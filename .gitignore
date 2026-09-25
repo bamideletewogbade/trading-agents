@@ -5,6 +5,7 @@
 /.next/
 /.vinext/
 /dist/
+/dist-preview/
 /out/
 next-env.d.ts
 tsconfig.tsbuildinfo

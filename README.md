@@ -30,6 +30,29 @@ lines.
 - **AI:** `OPENROUTER_API_KEY`, and `OPENROUTER_HAS_CREDIT=true` once the account has prepaid
   credit. Then `pnpm probe:openrouter` should show one Jev decision and one coach turn.
 
+## Deploy
+
+The Worker is `sika-lab`, so on the Cloudflare account the other projects use it goes live at
+**https://sika-lab.bishoptewogbade.workers.dev**. Any one of these works:
+
+1. **From the PC**, where `wrangler login` already holds the Cloudflare account (how Aksen Labs,
+   Kanea and Learn with Bishop deploy): `pnpm install && pnpm deploy`, then
+   `pnpm secrets --site https://sika-lab.bishoptewogbade.workers.dev` with the Neon
+   `DATABASE_URL` in `.dev.vars`. A Claude Code session running on the PC can do all of it.
+2. **From GitHub**, without a laptop: add `CLOUDFLARE_API_TOKEN` ("Edit Cloudflare Workers"
+   template), `CLOUDFLARE_ACCOUNT_ID` and `DATABASE_URL` to the repository's Actions secrets.
+   The Deploy workflow then runs on every push (or Actions › Deploy › Run workflow): checks,
+   migrations, deploy, secrets, and a browser playing the live site.
+3. **From a cloud session**: the same two Cloudflare values as environment variables in the
+   session's environment settings, then `pnpm deploy`.
+
+Cloud sessions can't use `wrangler login`: its browser sign-in has to come back to the machine
+running it, which a cloud container isn't. That is the only reason a cloud session needs a token.
+
+**Before a deploy, a preview.** `pnpm preview:build` turns the first 3 minutes into one
+self-contained HTML file (`dist-preview/sika-lab-payday.html`): the same engine and screens,
+running in the browser alone, saving nothing. It's how the shareable preview page was made.
+
 ## How it is built
 
 Five layers; each talks only to the one below (plan §3).
@@ -72,8 +95,8 @@ rejects any number the engine didn't produce, all checked against a mocked OpenR
 
 **Waiting on:**
 
-1. `DATABASE_URL` (Neon) and `OPENROUTER_API_KEY` in this environment's settings.
-2. A Cloudflare account to deploy to.
+1. A deploy, by any of the three routes above.
+2. `OPENROUTER_API_KEY` (with prepaid credit) for the coach.
 3. The Phase 1 pilot: 15–20 people, on their own phones, watched in person.
 4. A local reader for each country's amounts and words (`content/scenarios/payday.ts`).
 5. The decisions in plan §18: name, Paystack business, WhatsApp number, voice languages.
