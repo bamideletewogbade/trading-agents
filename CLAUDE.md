@@ -44,15 +44,23 @@ Build in phase order. Don't start a phase until the previous phase's exit criter
 
 ## Working here
 
-The stack is the Kanea Studio one (vinext on Cloudflare Workers, React 19, Tailwind 4, Drizzle +
-Neon, zod, OpenRouter, Paystack). Commands arrive with the Phase 0 scaffold; they will be:
+The stack is the Kanea Studio one (vinext on Cloudflare Workers, React 19, Tailwind 4, zod; Drizzle
++ Neon, OpenRouter and Paystack join in the phases that need them).
 
 ```bash
-pnpm dev
-pnpm check          # pure core and engine checks, no network
+pnpm dev            # http://localhost:5177
+pnpm check          # pure core and engine checks, no network. Must pass before any push
 pnpm typecheck && pnpm lint
-pnpm probe:<gate>   # real Jev calls on labelled sets; run after touching question wording
+pnpm shots          # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
+npx oxfmt <files>   # format what you touched
+pnpm probe:<gate>   # (Phase 2) real Jev calls on labelled sets; run after touching question wording
 ```
 
-Comments explain *why*, in plain words. Words shown to learners live in `content/`, not in
-components.
+- `lib/core` and `lib/engines` import each other by relative `.ts` path and nothing else, so
+  `pnpm check` can run them under plain Node.
+- Colours come only from the tokens in `app/globals.css`; Tailwind's own palette is switched off.
+  Type uses the `type-*` utilities; numbers that change or align get `num`.
+- Every page lives under `app/(app)/` (the shell with the tabs) unless it deliberately goes full
+  screen. New screens get added to `PAGES` in `scripts/shots.mjs`.
+- Comments explain *why*, in plain words. Words shown to learners live in `content/`, not in
+  components.

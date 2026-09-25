@@ -1,0 +1,27 @@
+# dependencies
+/node_modules
+
+# build output
+/.next/
+/.vinext/
+/dist/
+/out/
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# local tool state
+/.wrangler/
+.DS_Store
+*.pem
+npm-debug.log*
+.pnpm-debug.log*
+
+# local environment: secrets live here, never in the repo
+.env*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# screenshots from local verification runs
+/shots/

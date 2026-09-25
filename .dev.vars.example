@@ -1,0 +1,26 @@
+# Copy to .dev.vars (ignored by git) and fill in what you have. Everything is
+# optional: lib/capabilities.ts turns each missing service into a smaller
+# product, never a broken one.
+
+# Neon Postgres (Phase 1)
+DATABASE_URL=
+
+# OpenRouter: Jev (Decisions API) and the coach (Phase 2).
+# Set OPENROUTER_HAS_CREDIT=true only once the account has prepaid credit:
+# the Decisions API answers 402 on a trial balance.
+OPENROUTER_API_KEY=
+OPENROUTER_HAS_CREDIT=false
+
+# Paystack (Phase 5). PAYSTACK_MODE must agree with the key's prefix
+# (sk_test_ / sk_live_) or payments refuse to start.
+PAYSTACK_SECRET_KEY=
+PAYSTACK_MODE=test
+PAYSTACK_RECEIPT_DOMAIN=
+
+# WhatsApp Cloud API (Phase 5)
+WHATSAPP_ACCESS_TOKEN=
+WHATSAPP_APP_SECRET=
+WHATSAPP_PHONE_NUMBER_ID=
+WHATSAPP_VERIFY_TOKEN=
+
+SITE_URL=http://localhost:5177

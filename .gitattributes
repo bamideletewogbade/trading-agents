@@ -1,0 +1,6 @@
+# LF in the repository whatever the machine. The deploy host is Linux, and a
+# CRLF in a shell script or a .dev.vars line is a bug that only shows up there.
+* text=auto eol=lf
+*.png binary
+*.webp binary
+*.woff2 binary
