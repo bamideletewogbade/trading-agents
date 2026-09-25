@@ -2,7 +2,7 @@
  * Sends the Worker its secrets, printing names and lengths only, never
  * values. Run after a build, so dist/server/wrangler.json exists.
  *
- *     pnpm secrets --site https://sika-lab.<you>.workers.dev
+ *     pnpm secrets --site https://trading-agents.bishoptewogbade.workers.dev
  *
  * Values come from the environment first (CI, a cloud session), then from
  * .dev.vars. Three rules are enforced, not just documented:
@@ -46,7 +46,7 @@ const site = (
 )?.replace(/\/$/, '');
 if (!site || !site.startsWith('https://')) {
   console.error(
-    'Give the production address: pnpm secrets --site https://sika-lab.<you>.workers.dev',
+    'Give the production address: pnpm secrets --site https://trading-agents.bishoptewogbade.workers.dev',
   );
   process.exit(1);
 }

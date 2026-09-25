@@ -1,7 +1,8 @@
-# Deploy to Cloudflare Workers: on every push to the default branch, or by
-# hand from Actions › Deploy › Run workflow. Until the Cloudflare secrets
-# exist the run stops after its gate job with a note saying so, so pushes
-# stay green and nothing half-deploys.
+# A manual fallback deploy (Actions › Deploy › Run workflow). The site
+# normally deploys through Cloudflare Workers Builds on every push; this
+# workflow is for when that's disconnected, so it never runs on push and
+# never races it. Without the Cloudflare secrets it stops after its gate job
+# with a note saying so.
 #
 # The Cloudflare token lives only in the repository's secrets, never in a
 # session or a file. Needs these repository secrets:
@@ -21,8 +22,6 @@
 name: Deploy
 
 on:
-  push:
-    branches: [claude/financial-learning-platform-spec-dwjl4e]
   workflow_dispatch:
 
 concurrency:

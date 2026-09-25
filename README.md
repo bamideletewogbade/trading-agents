@@ -32,26 +32,32 @@ lines.
 
 ## Deploy
 
-The Worker is `sika-lab`, so on the Cloudflare account the other projects use it goes live at
-**https://sika-lab.bishoptewogbade.workers.dev**. Any one of these works:
+**Live: https://trading-agents.bishoptewogbade.workers.dev**
 
-1. **From the PC**, where `wrangler login` already holds the Cloudflare account (how Aksen Labs,
-   Kanea and Learn with Bishop deploy): `pnpm install && pnpm deploy`, then
-   `pnpm secrets --site https://sika-lab.bishoptewogbade.workers.dev` with the Neon
-   `DATABASE_URL` in `.dev.vars`. A Claude Code session running on the PC can do all of it.
-2. **From GitHub**, without a laptop: add `CLOUDFLARE_API_TOKEN` ("Edit Cloudflare Workers"
-   template), `CLOUDFLARE_ACCOUNT_ID` and `DATABASE_URL` to the repository's Actions secrets.
-   The Deploy workflow then runs on every push (or Actions › Deploy › Run workflow): checks,
-   migrations, deploy, secrets, and a browser playing the live site.
-3. **From a cloud session**: the same two Cloudflare values as environment variables in the
-   session's environment settings, then `pnpm deploy`.
+The repository is connected to Cloudflare Workers Builds (Workers & Pages › trading-agents), so
+**every push to `claude/financial-learning-platform-spec-dwjl4e` deploys itself**. The Worker's
+name, its workers.dev URL and `SITE_URL` are pinned in `vite.config.ts`, so a deploy can't turn
+the URL off or land on a different Worker.
 
-Cloud sessions can't use `wrangler login`: its browser sign-in has to come back to the machine
-running it, which a cloud container isn't. That is the only reason a cloud session needs a token.
+Runtime secrets go in the dashboard, where they survive every deploy (Settings › Variables and
+Secrets, type **Secret**):
 
-**Before a deploy, a preview.** `pnpm preview:build` turns the first 3 minutes into one
+- `DATABASE_URL`: the Neon pooled connection string. Until it's set, the site works and saves
+  nothing (`/api/runs` answers 204). Run `pnpm db:migrate` against it once.
+- `OPENROUTER_API_KEY`, and `OPENROUTER_HAS_CREDIT=true` once the account has prepaid credit.
+
+Other ways to deploy the same Worker, if Workers Builds is ever disconnected:
+
+- **From the PC** where `wrangler login` holds the account (how Aksen Labs and Kanea deploy):
+  `pnpm run deploy`, then `pnpm secrets --site https://trading-agents.bishoptewogbade.workers.dev`.
+  Use `pnpm run deploy`, not `pnpm deploy`, which is a built-in pnpm command.
+- **From GitHub Actions**: Actions › Deploy › Run workflow, with `CLOUDFLARE_API_TOKEN` and
+  `CLOUDFLARE_ACCOUNT_ID` in the repository's secrets. Manual only, so it never races Workers
+  Builds.
+
+**A preview without a deploy.** `pnpm preview:build` turns the first 3 minutes into one
 self-contained HTML file (`dist-preview/sika-lab-payday.html`): the same engine and screens,
-running in the browser alone, saving nothing. It's how the shareable preview page was made.
+running in the browser alone, saving nothing.
 
 ## How it is built
 
@@ -95,7 +101,7 @@ rejects any number the engine didn't produce, all checked against a mocked OpenR
 
 **Waiting on:**
 
-1. A deploy, by any of the three routes above.
+1. `DATABASE_URL` as a Worker secret, so pilot runs are saved.
 2. `OPENROUTER_API_KEY` (with prepaid credit) for the coach.
 3. The Phase 1 pilot: 15–20 people, on their own phones, watched in person.
 4. A local reader for each country's amounts and words (`content/scenarios/payday.ts`).
