@@ -5,6 +5,7 @@
  *     pnpm dev              (in another terminal)
  *     pnpm walk             screenshots of every step into shots/payday-*.png
  *     pnpm walk <url>       against another server
+ *     pnpm walk <url> --test  marked as test traffic: played, but not stored
  *
  * It plays Ghana's pilot month with the split from the plan's own example
  * (§8), so the numbers it expects are the ones worked out by hand in
@@ -16,7 +17,10 @@
 import { existsSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 
-const BASE = (process.argv[2] ?? 'http://localhost:5177').replace(/\/$/, '');
+const args = process.argv.slice(2);
+const BASE = (
+  args.find((arg) => !arg.startsWith('--')) ?? 'http://localhost:5177'
+).replace(/\/$/, '');
 const bundled = '/opt/pw-browsers/chromium';
 const browser = await chromium.launch(
   existsSync(bundled) ? { executablePath: bundled } : {},
@@ -27,6 +31,8 @@ const context = await browser.newContext({
   isMobile: true,
   hasTouch: true,
 });
+if (args.includes('--test'))
+  await context.addCookies([{ name: 'sika_test', value: '1', url: BASE }]);
 const page = await context.newPage();
 mkdirSync('shots', { recursive: true });
 

@@ -1,14 +1,20 @@
 import { getDb } from '@/db';
 import { json, readJson, route } from '@/lib/api';
 import { capabilities } from '@/lib/capabilities';
-import { learnerCookie, learnerFrom, recordRun } from '@/lib/learning/store';
+import {
+  isTestTraffic,
+  learnerCookie,
+  learnerFrom,
+  recordRun,
+} from '@/lib/learning/store';
 
 /**
  * A finished run: config, seed and actions. The server replays it through
  * its own copy of the engine before storing anything (lib/learning/store.ts).
  */
 export const POST = route(async (request) => {
-  if (!capabilities().database) return new Response(null, { status: 204 });
+  if (!capabilities().database || isTestTraffic(request))
+    return new Response(null, { status: 204 });
   const learner = learnerFrom(request);
   const { summary } = await recordRun(
     await getDb(),

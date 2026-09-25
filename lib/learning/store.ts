@@ -21,6 +21,19 @@ const ONE_YEAR = 60 * 60 * 24 * 365;
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+export const TEST_COOKIE = 'sika_test';
+
+/**
+ * Traffic from our own checks (`pnpm walk --test` after a deploy) carries
+ * this cookie and is answered but never stored, so the pilot's numbers count
+ * learners, not robots.
+ */
+export function isTestTraffic(request: Request): boolean {
+  return new RegExp(`(?:^|;\\s*)${TEST_COOKIE}=1(?:;|$)`).test(
+    request.headers.get('cookie') ?? '',
+  );
+}
+
 /** The learner this request belongs to: the cookie's id, or a new one. */
 export function learnerFrom(request: Request): { id: string; fresh: boolean } {
   const cookie = request.headers.get('cookie') ?? '';

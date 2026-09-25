@@ -57,7 +57,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm db:push --force
+      - run: pnpm db:migrate
       # The Worker reads its environment from .dev.vars in development.
       - run: printf 'DATABASE_URL=%s\n' "$DATABASE_URL" > .dev.vars
       - name: Start the dev server

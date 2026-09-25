@@ -16,10 +16,11 @@
     "check": "node --experimental-strip-types scripts/check-core.ts && node --experimental-strip-types scripts/check-engines.ts && node --experimental-strip-types scripts/check-intelligence.ts",
     "deploy": "vinext build && wrangler deploy --config dist/server/wrangler.json",
     "shots": "node scripts/shots.mjs",
-    "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "walk": "node scripts/walk-payday.mjs",
-    "probe:openrouter": "node --experimental-strip-types scripts/probe-openrouter.ts"
+    "probe:openrouter": "node --experimental-strip-types scripts/probe-openrouter.ts",
+    "secrets": "node scripts/push-secrets.mjs",
+    "db:migrate": "node --experimental-strip-types scripts/migrate.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",

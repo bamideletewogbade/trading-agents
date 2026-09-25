@@ -1,7 +1,12 @@
 import { getDb } from '@/db';
 import { json, readJson, route } from '@/lib/api';
 import { capabilities } from '@/lib/capabilities';
-import { learnerCookie, learnerFrom, recordEvent } from '@/lib/learning/store';
+import {
+  isTestTraffic,
+  learnerCookie,
+  learnerFrom,
+  recordEvent,
+} from '@/lib/learning/store';
 
 /**
  * Something the learner did (lib/client/track.ts). Answers 204 and stores
@@ -9,7 +14,8 @@ import { learnerCookie, learnerFrom, recordEvent } from '@/lib/learning/store';
  * measurement of it needs one.
  */
 export const POST = route(async (request) => {
-  if (!capabilities().database) return new Response(null, { status: 204 });
+  if (!capabilities().database || isTestTraffic(request))
+    return new Response(null, { status: 204 });
   const learner = learnerFrom(request);
   await recordEvent(
     await getDb(),

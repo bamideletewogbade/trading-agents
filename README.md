@@ -26,7 +26,7 @@ Copy `.dev.vars.example` to `.dev.vars`. Every service is optional (`lib/capabil
 none set, the whole Payday month still plays; nothing is saved and the coach speaks its authored
 lines.
 
-- **Database:** `DATABASE_URL` to a Neon project, or to any local Postgres, then `pnpm db:push`.
+- **Database:** `DATABASE_URL` to a Neon project, or to any local Postgres, then `pnpm db:migrate`.
 - **AI:** `OPENROUTER_API_KEY`, and `OPENROUTER_HAS_CREDIT=true` once the account has prepaid
   credit. Then `pnpm probe:openrouter` should show one Jev decision and one coach turn.
 

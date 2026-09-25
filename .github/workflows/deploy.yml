@@ -1,0 +1,81 @@
+# Deploy to Cloudflare Workers, by hand: Actions › Deploy › Run workflow.
+#
+# The Cloudflare token lives only in the repository's secrets, never in a
+# session or a file. Needs these repository secrets:
+#
+#   CLOUDFLARE_API_TOKEN    "Edit Cloudflare Workers" template token
+#   CLOUDFLARE_ACCOUNT_ID   from the Cloudflare dashboard's Workers page
+#
+# and optionally, for the running app (each one missing makes a smaller
+# product, never a broken one; see lib/capabilities.ts):
+#
+#   DATABASE_URL            Neon connection string; migrations are applied here
+#   OPENROUTER_API_KEY
+#   OPENROUTER_HAS_CREDIT   "true" once the OpenRouter account has prepaid credit
+#
+# The same gate as CI runs first, and the deployed site is played through by
+# a browser afterwards, so a broken deploy is noticed here, not by a learner.
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # `secrets` can't appear in a step's `if:`, so its presence is passed as a flag.
+      HAS_DATABASE: ${{ secrets.DATABASE_URL != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check && pnpm typecheck && pnpm lint
+
+      - name: Database migrations
+        if: env.HAS_DATABASE == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm db:migrate
+
+      - run: pnpm build
+      - name: Deploy the Worker
+        id: deploy
+        run: |
+          npx wrangler deploy --config dist/server/wrangler.json | tee deploy.log
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          test -n "$url"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_HAS_CREDIT: ${{ secrets.OPENROUTER_HAS_CREDIT }}
+        run: pnpm secrets --site "${{ steps.deploy.outputs.url }}"
+
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Play the live site
+        run: |
+          sleep 10
+          pnpm shots "${{ steps.deploy.outputs.url }}"
+          # --test marks the browser as test traffic, so the live database
+          # keeps only real learners' runs (lib/learning/store.ts).
+          pnpm walk "${{ steps.deploy.outputs.url }}" --test
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-shots
+          path: shots/
+      - run: echo "Live at ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
