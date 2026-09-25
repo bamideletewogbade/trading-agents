@@ -41,12 +41,15 @@ export function Delta({
       {direction === 'loss' ? (
         <TriangleDown width={iconSize} height={iconSize} />
       ) : null}
-      <span>
-        {formatMoney(amount, { signed: true })}
-        {shareBp !== undefined
-          ? ` (${formatBp(shareBp, { signed: true })})`
-          : ''}
-      </span>
+      {/* No change is said in a word alone: "GH₵0 same" reads as a glitch. */}
+      {direction === 'none' ? null : (
+        <span>
+          {formatMoney(amount, { signed: true })}
+          {shareBp !== undefined
+            ? ` (${formatBp(shareBp, { signed: true })})`
+            : ''}
+        </span>
+      )}
       <span className="font-normal">{words[direction]}</span>
     </span>
   );

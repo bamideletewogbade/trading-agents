@@ -1,14 +1,14 @@
 import { HOME } from '@/content/copy/shell';
 import { BRAND } from '@/lib/brand';
 import { TopBar } from '@/components/shell/TopBar';
-import { Button } from '@/components/ui/Button';
+import { ButtonLink } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { IntelligenceMap } from '@/components/progress/IntelligenceMap';
 
 /**
  * Home. For someone new, the first thing on it is the test of how they think
- * about money (spec §98): no sign-up, no video, no course list. The button
- * opens the Payday simulation once Phase 1 builds it.
+ * about money (spec §98): no sign-up, no video, no course list. Start opens
+ * the Payday simulation, full screen.
  */
 export default function HomePage() {
   return (
@@ -19,9 +19,9 @@ export default function HomePage() {
           <p className="type-display text-fg">{HOME.opener}</p>
           <p className="mt-3 type-body text-fg-2">{HOME.openerDetail}</p>
           <div className="mt-6">
-            <Button kind="primary" block disabled reason={HOME.startNotReady}>
+            <ButtonLink kind="primary" block href="/play/payday">
               {HOME.start}
-            </Button>
+            </ButtonLink>
           </div>
         </section>
 

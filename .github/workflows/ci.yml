@@ -1,6 +1,10 @@
-# The same gate a contributor runs locally: pure core checks, types, lint,
-# and a production build. Screens are checked with `pnpm shots` locally,
-# because that needs a running server and a browser.
+# Two jobs on every push:
+#
+# - check: the gate a contributor runs locally (pure checks with no network,
+#   types, lint, a production build).
+# - walk: the product itself. A real Postgres, the dev server, every screen at
+#   phone widths (`pnpm shots`), and the first 3 minutes played through by a
+#   browser (`pnpm walk`). Screenshots are kept as an artifact either way.
 name: CI
 
 on:
@@ -26,3 +30,49 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm build
+
+  walk:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: sika_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/sika_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm db:push --force
+      # The Worker reads its environment from .dev.vars in development.
+      - run: printf 'DATABASE_URL=%s\n' "$DATABASE_URL" > .dev.vars
+      - name: Start the dev server
+        run: |
+          pnpm dev > dev.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:5177/ && exit 0; sleep 1; done
+          cat dev.log; exit 1
+      - run: pnpm shots
+      - run: pnpm walk
+      - name: The walkthrough was saved
+        run: |
+          psql "$DATABASE_URL" -At -c "select count(*) from experience_runs" | grep -qE '^[2-9]'
+          psql "$DATABASE_URL" -At -c "select count(*) from learning_events where type = 'another_requested'" | grep -q '^1$'
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shots
+          path: shots/

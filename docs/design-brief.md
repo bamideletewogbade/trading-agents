@@ -1,8 +1,8 @@
 # Design brief
 
-**Status: draft for approval (25 Sep 2026).** Spec §81 makes this the source of truth for every
-agent that builds a screen. Nothing past the shell is built until it is approved. The shell and
-the specimen page (`/design`) are built from it so it can be judged on a phone, not in prose.
+**Status: approved to proceed (25 Sep 2026).** Spec §81 makes this the source of truth for every
+agent that builds a screen. The specimen page (`/design`) draws it on a phone; changes to it are
+welcome, and go here first, then into `app/globals.css`, then into screens.
 
 Tokens live in `app/globals.css` as Tailwind theme variables, so `bg-panel`, `text-fg`, `border-edge`
 and `text-gold` are the classes. **Tailwind's default palette is switched off there**: the only

@@ -14,15 +14,21 @@ decisions by practising them in simulations with an AI coach. Nothing in it is r
 
 ```bash
 pnpm install
-pnpm dev            # http://localhost:5177
-pnpm check          # pure core checks: money, phones, seeded randomness, determinism rules
+pnpm dev               # http://localhost:5177  (Start on Home opens the Payday month)
+pnpm check             # core, engine and intelligence checks: no network, about a second
 pnpm typecheck && pnpm lint
-pnpm shots          # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
+pnpm shots             # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
+pnpm walk              # with pnpm dev running: plays the first 3 minutes, checks the numbers
 pnpm build
 ```
 
-Copy `.dev.vars.example` to `.dev.vars` for secrets. Every service is optional
-(`lib/capabilities.ts`): with none of them set, the app still runs.
+Copy `.dev.vars.example` to `.dev.vars`. Every service is optional (`lib/capabilities.ts`): with
+none set, the whole Payday month still plays; nothing is saved and the coach speaks its authored
+lines.
+
+- **Database:** `DATABASE_URL` to a Neon project, or to any local Postgres, then `pnpm db:push`.
+- **AI:** `OPENROUTER_API_KEY`, and `OPENROUTER_HAS_CREDIT=true` once the account has prepaid
+  credit. Then `pnpm probe:openrouter` should show one Jev decision and one coach turn.
 
 ## How it is built
 
@@ -41,29 +47,33 @@ Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases th
 
 ## Where things stand (25 Sep 2026)
 
-**Phase 0, foundations.** Done:
+**Phase 0, foundations: done.** The stack, the pure core (money in four currencies, phones for
+Ghana/Nigeria/Kenya, seeded randomness), the design brief and `/design`, the shell with five tabs.
 
-- The scaffold, the same stack as Kanea Studio, building clean.
-- `lib/core`: multi-currency money (minor units, basis points, micro-dollars, compact hero
-  amounts), phone numbers for Ghana, Nigeria and Kenya with MoMo network guesses, seeded
-  randomness identical across browsers, readable login codes. 23 checks, including one that
-  fails the build if an engine uses `Math.random()` or an engine-dependent maths function.
-- The design brief, with the palette validated for colour-blind readers and the typeface chosen
-  by checking 25 families for ₵, ₦, Twi and Yoruba letters.
-- The shell: five tabs (Home, Learn, Practice, Progress, Coach), truth badges, the experience
-  frame, buttons, stats, gain/loss markers, the slider and choice controls, and a gain/loss
-  colour setting for colour-blind learners that applies before first paint.
-- `/design`, the brief drawn on a phone, for approval.
+**Phase 1, the first 3 minutes: built, pilot not yet run.**
+
+- `/play/payday`: choose a country, split a month's income across rent, family, savings, a
+  friend's "forex guy" and spending; guess how long the savings would last; watch the month
+  happen (the phone breaks mid-month); see what the choices did, with an authored coach line;
+  replay the same month with one change, side by side; then see what "doubles every 30 days"
+  really means. Ghana, Nigeria (a yearly-rent fund) and Kenya, with illustrative amounts awaiting
+  a local reader.
+- `lib/engines/payday.ts`: the month's rules, 16 checks including 2,000 random months that must
+  each balance to the pesewa. The first month uses the fixed seed "pilot" so every pilot learner
+  lives the same month.
+- Runs and events are saved when a database is configured: the server replays every run through
+  its own engine before storing it, and refuses runs that don't replay.
+- `pnpm walk` plays it all in a browser and CI does the same against a real Postgres on every
+  push.
+
+**Phase 2, the coach: groundwork built, waiting on the key.** The Jev client and hedge-band
+readers, the OpenRouter JSON client with pinned per-job model lists, and the numeric guard that
+rejects any number the engine didn't produce, all checked against a mocked OpenRouter.
 
 **Waiting on:**
 
-1. Approval of the design brief (`/design`, `docs/design-brief.md` §14). Phase 1 builds screens
-   on it.
-2. A Cloudflare account to deploy to (the Phase 0 exit asks for the shell live on Workers).
-3. The decisions in plan §18: name, Paystack business, WhatsApp number, country order, voice
-   languages, the Phase 1 pilot group.
-4. Admin that takes weeks, so it should start now: Meta business verification, OpenRouter prepaid
-   credit, Paystack Ghana test keys.
-
-**Next, Phase 1:** the Experience Registry, the Payday life simulation with What-If replay, and
-the first 3 minutes, tested on 15–20 real people before any AI is added.
+1. `DATABASE_URL` (Neon) and `OPENROUTER_API_KEY` in this environment's settings.
+2. A Cloudflare account to deploy to.
+3. The Phase 1 pilot: 15–20 people, on their own phones, watched in person.
+4. A local reader for each country's amounts and words (`content/scenarios/payday.ts`).
+5. The decisions in plan §18: name, Paystack business, WhatsApp number, voice languages.

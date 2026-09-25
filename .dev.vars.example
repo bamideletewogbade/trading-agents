@@ -2,7 +2,10 @@
 # optional: lib/capabilities.ts turns each missing service into a smaller
 # product, never a broken one.
 
-# Neon Postgres (Phase 1)
+# Postgres. Neon in production (a *.neon.tech URL uses Neon's HTTP driver).
+# Any other URL uses node-postgres, e.g. a local database for development:
+#   DATABASE_URL=postgres://postgres@127.0.0.1:5432/sika_dev
+# then `pnpm db:push` to create the tables.
 DATABASE_URL=
 
 # OpenRouter: Jev (Decisions API) and the coach (Phase 2).

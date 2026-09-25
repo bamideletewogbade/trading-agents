@@ -62,6 +62,8 @@ export type Lab = {
   name: string;
   line: string;
   status: 'mvp' | 'later';
+  /** Where the lab opens, once it exists. */
+  href?: string;
 };
 
 export const LABS: readonly Lab[] = [
@@ -70,6 +72,7 @@ export const LABS: readonly Lab[] = [
     name: 'Money Lab',
     line: 'Live a month, or a year, on a fictional income.',
     status: 'mvp',
+    href: '/play/payday',
   },
   {
     key: 'risk',

@@ -25,6 +25,7 @@ const PAGES = [
   ['progress', '/progress'],
   ['coach', '/coach'],
   ['design', '/design'],
+  ['payday', '/play/payday?country=GH'],
 ];
 const WIDTHS = [360, 375, 390];
 

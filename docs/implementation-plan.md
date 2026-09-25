@@ -3,7 +3,14 @@
 **The financial intelligence gym: how we build it, in what order, and what we borrow.**
 
 Written 25 September 2026. Companion to `docs/product-spec.md` (the why and what). This file is
-the how. Where the two disagree about the product, the spec wins; where they disagree about
+the how.
+
+> **Status, 25 Sep 2026 (evening).** Phase 0 done. Phase 1 built and passing its automated checks
+> (the Payday month, What-If, the reveal, runs and events saved and replayed server-side); its
+> exit is the in-person pilot with 15–20 people, not yet run. Phase 2's clients (Jev, OpenRouter,
+> the numeric guard) are built and checked against a mocked OpenRouter; they go live once
+> `OPENROUTER_API_KEY` is in the environment and `pnpm probe:openrouter` passes. README.md keeps
+> the running status. Where the two disagree about the product, the spec wins; where they disagree about
 engineering, this file wins until it is updated.
 
 Built on what already works in our recent projects:
@@ -176,6 +183,10 @@ export type Facts = {
   pivotal: boolean;                   // the engine says this moment is worth a coach question
 };
 ```
+
+**As built:** the engine returns numbers only (`facts()`), and the sentences are written per
+country in `content/` from those numbers, so engines never hold words and content never does
+arithmetic. The paragraph below describes the pair.
 
 `summarize()` is the most reused function in the product. It feeds:
 

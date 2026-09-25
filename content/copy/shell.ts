@@ -20,7 +20,6 @@ export const HOME = {
   openerDetail:
     'One payday, a few decisions, and what they lead to. About three minutes.',
   start: 'Start',
-  startNotReady: 'The first simulation arrives in the next build.',
   mapTitle: 'Your financial intelligence map',
   mapEmpty: 'Play one simulation and your map starts filling in.',
   dailyTitle: 'Today’s challenge',
