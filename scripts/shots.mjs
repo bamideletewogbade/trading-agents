@@ -32,6 +32,7 @@ const PAGES = [
   ['lesson', '/lesson/m1'],
   ['lesson-chart', '/lesson/c4'],
   ['lesson-ta', '/lesson/t1'],
+  ['lesson-fa', '/lesson/f3'],
   ['home', '/home'],
   ['learn', '/learn'],
   ['practice', '/practice'],

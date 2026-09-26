@@ -56,3 +56,11 @@ export const STAGE4_SEEDS = {
 export const MARKETS = { quiet: 20, wild: 80 } as const;
 /** The stop a guess gives, in cents: the same in every market. */
 export const GUESSED_STOP = 60;
+
+/** Stage 5 (fundamental analysis): the scenarios each lesson pins. */
+export const STAGE5_SEEDS = {
+  news: 'news',
+  release: 'rate-day',
+  carry: 'carry',
+  pullback: 'bank',
+} as const;

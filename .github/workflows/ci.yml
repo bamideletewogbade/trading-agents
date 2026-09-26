@@ -5,7 +5,7 @@
 # - walk: the product itself. A real Postgres, the dev server, every screen at
 #   phone widths (`pnpm shots`), and the first 3 minutes played through by a
 #   browser (`pnpm walk`), and onboarding chatted through to the desk
-#   (`pnpm walk:onboarding`), and all 31 lessons of stages 1–4 played to the
+#   (`pnpm walk:onboarding`), and all 40 lessons of stages 1–5 played to the
 #   finish (`pnpm walk:lessons`). Screenshots are kept as an artifact either
 #   way.
 name: CI
@@ -77,7 +77,7 @@ jobs:
           psql "$DATABASE_URL" -At -c "select count(*) from experience_runs" | grep -qE '^[2-9]'
           psql "$DATABASE_URL" -At -c "select count(*) from learning_events where type = 'another_requested'" | grep -q '^1$'
           psql "$DATABASE_URL" -At -c "select placement->>'stage' from learner_profiles where profile->>'goal' = 'ipo'" | grep -q '^0$'
-          psql "$DATABASE_URL" -At -c "select count(distinct skill) from learning_events where type = 'lesson_completed'" | grep -q '^31$'
+          psql "$DATABASE_URL" -At -c "select count(distinct skill) from learning_events where type = 'lesson_completed'" | grep -q '^40$'
       - if: always()
         uses: actions/upload-artifact@v4
         with:

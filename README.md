@@ -85,9 +85,33 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026, late)
+## Where things stand (26 Sep 2026, later still)
 
-**Stage 4 of the roadmap: technical analysis, 10 lessons. 31 lessons you play in all.**
+**Stage 5 of the roadmap: fundamental analysis, 9 lessons. 40 lessons you play in all.**
+
+- **The lessons:** what moves prices (only the surprise), central banks and rates, inflation and
+  your currency, reading an income statement, valuation and the value trap, the economic
+  calendar, commodities and African currencies, the carry trade, and fundamentals with
+  technicals.
+- **Real figures where we have them.** Ghana's 2022 comes from the Bank of Ghana's December 2022
+  statistical bulletin: monthly inflation, the policy rate, 91-day bill rates and the cedi.
+  Nigeria's 2023 inflation comes from the NBS, and the naira's official rate from FMDQ data.
+  The inflation lesson (f3) plays those years month by month and names its sources on screen.
+  Everything else is a labelled model: f7 and f9 were planned as "historical" but need market
+  price history we don't have licensed, so they're simulations and say so.
+- **New engines:** `lib/engines/macro.ts` (news surprises, policy effects on savings, loans,
+  bonds and shares, real returns, dollar flows, the carry trade, a rate-decision day with gaps
+  and wide spreads, news-then-pullback entries) and `lib/engines/company.ts` (income statement,
+  P/E, dividend yield, holding a share for five years).
+- **Every lesson now shows its truth badge** (simulation, historical data, educational) in the
+  player's header, as rule 7 asks.
+- **9 new widgets**, 40 in all. `pnpm check` runs 123 checks, including that the published
+  figures reproduce what the sources reported (the cedi's 30.0% fall, the naira's 49%).
+  `pnpm walk:lessons` plays all 40 lessons; CI checks all 40 completions were saved.
+
+### Earlier: stage 4
+
+Technical analysis, 10 lessons, 31 in all at the time.
 
 - **The lessons:** trendlines and channels, moving averages, RSI, MACD built from its parts,
   Bollinger Bands and ATR stops, candlestick patterns, chart patterns (the double top), Fibonacci,

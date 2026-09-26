@@ -1,5 +1,5 @@
 /**
- * Plays every lesson in stages 1–4 in a phone-sized browser, the way a
+ * Plays every lesson in stages 1–5 in a phone-sized browser, the way a
  * learner would: does each widget's one thing, answers each question until
  * it's right, and finishes. Fails on any console error, a widget that scrolls
  * sideways, a Continue that never unlocks, or a lesson that doesn't reach its
@@ -49,6 +49,15 @@ const ALL = [
   't8',
   't9',
   't10',
+  'f1',
+  'f2',
+  'f3',
+  'f4',
+  'f5',
+  'f6',
+  'f7',
+  'f8',
+  'f9',
 ];
 const chosen = args.filter((a) => !a.startsWith('http'));
 const IDS = chosen.length ? chosen : ALL;
@@ -198,6 +207,46 @@ const WIDGETS = {
     await radio(w, 'Bigger trend down');
     await click(w, 'Test buying hourly dips, 150 charts each way');
     await w.getByText('Dips bought in a downtrend').waitFor();
+  },
+  'news-surprise': async (w) => {
+    await slide(w, 2000);
+    await radio(w, 'Rate decision');
+    await slide(w, 150);
+    await w.getByText(/Surprise:/).waitFor();
+  },
+  'rate-setter': (w) => slide(w, 2700),
+  'inflation-replay': async (w) => {
+    for (let i = 0; i < 12; i += 1) await click(w, 'Next month');
+    await w.getByText(/Saved GH₵/).waitFor();
+  },
+  'income-statement': (w) => slide(w, 9000),
+  'value-trap': async (w) => {
+    await click(w, 'Play 5 years');
+    await slide(w, 0);
+  },
+  'release-day': async (w) => {
+    await click(w, 'Play the day');
+    await w.getByText(/Planned to lose/).waitFor();
+    await radio(w, 'Wait for it to settle');
+    await click(w, 'Play the day');
+    await click(w, 'Try another day');
+  },
+  'dollar-earnings': async (w) => {
+    await slide(w, 40);
+    await w
+      .getByText(/Short of dollars/)
+      .first()
+      .waitFor();
+  },
+  'carry-trade': async (w) => {
+    for (let i = 0; i < 7; i += 1) await click(w, 'Next 3 months');
+    await w.getByText(/Before the devaluation/).waitFor();
+  },
+  'news-pullback': async (w) => {
+    await click(w, 'Play what happened');
+    await w.getByText(/Your result/).waitFor();
+    await click(w, 'Replay: what if the good news fades?');
+    await w.getByText(/faded/).first().waitFor();
   },
   divergence: async (w) => {
     await click(w, 'Mark the two highs');

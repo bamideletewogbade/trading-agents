@@ -430,11 +430,11 @@ export const LANDING = {
     items: [
       [
         'Now',
-        'The first four stages of the roadmap, 31 lessons you play: how markets work, reading charts, risk, and technical analysis, with every famous pattern tested against a coin flip. Plus accounts, and an onboarding chat that finds your starting point.',
+        'The first five stages of the roadmap, 40 lessons you play: how markets work, reading charts, risk, technical analysis tested against a coin flip, and fundamentals, with Ghana’s 2022 and Nigeria’s 2023 on the published figures. Plus accounts, and an onboarding chat that finds your starting point.',
       ],
       [
         'Next',
-        'Fundamental analysis (stage 5): interest rates, inflation, reading a company’s accounts, valuation, and what moves the naira and the cedi.',
+        'Strategies (stage 6): trend following, ranges, breakouts, news trading, and investing versus trading, each run by its rules and tested before you trust it.',
       ],
       [
         'Then',
@@ -442,7 +442,7 @@ export const LANDING = {
       ],
       [
         'After',
-        'Market replays on historical data, fundamental analysis, and the daily chart on WhatsApp.',
+        'Market replays on licensed historical data, and the daily chart on WhatsApp.',
       ],
       ['Later', 'Passes by MoMo, the Floor, mentor cohorts, partner access.'],
     ],

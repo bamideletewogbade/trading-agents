@@ -40,6 +40,17 @@ import {
   TimeframesTradeWidget,
   TrendlineWidget,
 } from './technical';
+import {
+  CarryTradeWidget,
+  DollarEarningsWidget,
+  IncomeStatementWidget,
+  InflationReplayWidget,
+  NewsPullbackWidget,
+  NewsSurpriseWidget,
+  RateSetterWidget,
+  ReleaseDayWidget,
+  ValueTrapWidget,
+} from './fundamental';
 
 /**
  * Every widget a lesson can name. The Record type makes a missing one a
@@ -89,4 +100,13 @@ export const WIDGETS: Record<
   'fib-test': FibTestWidget,
   'timeframes-trade': TimeframesTradeWidget,
   divergence: DivergenceWidget,
+  'news-surprise': NewsSurpriseWidget,
+  'rate-setter': RateSetterWidget,
+  'inflation-replay': InflationReplayWidget,
+  'income-statement': IncomeStatementWidget,
+  'value-trap': ValueTrapWidget,
+  'release-day': ReleaseDayWidget,
+  'dollar-earnings': DollarEarningsWidget,
+  'carry-trade': CarryTradeWidget,
+  'news-pullback': NewsPullbackWidget,
 };

@@ -333,4 +333,186 @@ export const WIDGET_COPY = {
       'It kept rising anyway. Divergence is a warning, not a signal.',
     pane: 'RSI',
   },
+  newsSurprise: {
+    which: 'The news',
+    kinds: {
+      rates: 'Rate decision',
+      inflation: 'Inflation figure',
+      earnings: 'Company profits',
+    },
+    expected: {
+      rates: (pts: string) => `Expected: rates up ${pts} points`,
+      inflation: (rate: string) => `Expected: inflation at ${rate}`,
+      earnings: (rate: string) => `Expected: profits up ${rate}`,
+    },
+    actual: 'What actually happened',
+    shown: {
+      rates: (pts: string) => `Rates up ${pts} points`,
+      inflation: (rate: string) => `Inflation at ${rate}`,
+      earnings: (rate: string, up: boolean) =>
+        up ? `Profits up ${rate}` : `Profits down ${rate}`,
+    },
+    news: 'NEWS',
+    before:
+      'Before the news, the price had already moved on what people expected.',
+    result: (surprise: string, move: string) =>
+      `Surprise: ${surprise} points. The price on the day: ${move}.`,
+    none: 'No surprise: the news was already in the price, so it barely moved.',
+  },
+  rateSetter: {
+    rate: 'The policy rate',
+    start: (rate: string) => `Starting from ${rate}`,
+    deposit: (amount: string) => `${amount} saved for a year earns`,
+    loan: (amount: string, months: number) =>
+      `A ${amount} loan over ${months} months costs, a month`,
+    bond: (years: number, face: string, coupon: string) =>
+      `A ${years}-year bond bought for ${face} paying ${coupon}, now worth`,
+    share: (dividend: string) =>
+      `A share paying ${dividend} a year, and growing, now worth`,
+    change: (delta: string) => `${delta} from the start`,
+  },
+  inflationReplay: {
+    which: 'Which year',
+    years: { ghana: 'Ghana 2022', nigeria: 'Nigeria 2023' },
+    keep: 'Where the money sat',
+    places: {
+      cash: 'Cash at home',
+      savings: (rate: string) => `Savings at ${rate}`,
+      bills: '91-day T-bills',
+    },
+    billsNote:
+      'T-bills rolled every three months at the Bank of Ghana’s published rates.',
+    savingsNote: (rate: string) =>
+      `A ${rate} savings rate is our example, not a published figure.`,
+    next: 'Next month',
+    again: 'Start the year again',
+    now: (month: string, rate: string) =>
+      `${month}: prices ${rate} higher than a year before`,
+    legend: {
+      inflation: 'Inflation, year on year',
+      policy: 'Bank of Ghana policy rate (dashed)',
+    },
+    saved: (start: string, end: string) => `Saved ${start}, it became ${end}.`,
+    bought: (rate: string, real: string) =>
+      `Prices rose ${rate} over the year, so it buys what ${real} bought when you saved it.`,
+    phone: (price: string, before: string, after: string) =>
+      `A ${price} phone: ${before} at the start of the year, ${after} at the end.`,
+    source: 'Source',
+  },
+  incomeStatement: {
+    tonnes: 'Tonnes sold',
+    tonnesShown: (n: string) => `${n} t`,
+    beans: 'Cost of beans, a tonne',
+    lines: {
+      revenue: 'Revenue',
+      costOfSales: 'Cost of sales (beans and processing)',
+      grossProfit: 'Gross profit',
+      operatingCosts: 'Running costs (salaries, rent)',
+      operatingProfit: 'Operating profit',
+      interest: 'Interest on loans',
+      profitBeforeTax: 'Profit before tax',
+      tax: (rate: string) => `Tax at ${rate}`,
+      netProfit: 'Net profit',
+    },
+    grossMargin: 'Gross margin',
+    netMargin: 'Net margin',
+    eps: 'Earnings per share',
+    versus: (change: string) => `Net profit ${change} against the first year.`,
+  },
+  valueTrap: {
+    names: {
+      cheap: 'Company A: a cement maker',
+      dear: 'Company B: a payments company',
+    },
+    pe: 'P/E',
+    yield: 'Dividend yield',
+    times: (n: string) => `${n}×`,
+    play: (years: number) => `Play ${years} years`,
+    story: {
+      cheap: 'Its one big contract ends this year.',
+      dear: 'Signing up shops fast.',
+    },
+    invested: (amount: string) =>
+      `${amount} invested in each, P/E kept the same:`,
+    ended: (value: string, change: string) =>
+      `Ended at ${value} (${change}), dividends included`,
+    earnings: 'Earnings a share, each year',
+    slider: 'Company A’s earnings, each year',
+    shrink: (rate: string) =>
+      `Company A could have shrunk ${rate} a year and still not lost money.`,
+    change: (rate: string) =>
+      rate.startsWith('−') ? `down ${rate.slice(1)}` : `up ${rate}`,
+  },
+  releaseDay: {
+    plan: 'Your plan',
+    plans: { hold: 'Hold through the news', wait: 'Wait for it to settle' },
+    play: 'Play the day',
+    another: 'Try another day',
+    news: 'RATE DECISION',
+    entry: 'Entry',
+    stop: 'Stop',
+    planned: (amount: string) => `Planned to lose at most ${amount}.`,
+    slipped: (fill: string, stop: string) =>
+      `The stop was at ${stop}. The first price after the release was lower, so it filled at ${fill}.`,
+    filled: (fill: string) => `Stopped out at ${fill}.`,
+    result: (pnl: string) => `Result: ${pnl}.`,
+    side: { long: 'Bought', short: 'Sold' },
+    at: (side: string, price: string) => `${side} at ${price}.`,
+    spread: (normal: string, wide: string) =>
+      `The spread: ${normal} most of the day, ${wide} at the release.`,
+  },
+  dollarEarnings: {
+    prices: {
+      oil: 'Oil, a barrel',
+      gold: 'Gold, an ounce',
+      cocoa: 'Cocoa, a tonne',
+    },
+    countries: { oil: 'Sells mostly oil', mixed: 'Sells gold, cocoa and oil' },
+    earned: 'Dollars earned',
+    needs: 'Dollars needed',
+    gap: 'Left over',
+    support: 'More dollars coming in than going out: the currency has support.',
+    pressure: 'Short of dollars: pressure on the currency.',
+    ofNeeds: (share: string) => `${share} of what it needs`,
+    illustrative: 'Sizes are illustrative, not either country’s statistics.',
+  },
+  carryTrade: {
+    next: (n: number) => `Next ${n} months`,
+    again: 'Replay without the devaluation',
+    withIt: 'Replay with the devaluation',
+    profit: 'Profit if you closed now',
+    fx: 'Local currency per dollar',
+    month: (n: number) => `Month ${n}`,
+    devalued: (loss: string) =>
+      `The currency was devalued: it lost ${loss} of its value against the dollar in one month.`,
+    summary: (earned: string, now: string) =>
+      `Before the devaluation the trade was up ${earned}. At the end: ${now}.`,
+    calm: (now: string) =>
+      `No devaluation this time: the trade ends at ${now}.`,
+    zero: 'Break-even',
+  },
+  newsPullback: {
+    headline:
+      'Headline: the central bank raises rates more than expected. Banks earn more when rates are high.',
+    support: 'Old range top',
+    plan: 'Your plan',
+    plans: {
+      chase: 'Buy on the news',
+      pullback: 'Buy the pullback',
+      fade: 'Sell: too far, too fast',
+    },
+    play: 'Play what happened',
+    other: {
+      holds: 'Replay: what if the good news fades?',
+      fails: 'Replay: what if it holds?',
+    },
+    result: (r: string) => `Your result: ${r}`,
+    all: 'All three plans, on this chart',
+    endings: {
+      holds: 'The move held.',
+      fails: 'The good news faded and price fell back into the range.',
+    },
+    entry: 'Entry',
+    stop: 'Stop',
+  },
 };

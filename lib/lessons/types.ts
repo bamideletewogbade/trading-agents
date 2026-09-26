@@ -42,6 +42,15 @@ export const WIDGET_NAMES = [
   'fib-test',
   'timeframes-trade',
   'divergence',
+  'news-surprise',
+  'rate-setter',
+  'inflation-replay',
+  'income-statement',
+  'value-trap',
+  'release-day',
+  'dollar-earnings',
+  'carry-trade',
+  'news-pullback',
 ] as const;
 
 export type WidgetName = (typeof WIDGET_NAMES)[number];

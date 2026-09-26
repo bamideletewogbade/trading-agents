@@ -12,6 +12,7 @@ import {
 } from '@/content/curriculum';
 import type { Beat, LoopTag } from '@/lib/lessons/types';
 import { markCompleted } from '@/lib/client/progress';
+import { TruthBadge } from '@/components/shell/TruthBadge';
 import { WIDGETS } from './widgets';
 
 /**
@@ -19,6 +20,9 @@ import { WIDGETS } from './widgets';
  * Continue that waits until the beat's one thing is done (a widget used, a
  * question answered). The finish screen shows the takeaways, saves the
  * lesson as done, and offers the next one on the roadmap.
+ *
+ * The header says what kind of thing the lesson is (simulation, historical
+ * data, educational), from the curriculum, so no lesson can forget to.
  *
  * The player knows nothing about any particular lesson. Everything it
  * shows comes from content/lessons (words and structure) and the widgets
@@ -183,9 +187,14 @@ export function LessonPlayer({ id }: { id: string }) {
             ✕
           </Link>
           <div className="min-w-0 flex-1">
-            <p className="truncate font-mono type-tick text-muted uppercase">
-              {TOPICS[meta.topic].label}
-            </p>
+            <div className="flex min-w-0 items-center gap-2">
+              <p className="truncate font-mono type-tick text-muted uppercase">
+                {TOPICS[meta.topic].label}
+              </p>
+              <span className="shrink-0">
+                <TruthBadge truth={meta.truth} />
+              </span>
+            </div>
             <p className="truncate type-small font-semibold text-fg">
               {meta.title}
             </p>

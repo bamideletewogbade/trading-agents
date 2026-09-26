@@ -1,5 +1,5 @@
 /**
- * Stages 1–4 of the roadmap: the engines behind their lessons, and the
+ * Stages 1–5 of the roadmap: the engines behind their lessons, and the
  * lessons themselves (every one complete, every quiz with a right answer,
  * every widget registered, every number computable).
  *
@@ -46,8 +46,45 @@ import {
   RANGE,
   SEEDS,
   STAGE4_SEEDS,
+  STAGE5_SEEDS,
   TREND,
 } from '../content/lessons/seeds.ts';
+import { GHANA_2022, NIGERIA_2023 } from '../content/lessons/history.ts';
+import {
+  CARRY,
+  EXPORTERS,
+  NEWS,
+  POLICY,
+  basePrices,
+  bondPrice,
+  breakEvenLossBp,
+  carryRun,
+  currencyLossBp,
+  dollarFlow,
+  inDollars,
+  loanPayment,
+  localPrice,
+  newsDay,
+  newsPullback,
+  playEntry,
+  playRelease,
+  policyEffects,
+  realReturnBp,
+  realValue,
+  releaseDay,
+  rollBills,
+  shareValue,
+  surpriseMoveBp,
+} from '../lib/engines/macro.ts';
+import {
+  COCOA_CO,
+  STOCKS,
+  dividendYieldBp,
+  hold,
+  incomeStatement,
+  peHundredths,
+  survivableShrinkBp,
+} from '../lib/engines/company.ts';
 import * as reference from 'trading-signals';
 import {
   atr,
@@ -638,12 +675,312 @@ check(
   },
 );
 
-/* ── The lessons themselves ───────────────────────────────────────────── */
-
-const stageIds = STAGES.slice(0, 4).flatMap((stage) => [...stage.lessons]);
+/* ── Stage 5: fundamentals ────────────────────────────────────────────── */
 
 check(
-  'every lesson in stages 1–4 has a definition, and nothing else does',
+  'news: only the surprise moves the price, and the build-up never peeks',
+  () => {
+    for (const kind of ['rates', 'inflation', 'earnings'] as const) {
+      const config = NEWS[kind];
+      const none = newsDay(STAGE5_SEEDS.news, kind, config.expectedBp);
+      equal(none.moveBp, 0, `${kind}: no surprise, no move`);
+      equal(none.bars[none.at]!.close, none.bars[none.at - 1]!.close);
+      for (const actual of [config.lowBp, config.highBp]) {
+        const day = newsDay(STAGE5_SEEDS.news, kind, actual);
+        deepStrictEqual(
+          day.bars.slice(0, day.at),
+          none.bars.slice(0, none.at),
+          `${kind}: no look-ahead`,
+        );
+        equal(
+          Math.sign(day.moveBp),
+          Math.sign((actual - config.expectedBp) * config.movePerPointBp),
+        );
+      }
+    }
+    ok(
+      surpriseMoveBp('earnings', 2_000) < 0,
+      'profits up 20% when 30% was expected: the price falls',
+    );
+  },
+);
+
+check(
+  'rates: bonds, shares and loans answer the policy rate the right way',
+  () => {
+    equal(
+      bondPrice(100_000, 2_200, 5, 2_200),
+      100_000,
+      'a bond at its own coupon yield is worth its face',
+    );
+    ok(
+      Math.abs(bondPrice(100_000, 1_000, 5, 1_200) - 92_790) <= 1,
+      'the textbook 5-year 10% bond at 12%',
+    );
+    equal(loanPayment(1_200_000, 0, 12), 100_000);
+    equal(shareValue(100, 2_600, 1_000), 625);
+    throws(() => shareValue(100, 1_000, 1_000));
+    let last = policyEffects(POLICY.lowBp);
+    for (
+      let rate = POLICY.lowBp + POLICY.stepBp;
+      rate <= POLICY.highBp;
+      rate += POLICY.stepBp
+    ) {
+      const now = policyEffects(rate);
+      ok(now.deposit.interest > last.deposit.interest, `deposit at ${rate}`);
+      ok(now.loan.monthly > last.loan.monthly, `loan at ${rate}`);
+      ok(now.bond.price < last.bond.price, `bond at ${rate}`);
+      ok(now.share.value <= last.share.value, `share at ${rate}`);
+      ok(now.loan.total > POLICY.loan.amount);
+      last = now;
+    }
+  },
+);
+
+check(
+  'the published figures are the ones the sources give, and add up the way they reported',
+  () => {
+    for (const year of [GHANA_2022, NIGERIA_2023]) {
+      equal(year.months.length, 13);
+      equal(year.inflationBp.length, 13);
+    }
+    equal(GHANA_2022.inflationBp.at(-1), 5_410);
+    equal(GHANA_2022.policyBp?.length, 13);
+    equal(GHANA_2022.billBp?.length, 13);
+    // NBS: December 2023 was 7.58 points above December 2022.
+    equal(NIGERIA_2023.inflationBp.at(-1)! - NIGERIA_2023.inflationBp[0]!, 758);
+    // Bank of Ghana: the cedi lost 30.0% against the dollar in 2022.
+    equal(
+      Math.round(currencyLossBp(GHANA_2022.fx.start, GHANA_2022.fx.end) / 10),
+      300,
+    );
+    // FMDQ via Nairametrics: the naira lost 49% in 2023.
+    equal(
+      Math.round(
+        currencyLossBp(NIGERIA_2023.fx.start, NIGERIA_2023.fx.end) / 100,
+      ),
+      49,
+    );
+    equal(realValue(100_000, 5_410), 64_893);
+    equal(realReturnBp(0, 0), 0);
+    ok(realReturnBp(2_000, 5_410) < 0);
+    equal(localPrice(10_000, GHANA_2022.fx.start), 60_061);
+    equal(inDollars(60_061, GHANA_2022.fx.start), 10_000);
+  },
+);
+
+check(
+  '2022 in Ghana: rolling T-bills grew the money and still lost to prices',
+  () => {
+    const bills = GHANA_2022.billBp!;
+    const rolled = rollBills(100_000, [
+      bills[0]!,
+      bills[3]!,
+      bills[6]!,
+      bills[9]!,
+    ]);
+    ok(rolled > 100_000 + 20_000, `rolled to ${rolled}`);
+    ok(
+      realValue(rolled, GHANA_2022.inflationBp.at(-1)!) < 100_000,
+      'but it bought less',
+    );
+    const dollars = inDollars(
+      rollBills(localPrice(100_000, GHANA_2022.fx.start), [
+        bills[0]!,
+        bills[3]!,
+        bills[6]!,
+        bills[9]!,
+      ]),
+      GHANA_2022.fx.end,
+    );
+    ok(dollars < 100_000, `a dollar investor ended with ${dollars}`);
+  },
+);
+
+check(
+  'commodities: a cheaper barrel hurts the oil seller far more than the mixed one',
+  () => {
+    const base = basePrices();
+    for (const exporter of Object.values(EXPORTERS))
+      ok(dollarFlow(exporter, base).gapUsdM > 0, 'both balance at base prices');
+    const cheap = { ...base, oil: 40 };
+    const oil = dollarFlow(EXPORTERS.oil, cheap);
+    const mixed = dollarFlow(EXPORTERS.mixed, cheap);
+    ok(oil.gapBp < 0 && mixed.gapBp < 0);
+    ok(oil.gapBp < mixed.gapBp * 3, `${oil.gapBp} vs ${mixed.gapBp}`);
+    const cocoa = dollarFlow(EXPORTERS.mixed, { ...base, cocoa: 8_000 });
+    ok(cocoa.gapUsdM > dollarFlow(EXPORTERS.mixed, base).gapUsdM);
+    equal(
+      dollarFlow(EXPORTERS.oil, { ...base, cocoa: 8_000 }).gapUsdM,
+      dollarFlow(EXPORTERS.oil, base).gapUsdM,
+    );
+  },
+);
+
+check(
+  'carry: it earns the gap, the money balances, and one devaluation takes it all',
+  () => {
+    equal(breakEvenLossBp(2_500, 500), 1_600);
+    for (const seed of [STAGE5_SEEDS.carry, 'c-1', 'c-2', 'c-3']) {
+      const calm = carryRun(seed, false);
+      const hit = carryRun(seed);
+      for (const m of hit)
+        equal(
+          m.profit,
+          inDollars(m.local, m.fx) - m.owed,
+          'profit is what closing would leave',
+        );
+      ok(calm.at(-1)!.profit > 0, `${seed}: without a devaluation it pays`);
+      const before = hit[CARRY.devalueMonth - 1]!;
+      ok(before.profit > 0, `${seed}: it was paying until then`);
+      ok(
+        hit[CARRY.devalueMonth]!.profit < 0,
+        `${seed}: one month wipes it out`,
+      );
+      deepStrictEqual(
+        hit.slice(0, CARRY.devalueMonth),
+        calm.slice(0, CARRY.devalueMonth),
+      );
+    }
+  },
+);
+
+check(
+  'release day: holding through slips past the stop; waiting loses what it planned, at most',
+  () => {
+    for (let n = 0; n < 200; n += 1) {
+      const seed = n === 0 ? STAGE5_SEEDS.release : `rd-${n}`;
+      const up = releaseDay(seed, 'up');
+      for (const ending of ['up', 'down', 'reverse'] as const) {
+        const day = releaseDay(seed, ending);
+        deepStrictEqual(
+          day.bars.slice(0, day.at),
+          up.bars.slice(0, up.at),
+          'no look-ahead',
+        );
+        ok(
+          day.spreads[day.at]! > day.spreads[day.at - 1]!,
+          'the spread widens at the release',
+        );
+        for (const bar of day.bars)
+          ok(
+            bar.low <= Math.min(bar.open, bar.close) &&
+              bar.high >= Math.max(bar.open, bar.close),
+          );
+        const holdIt = playRelease(day, 'hold');
+        ok(
+          holdIt.fill !== null && holdIt.pnl < holdIt.planned,
+          `${seed} ${ending}: the gap fills below the stop`,
+        );
+        const wait = playRelease(day, 'wait');
+        ok(
+          wait.pnl >= wait.planned - wait.units * 3,
+          `${seed} ${ending}: waiting loses no more than planned`,
+        );
+        if (ending === 'reverse')
+          ok(wait.pnl < 0, `${seed}: waiting can still lose`);
+        else ok(wait.pnl > 0, `${seed} ${ending}`);
+      }
+    }
+  },
+);
+
+check(
+  'news then pullback: the chart gives a better price for the same risk, not a certainty',
+  () => {
+    for (let n = 0; n < 300; n += 1) {
+      const seed = n === 0 ? STAGE5_SEEDS.pullback : `nb-${n}`;
+      const good = newsPullback(seed, 'holds');
+      const bad = newsPullback(seed, 'fails');
+      deepStrictEqual(good.seen, bad.seen, 'no look-ahead');
+      const common = good.pullbackAt - good.seen.length + 1;
+      deepStrictEqual(good.next.slice(0, common), bad.next.slice(0, common));
+      ok(
+        good.seen.slice(0, -1).every((bar) => bar.high <= good.support),
+        'the range stays under the old top',
+      );
+      ok(
+        good.next.slice(0, common).every((bar) => bar.low >= good.support),
+        'the pullback holds the old top',
+      );
+      const r = (s: typeof good, plan: 'chase' | 'pullback' | 'fade') =>
+        playEntry(s, plan).r;
+      ok(
+        r(good, 'pullback') > r(good, 'chase') && r(good, 'chase') > 0,
+        `${seed}: holds`,
+      );
+      equal(r(good, 'fade'), -100);
+      equal(r(bad, 'chase'), -100);
+      equal(r(bad, 'pullback'), -100);
+    }
+  },
+);
+
+check(
+  'the income statement adds up, and small changes at the top move the bottom a lot',
+  () => {
+    const base = incomeStatement(COCOA_CO);
+    equal(base.revenue - base.costOfSales, base.grossProfit);
+    equal(base.grossProfit - base.operatingCosts, base.operatingProfit);
+    equal(base.operatingProfit - base.interest, base.profitBeforeTax);
+    equal(base.profitBeforeTax - base.tax, base.netProfit);
+    ok(base.netProfit > 0);
+    const fewer = incomeStatement({ ...COCOA_CO, tonnes: 9_000 });
+    ok(
+      fewer.netProfit < base.netProfit * 0.8,
+      'sell 10% less, lose far more than 10% of profit',
+    );
+    const both = incomeStatement({
+      ...COCOA_CO,
+      tonnes: 11_000,
+      beansPerTonne: 3_960_000,
+    });
+    ok(
+      both.revenue > base.revenue && both.netProfit < base.netProfit / 2,
+      'revenue up, profit down',
+    );
+    const loss = incomeStatement({ ...COCOA_CO, tonnes: 5_000 });
+    ok(loss.profitBeforeTax < 0 && loss.tax === 0, 'no tax on a loss');
+  },
+);
+
+check(
+  'valuation: the cheap share was cheap for a reason, and only because its earnings shrank',
+  () => {
+    equal(peHundredths(STOCKS.cheap), 400);
+    equal(peHundredths(STOCKS.dear), 1_500);
+    ok(dividendYieldBp(STOCKS.cheap) > dividendYieldBp(STOCKS.dear) * 5);
+    for (const stock of Object.values(STOCKS)) {
+      const h = hold(stock, 100_000);
+      equal(
+        h.endValue,
+        h.cash + h.shares * h.endPrice + h.dividends,
+        'the money balances',
+      );
+    }
+    ok(hold(STOCKS.cheap, 100_000).returnBp < 0);
+    ok(hold(STOCKS.dear, 100_000).returnBp > 0);
+    ok(
+      hold({ ...STOCKS.cheap, growthBp: 0 }, 100_000).returnBp >
+        hold(STOCKS.dear, 100_000).returnBp / 3,
+      'cheap and steady does well',
+    );
+    const floor = survivableShrinkBp(STOCKS.cheap, 100_000);
+    ok(
+      floor < 0 && floor > STOCKS.cheap.growthBp,
+      `survives shrinking ${floor}`,
+    );
+    ok(hold({ ...STOCKS.cheap, growthBp: floor }, 100_000).returnBp >= 0);
+    ok(hold({ ...STOCKS.cheap, growthBp: floor - 100 }, 100_000).returnBp < 0);
+  },
+);
+
+/* ── The lessons themselves ───────────────────────────────────────────── */
+
+const stageIds = STAGES.slice(0, 5).flatMap((stage) => [...stage.lessons]);
+
+check(
+  'every lesson in stages 1–5 has a definition, and nothing else does',
   () => {
     deepStrictEqual(Object.keys(LESSON_DEFS).sort(), [...stageIds].sort());
   },
@@ -733,4 +1070,4 @@ if (failures.length) {
   console.error(`\n${failures.length} failed, ${passed} passed.`);
   process.exit(1);
 }
-console.log(`✓ stages 1–4: ${passed} checks passed.`);
+console.log(`✓ stages 1–5: ${passed} checks passed.`);
