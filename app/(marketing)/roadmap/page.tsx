@@ -1,61 +1,45 @@
 import { ROADMAP_PAGE } from '@/content/pages';
-import { LANDING } from '@/content/landing';
 import { AskBox } from '@/components/marketing/AskBox';
-import { PageHero, Section } from '@/components/marketing/Section';
-import { Curriculum } from '@/components/landing/Curriculum';
+import { RoadmapExplorer } from '@/components/marketing/RoadmapExplorer';
 
 export const metadata = {
   title: ROADMAP_PAGE.meta.title,
   description: ROADMAP_PAGE.meta.description,
 };
 
+/**
+ * The roadmap on one screen: a short header with the search beside it,
+ * then the stage map (components/marketing/RoadmapExplorer.tsx). Every
+ * stage is one tap away; nothing makes you scroll past the others.
+ */
 export default function RoadmapPage() {
   return (
-    <>
-      <PageHero
-        kicker={ROADMAP_PAGE.hero.kicker}
-        titleLead={ROADMAP_PAGE.hero.titleLead}
-        titleGold={ROADMAP_PAGE.hero.titleGold}
-        lead={ROADMAP_PAGE.hero.lead}
-      >
-        <div className="max-w-[640px]">
-          <AskBox />
+    <section className="relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
+      <div className="relative mx-auto max-w-[1200px] px-4 pt-8 pb-14 sm:px-8 lg:pt-12">
+        <div className="lg:flex lg:items-end lg:justify-between lg:gap-10">
+          <div>
+            <p className="font-mono type-label text-gold">
+              {ROADMAP_PAGE.hero.kicker}
+            </p>
+            <h1 className="mt-2 max-w-[20ch] text-[2rem] leading-[2.375rem] font-[680] tracking-[-0.03em] text-balance text-fg sm:text-[2.75rem] sm:leading-[3.125rem]">
+              {ROADMAP_PAGE.hero.title}
+            </h1>
+            <p className="mt-2 max-w-[56ch] type-body text-fg-2">
+              {ROADMAP_PAGE.hero.lead}
+            </p>
+          </div>
+          <div className="mt-5 w-full lg:mt-0 lg:max-w-[420px]">
+            <p className="mb-2 font-mono type-label text-fg-2">
+              {ROADMAP_PAGE.ask}
+            </p>
+            <AskBox compact />
+          </div>
         </div>
-      </PageHero>
-      {/* The hero already says what the path is: straight into the stages. */}
-      <Section kicker={ROADMAP_PAGE.stages}>
-        <div className="max-w-[860px]">
-          <Curriculum />
+        <div className="mt-8">
+          <RoadmapExplorer />
         </div>
-      </Section>
-      <Section
-        kicker={LANDING.steps.kicker}
-        title={LANDING.steps.title}
-        lead={LANDING.steps.lead}
-        tone="panel"
-      >
-        <ol className="grid gap-3 sm:grid-cols-3">
-          {LANDING.steps.items.map(([name, detail], i) => (
-            <li
-              key={name}
-              className="flex gap-4 rounded-xl border border-line bg-panel p-4 sm:flex-col"
-            >
-              <span
-                aria-hidden
-                className="coin grid size-12 shrink-0 place-items-center font-mono type-heading font-bold text-ink [--face:var(--color-gold)] [--rim:var(--color-gold-deep)]"
-              >
-                {i + 1}
-              </span>
-              <span>
-                <span className="block type-heading text-fg">{name}</span>
-                <span className="mt-1 block type-small text-fg-2">
-                  {detail}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </Section>
-    </>
+      </div>
+    </section>
   );
 }

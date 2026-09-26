@@ -11,13 +11,26 @@ export const ROADMAP_PAGE = {
       'A curated path from your first chart to a 30-day paper challenge, or any single lesson on its own: technical analysis, fundamental analysis, risk and strategies.',
   },
   hero: {
-    kicker: 'The path',
-    titleLead: 'From your first chart to',
-    titleGold: 'trading with a plan.',
-    lead: 'Seven stages, in order: how markets work, reading charts, risk, technical analysis, fundamental analysis, strategies, then proving it. Already trading? Pick any lesson on its own.',
+    kicker: 'The roadmap',
+    title: 'Seven stages, from zero to a plan.',
+    lead: 'Pick a stage to see its lessons. Go in order, or jump to what you need.',
   },
-  ask: 'Or just ask',
-  stages: 'Seven stages, in order',
+  ask: 'Or look for one topic',
+  stagesLabel: 'Stages',
+  stage: (n: number) => `Stage ${n}`,
+  lessons: (n: number) => `${n} lessons`,
+  done: (done: number, total: number) => `${done} of ${total} done`,
+  minutes: (n: number) => `${n} min`,
+  truth: {
+    simulation: 'Simulation',
+    historical: 'Historical data',
+    educational: 'Educational',
+  },
+  soon: 'Soon',
+  start: (title: string) => `Start: ${title}`,
+  next: (title: string) => `Next: ${title}`,
+  again: 'Play this stage again',
+  coming: 'This stage is being built. The lessons above are coming soon.',
 };
 
 export const COMMUNITY_PAGE = {

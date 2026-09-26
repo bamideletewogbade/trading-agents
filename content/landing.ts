@@ -18,7 +18,7 @@ export const LANDING = {
   ask: {
     label: 'What do you want to understand?',
     placeholders: [
-      'how the Dangote IPO works',
+      'how an IPO works',
       'what RSI actually means',
       'why I keep getting stopped out',
       'how to read a chart',
@@ -153,32 +153,11 @@ export const LANDING = {
     kicker: 'The path',
     title: 'One path from zero to trading with a plan.',
     lead: 'Go in order, or pick any lesson on its own. Already trading? Jump straight to what you need, like RSI or reading a company’s accounts.',
-    tabs: { path: 'The roadmap', single: 'Single lessons' },
-    stage: (n: number) => `Stage ${n}`,
     lessonsCount: (n: number) => `${n} lessons`,
-    progress: (done: number, total: number) => `${done} of ${total} done`,
-    done: 'Done',
-    again: 'Play again',
-    summary: (stages: number) => `lessons · ${stages} stages`,
-    minutes: (n: number) => `${n} min`,
-    needs: 'Builds on',
-    all: 'All topics',
     status: {
       live: 'Play it now',
-      next: 'Being built',
       planned: 'On the roadmap',
     },
-    truth: {
-      simulation: 'Simulation',
-      historical: 'Historical data',
-      educational: 'Educational',
-    },
-    placement: {
-      title: 'Already trade?',
-      body: 'A short chat finds what you already know, so you skip straight to what you don’t.',
-    },
-    riskFirst:
-      'Risk comes before any strategy. You learn where you’re wrong before you learn where to buy.',
   },
 
   risk: {

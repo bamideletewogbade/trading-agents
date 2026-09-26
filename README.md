@@ -106,6 +106,9 @@ Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases th
   "this phone").
 - **Checks:** `pnpm shots` now also checks 1024 and 1440 px for sideways scrolling and saves
   desktop screenshots; `pnpm check` checks the glossary.
+- **The roadmap on one screen.** `/roadmap` is a stage map: seven stages to pick from and the
+  picked stage's lessons beside them (a row of seven numbered coins on a phone), with one "Start"
+  or "Next" button. No tabs, no big cards, no long scroll; about a third of its old height.
 
 ### Earlier: Jev
 
