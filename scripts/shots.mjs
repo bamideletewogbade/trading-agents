@@ -29,6 +29,8 @@ const PAGES = [
   ['sign-up', '/sign-up'],
   ['onboarding', '/onboarding'],
   ['desk', '/desk'],
+  ['lesson', '/lesson/m1'],
+  ['lesson-chart', '/lesson/c4'],
   ['home', '/home'],
   ['learn', '/learn'],
   ['practice', '/practice'],

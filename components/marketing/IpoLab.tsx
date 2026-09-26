@@ -64,7 +64,7 @@ function Step({
   );
 }
 
-export function IpoLab() {
+export function IpoLab({ onDone }: { onDone?: () => void } = {}) {
   const C = IPO_PAGE;
   const [budgetNaira, setBudgetNaira] = useState(100_000);
   const [times, setTimes] = useState(2);
@@ -94,9 +94,10 @@ export function IpoLab() {
             min={0}
             step={1000}
             value={budgetNaira}
-            onChange={(event) =>
-              setBudgetNaira(Math.floor(Number(event.target.value) || 0))
-            }
+            onChange={(event) => {
+              setBudgetNaira(Math.floor(Number(event.target.value) || 0));
+              onDone?.();
+            }}
             className="mt-2 min-h-12 w-full rounded-md border border-edge bg-raised px-3 font-mono type-body text-fg num outline-none focus:border-gold"
           />
         </label>
@@ -105,7 +106,10 @@ export function IpoLab() {
             <button
               key={amount}
               type="button"
-              onClick={() => setBudgetNaira(amount)}
+              onClick={() => {
+                setBudgetNaira(amount);
+                onDone?.();
+              }}
               className={`min-h-11 rounded-full border px-3 font-mono type-small num ${budgetNaira === amount ? 'border-gold bg-gold-soft text-gold' : 'border-edge text-fg-2'}`}
             >
               {naira(amount * 100)}
@@ -148,7 +152,10 @@ export function IpoLab() {
             min={1}
             max={5}
             value={times}
-            onChange={(event) => setTimes(Number(event.target.value))}
+            onChange={(event) => {
+              setTimes(Number(event.target.value));
+              onDone?.();
+            }}
             aria-label={C.oversubscribed.label}
             className="slider mt-2 h-12 w-full cursor-pointer appearance-none bg-transparent"
             style={{ ['--filled' as string]: `${((times - 1) / 4) * 100}%` }}
@@ -189,7 +196,10 @@ export function IpoLab() {
             min={0}
             max={MOVES.length - 1}
             value={moveIndex}
-            onChange={(event) => setMoveIndex(Number(event.target.value))}
+            onChange={(event) => {
+              setMoveIndex(Number(event.target.value));
+              onDone?.();
+            }}
             aria-label={C.listing.label}
             className="slider mt-2 h-12 w-full cursor-pointer appearance-none bg-transparent"
             style={{

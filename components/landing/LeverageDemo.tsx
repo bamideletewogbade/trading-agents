@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LANDING } from '@/content/landing';
 import { formatBp, formatMoney, fromMinor, shareBp } from '@/lib/core/money';
 import {
@@ -36,7 +36,7 @@ const H = 160;
 const yOf = (bp: number) =>
   ((TOP - Math.max(BOTTOM, Math.min(TOP, bp))) / (TOP - BOTTOM)) * H;
 
-export function LeverageDemo() {
+export function LeverageDemo({ onDone }: { onDone?: () => void } = {}) {
   const [leverage, setLeverage] = useState<number>(20);
   const [guess, setGuess] = useState<LossBand | null>(null);
   const [day, setDay] = useState(0);
@@ -49,6 +49,9 @@ export function LeverageDemo() {
   const steps = result.path.length;
   const shown = useReveal(steps, run, 2600);
   const done = run !== 0 && shown === steps;
+  useEffect(() => {
+    if (done) onDone?.();
+  }, [done, onDone]);
   const band = lossBand(LEVERAGE_LAB, result);
   const liqBp = liquidationMoveBp(LEVERAGE_LAB, leverage);
   const current =

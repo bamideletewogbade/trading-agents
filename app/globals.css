@@ -406,3 +406,18 @@ html.js [data-reveal][data-shown] {
     background-position: -120% 0;
   }
 }
+
+/* The finish screen's burst: gold points flying out from the centre, once. */
+@keyframes burst {
+  from {
+    opacity: 1;
+    transform: rotate(var(--angle)) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(140px);
+  }
+}
+@utility animate-burst {
+  animation: burst 900ms var(--ease-out) both;
+}

@@ -85,7 +85,29 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026, evening)
+## Where things stand (26 Sep 2026, night)
+
+**The lesson player, and stages 1–3 of the roadmap: 21 lessons you play.**
+
+- **The player** (`/lesson/<id>`) steps through each lesson's beats: see it, touch it, predict,
+  why, check. Continue waits until you've done the thing. The finish screen shows your takeaways
+  and the next lesson.
+- **Progress** is saved as events, mirrored on the phone, and shown on the roadmap (ticks,
+  "3 of 8 done") and the desk ("continue where you left off").
+- **The stages:**
+  - Stage 1, how markets work: noise and signal, the order book, the spread, order types, four
+    markets, IPO 101, leverage, who makes money from you.
+  - Stage 2, reading charts: line, bar and candle charts, anatomy, timeframes, trends from swing
+    points, support and resistance, trend vs range, volume and breakouts.
+  - Stage 3, risk first: stops, position size, R-multiples, drawdown, leverage revisited,
+    expectancy over 200 trades.
+- **21 widgets**, 14 of them new, each backed by an engine: `lib/engines/market.ts` (order book,
+  spread, order types, costs), `lib/engines/candles.ts` (walks, timeframes, swings, efficiency,
+  breakouts) and `lib/engines/trades.ts` (R, expectancy, equity curves, recovery).
+- **Checks:** `pnpm check` runs 101 of them. `pnpm walk:lessons` plays every lesson in a browser;
+  CI runs it and checks all 21 completions were saved.
+
+### Earlier that evening
 
 **The site, accounts and onboarding.**
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LANDING } from '@/content/landing';
 import {
   LEVELS,
@@ -11,6 +11,7 @@ import {
   type Lesson,
   type Topic,
 } from '@/content/curriculum';
+import { syncCompleted, useCompleted } from '@/lib/client/progress';
 
 /**
  * The roadmap and the single-lesson library, drawn from one list
@@ -37,7 +38,7 @@ function StatusChip({ status }: { status: Lesson['status'] }) {
   );
 }
 
-function LessonCard({ item }: { item: Lesson }) {
+function LessonCard({ item, done }: { item: Lesson; done: boolean }) {
   const needs = item.needs?.map((id) => lesson(id).title);
   return (
     <li className="rounded-md border border-line bg-panel p-3">
@@ -45,7 +46,13 @@ function LessonCard({ item }: { item: Lesson }) {
         <h4 className="min-w-0 type-body font-semibold text-fg">
           {item.title}
         </h4>
-        <StatusChip status={item.status} />
+        {done ? (
+          <span className="inline-flex shrink-0 items-center rounded-sm border border-gold px-1.5 py-0.5 font-mono type-tick text-gold uppercase">
+            ✓ {COPY.done}
+          </span>
+        ) : (
+          <StatusChip status={item.status} />
+        )}
       </div>
       <p className="mt-1 type-small text-fg-2">{item.practice}</p>
       <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono type-tick text-muted">
@@ -63,7 +70,7 @@ function LessonCard({ item }: { item: Lesson }) {
           href={item.playAt}
           className="mt-3 inline-flex min-h-12 items-center rounded-md border border-gold px-4 type-small font-semibold text-gold"
         >
-          {COPY.status.live} →
+          {done ? COPY.again : COPY.status.live} →
         </a>
       ) : null}
     </li>
@@ -71,6 +78,10 @@ function LessonCard({ item }: { item: Lesson }) {
 }
 
 export function Curriculum() {
+  const completed = useCompleted();
+  useEffect(() => {
+    void syncCompleted();
+  }, []);
   const [tab, setTab] = useState<'path' | 'single'>('path');
   const [topic, setTopic] = useState<Topic | 'all'>('all');
   const [open, setOpen] = useState<string>(STAGES[0].key);
@@ -110,6 +121,9 @@ export function Curriculum() {
               const live = items.filter(
                 (item) => item.status === 'live',
               ).length;
+              const finished = items.filter((item) =>
+                completed.includes(item.id),
+              ).length;
               return (
                 <li key={stage.key} className="relative">
                   <button
@@ -129,7 +143,9 @@ export function Curriculum() {
                           {stage.title}
                         </span>
                         <span className="shrink-0 font-mono type-tick text-muted">
-                          {COPY.lessonsCount(items.length)}
+                          {finished
+                            ? `${COPY.progress(finished, items.length)}`
+                            : COPY.lessonsCount(items.length)}
                           {expanded ? ' ▴' : ' ▾'}
                         </span>
                       </span>
@@ -141,7 +157,11 @@ export function Curriculum() {
                   {expanded ? (
                     <ul className="mt-3 space-y-2 pl-[52px]">
                       {items.map((item) => (
-                        <LessonCard key={item.id} item={item} />
+                        <LessonCard
+                          key={item.id}
+                          item={item}
+                          done={completed.includes(item.id)}
+                        />
                       ))}
                     </ul>
                   ) : null}
@@ -173,7 +193,11 @@ export function Curriculum() {
           ) : null}
           <ul className="mt-4 grid gap-2 lg:grid-cols-2">
             {filtered.map((item) => (
-              <LessonCard key={item.id} item={item} />
+              <LessonCard
+                key={item.id}
+                item={item}
+                done={completed.includes(item.id)}
+              />
             ))}
           </ul>
           <div className="mt-6 rounded-md border border-dashed border-edge p-4">

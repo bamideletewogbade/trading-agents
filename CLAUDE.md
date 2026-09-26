@@ -65,6 +65,7 @@ pnpm typecheck && pnpm lint
 pnpm shots             # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
 pnpm walk              # with pnpm dev running: plays the first 3 minutes in a browser, checks the numbers
 pnpm walk:onboarding   # with pnpm dev running: chats through onboarding to the desk
+pnpm walk:lessons      # with pnpm dev running: plays all 21 lessons of stages 1–3 to the finish
 pnpm db:generate       # after changing db/schema.ts: write the next migration (commit it)
 pnpm db:migrate        # apply migrations to DATABASE_URL (env or .dev.vars), over HTTPS for Neon
 pnpm probe:openrouter  # one live Jev call and one coach turn; costs well under a cent
@@ -89,6 +90,22 @@ npx oxfmt <files>      # format what you touched
   the ask box (`lib/curriculum/search.ts`), onboarding placement and the desk all read it.
   `pnpm check` proves every lesson sits in exactly one stage and every live lesson has somewhere
   to play.
+- **Lessons are data.** A lesson is a list of beats in `content/lessons/stage*.ts` (`say`,
+  `widget`, `choice`, `reflect`), each tagged with its step of the loop. The player
+  (`components/lesson/LessonPlayer.tsx`) never changes for a new lesson.
+  - Interaction lives in *widgets*: registered once in `components/lesson/widgets/index.tsx`,
+    named in `lib/lessons/types.ts`, each backed by an engine, and reusable by any lesson.
+  - Every number in a lesson's words is computed in its `beats()` from an engine.
+  - Charts a lesson depends on use seeds pinned in `content/lessons/seeds.ts`.
+  - A new lesson means:
+    1. its beats in `content/lessons`;
+    2. `status: 'live'` and `playAt: '/lesson/<id>'` in `content/curriculum.ts`;
+    3. a walk step in `scripts/walk-lessons.mjs` if it uses a new widget.
+  - `scripts/check-lessons.ts` proves it's complete: a widget, a prediction and a "why"; exactly
+    one right answer per question; registered widgets only; the seeds still show what the words
+    say.
+  - Progress is `lesson_completed` events (`/api/progress`), mirrored on the phone
+    (`lib/client/progress.ts`).
 - Onboarding questions are data. A new question means: a step, its reader and a Jev option set
   in `lib/onboarding/flow.ts`, its words and chips in `content/onboarding.ts`, and checks in
   `scripts/check-onboarding.ts` using real phrases people type. The chat screen doesn't change.

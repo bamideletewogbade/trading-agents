@@ -12,6 +12,9 @@ export const DESK = {
   start: (stage: number, title: string) =>
     `You start at stage ${stage}: ${title}`,
   next: 'Start here',
+  first: 'Your first lesson',
+  continue: 'Continue where you left off',
+  done: 'Done',
   play: 'Play',
   soon: 'Coming soon',
   path: 'Your roadmap',

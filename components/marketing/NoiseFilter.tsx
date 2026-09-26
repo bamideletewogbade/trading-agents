@@ -20,7 +20,7 @@ const COPY = MINDSET.filter;
 const W = 600;
 const H = 220;
 
-export function NoiseFilter() {
+export function NoiseFilter({ onDone }: { onDone?: () => void } = {}) {
   const [length, setLength] = useState(1);
   const prices = useMemo(() => noisyPrices(NOISE_LAB, 'mindset'), []);
   const average = useMemo(
@@ -102,7 +102,11 @@ export function NoiseFilter() {
             min={1}
             max={30}
             value={length}
-            onChange={(event) => setLength(Number(event.target.value))}
+            onChange={(event) => {
+              const next = Number(event.target.value);
+              setLength(next);
+              if (next >= 10) onDone?.();
+            }}
             aria-label={COPY.label}
             className="slider mt-2 h-12 w-full cursor-pointer appearance-none bg-transparent"
             style={{ ['--filled' as string]: `${filled}%` }}

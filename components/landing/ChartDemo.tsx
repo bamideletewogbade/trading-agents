@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LANDING } from '@/content/landing';
 import { formatMoney, fromMinor } from '@/lib/core/money';
 import {
@@ -33,10 +33,22 @@ const seedFor = (n: number) => (n === 0 ? 'koko' : `koko-${n}`);
 
 type Step = 0 | 1 | 2;
 
-export function ChartDemo() {
+export function ChartDemo({
+  start = 0,
+  end = 2,
+  onDone,
+}: {
+  /** The first step to show (a lesson can open straight at "find the floor"). */
+  start?: Step;
+  /** The last step; its "next" button is hidden. */
+  end?: Step;
+  /** Called when the last step's one thing is done. */
+  onDone?: () => void;
+} = {}) {
   const [chartNumber, setChartNumber] = useState(0);
   const [ending, setEnding] = useState<Ending>('bounce');
-  const [step, setStep] = useState<Step>(0);
+  const [step, setStep] = useState<Step>(start);
+  const [stepped, setStepped] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [pick, setPick] = useState<'a' | 'b' | 'c' | null>(null);
   const [stop, setStop] = useState<StopChoice | null>(null);
@@ -50,6 +62,9 @@ export function ChartDemo() {
   const shownNext = useReveal(scenario.next.length, run, 1800);
   const played = run !== 0;
   const done = played && shownNext === scenario.next.length;
+  useEffect(() => {
+    if (end === 2 && done) onDone?.();
+  }, [end, done, onDone]);
   const result = stop ? playPlan(scenario, stop) : null;
 
   const focus = selected ?? scenario.seen.length - 1;
@@ -190,7 +205,11 @@ export function ChartDemo() {
                   type="button"
                   className="grid size-12 place-items-center rounded-md border border-edge bg-raised text-fg"
                   aria-label={COPY.candle.earlier}
-                  onClick={() => setSelected(Math.max(0, focus - 1))}
+                  onClick={() => {
+                    setSelected(Math.max(0, focus - 1));
+                    setStepped((n) => n + 1);
+                    if (end === 0 && stepped >= 2) onDone?.();
+                  }}
                 >
                   ◀
                 </button>
@@ -198,9 +217,11 @@ export function ChartDemo() {
                   type="button"
                   className="grid size-12 place-items-center rounded-md border border-edge bg-raised text-fg"
                   aria-label={COPY.candle.later}
-                  onClick={() =>
-                    setSelected(Math.min(scenario.seen.length - 1, focus + 1))
-                  }
+                  onClick={() => {
+                    setSelected(Math.min(scenario.seen.length - 1, focus + 1));
+                    setStepped((n) => n + 1);
+                    if (end === 0 && stepped >= 2) onDone?.();
+                  }}
                 >
                   ▶
                 </button>
@@ -234,13 +255,15 @@ export function ChartDemo() {
             <p className="type-small text-fg-2">
               {COPY.candle.wickNote(usd(parts.lowerWick))}
             </p>
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="min-h-12 w-full rounded-md bg-gold px-5 type-body font-semibold text-ink active:scale-[0.98]"
-            >
-              {COPY.candle.next}
-            </button>
+            {end > 0 ? (
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="min-h-12 w-full rounded-md bg-gold px-5 type-body font-semibold text-ink active:scale-[0.98]"
+              >
+                {COPY.candle.next}
+              </button>
+            ) : null}
           </>
         ) : null}
 
@@ -255,7 +278,11 @@ export function ChartDemo() {
                   key={candidate.key}
                   type="button"
                   aria-pressed={pick === candidate.key}
-                  onClick={() => setPick(candidate.key)}
+                  onClick={() => {
+                    setPick(candidate.key);
+                    if (end === 1 && candidate.key === scenario.answer)
+                      onDone?.();
+                  }}
                   className={`min-h-12 rounded-md border px-2 font-mono type-small font-semibold ${pick === candidate.key ? (found ? 'border-gold bg-gold-soft text-gold' : 'border-loss text-loss') : 'border-edge bg-raised text-fg'}`}
                 >
                   {COPY.floor.line(candidate.key)}
@@ -278,17 +305,22 @@ export function ChartDemo() {
               </p>
             ) : null}
             {found ? (
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="min-h-12 w-full rounded-md bg-gold px-5 type-body font-semibold text-ink active:scale-[0.98]"
-              >
-                {COPY.floor.next}
-              </button>
+              end > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="min-h-12 w-full rounded-md bg-gold px-5 type-body font-semibold text-ink active:scale-[0.98]"
+                >
+                  {COPY.floor.next}
+                </button>
+              ) : null
             ) : pick ? (
               <button
                 type="button"
-                onClick={() => setPick(scenario.answer)}
+                onClick={() => {
+                  setPick(scenario.answer);
+                  if (end === 1) onDone?.();
+                }}
                 className="min-h-12 type-small text-fg-2 underline underline-offset-4"
               >
                 {COPY.floor.reveal}

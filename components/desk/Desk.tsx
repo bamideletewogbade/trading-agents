@@ -6,6 +6,7 @@ import { DESK } from '@/content/desk';
 import { ONBOARDING } from '@/content/onboarding';
 import { STAGES, TOPICS, lesson } from '@/content/curriculum';
 import { loadProfile, type Saved } from '@/lib/client/profile';
+import { syncCompleted, useCompleted } from '@/lib/client/progress';
 import { Reveal } from '@/components/motion/Reveal';
 
 /**
@@ -26,9 +27,11 @@ export function Desk() {
     loaded: false,
     saved: null,
   });
+  const completed = useCompleted();
 
   useEffect(() => {
     let live = true;
+    void syncCompleted();
     void loadProfile().then((saved) => {
       if (live) setState({ loaded: true, saved });
     });
@@ -67,6 +70,19 @@ export function Desk() {
 
   const { profile, placement } = saved;
   const stage = STAGES[placement.stage];
+  // The next lesson: the first of their three not yet done, then the first
+  // playable lesson on the roadmap from their stage onwards.
+  const fromStage = STAGES.slice(placement.stage).flatMap((item) => [
+    ...item.lessons,
+  ]);
+  const nextUp =
+    placement.lessons.find(
+      (id) => !completed.includes(id) && lesson(id).status === 'live',
+    ) ??
+    fromStage.find(
+      (id) => !completed.includes(id) && lesson(id).status === 'live',
+    ) ??
+    null;
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-10 sm:px-8">
@@ -84,6 +100,28 @@ export function Desk() {
           </p>
         ))}
       </Reveal>
+
+      {nextUp ? (
+        <Link
+          href={lesson(nextUp).playAt ?? '/roadmap'}
+          className="group mt-6 flex items-center justify-between gap-4 rounded-lg border border-gold bg-gold-soft p-4"
+        >
+          <span className="min-w-0">
+            <span className="block font-mono type-tick text-gold uppercase">
+              {completed.length ? DESK.continue : DESK.first}
+            </span>
+            <span className="block type-heading text-fg">
+              {lesson(nextUp).title}
+            </span>
+          </span>
+          <span
+            aria-hidden
+            className="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg text-ink transition-transform group-hover:translate-x-1"
+          >
+            ▶
+          </span>
+        </Link>
+      ) : null}
 
       {saved.where === 'device' ? (
         <p className="mt-6 rounded-md border border-dashed border-edge p-4 type-small text-fg-2">
@@ -116,6 +154,11 @@ export function Desk() {
                 <p className="mt-2 flex-1 type-small text-fg-2">
                   {item.practice}
                 </p>
+                {completed.includes(id) ? (
+                  <p className="mt-4 font-mono type-tick text-gold uppercase">
+                    ✓ {DESK.done}
+                  </p>
+                ) : null}
                 {item.playAt ? (
                   <Link
                     href={item.playAt}
@@ -150,6 +193,10 @@ export function Desk() {
                 </span>
                 <span className="min-w-0 flex-1 type-small font-semibold text-fg">
                   {item.title}
+                </span>
+                <span className="shrink-0 font-mono type-tick text-muted num">
+                  {item.lessons.filter((id) => completed.includes(id)).length}/
+                  {item.lessons.length}
                 </span>
                 {i === placement.stage ? (
                   <span className="shrink-0 font-mono type-tick text-gold uppercase">

@@ -154,7 +154,7 @@ export const LESSONS: Lesson[] = [
     minutes: 5,
     truth: 'simulation',
     status: 'live',
-    playAt: '/mindset',
+    playAt: '/lesson/m0',
     keywords: [
       'mindset',
       'noise',
@@ -178,7 +178,7 @@ export const LESSONS: Lesson[] = [
     minutes: 8,
     truth: 'educational',
     status: 'live',
-    playAt: '/ipo',
+    playAt: '/lesson/f0',
     keywords: [
       'ipo',
       'dangote',
@@ -202,7 +202,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 6,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/m1',
     practice:
       'Watch buyers and sellers meet in an order book. Move one order and see the price change.',
   },
@@ -214,7 +215,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 5,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/m2',
     practice:
       'Buy and sell ten times in a row and watch the spread take its cut every time.',
   },
@@ -226,7 +228,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 8,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/m3',
     needs: ['m2'],
     practice:
       'Place each kind of order in a moving market. See which fill, when, and at what price.',
@@ -249,7 +252,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 7,
     truth: 'educational',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/m4',
     practice:
       'Sort a dozen headlines by the market they move: USD/GHS, the NGX, bitcoin, cocoa.',
   },
@@ -269,7 +273,7 @@ export const LESSONS: Lesson[] = [
     minutes: 5,
     truth: 'simulation',
     status: 'live',
-    playAt: '/#risk-lab',
+    playAt: '/lesson/m5',
     practice:
       'You have $100. Choose your leverage, predict the damage of a 3% fall, then watch the market do it.',
   },
@@ -288,7 +292,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 7,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/m6',
     needs: ['m2', 'm5'],
     practice:
       'Follow a $100 deposit through spreads, overnight fees and a signals subscription.',
@@ -302,7 +307,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 5,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/c1',
     practice: 'See the same week as three charts and find what each one hides.',
   },
   {
@@ -314,7 +320,7 @@ export const LESSONS: Lesson[] = [
     minutes: 4,
     truth: 'simulation',
     status: 'live',
-    playAt: '/#demo',
+    playAt: '/lesson/c2',
     practice:
       'Step through a chart candle by candle: open, high, low, close, and who won each one.',
   },
@@ -326,7 +332,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 6,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/c3',
     needs: ['c2'],
     practice:
       'Zoom a month into days into hours. The same move tells three different stories.',
@@ -339,7 +346,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 7,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/c4',
     needs: ['c2'],
     practice:
       'Mark the swing highs and lows yourself, and watch a trend form or fail.',
@@ -360,7 +368,7 @@ export const LESSONS: Lesson[] = [
     minutes: 6,
     truth: 'simulation',
     status: 'live',
-    playAt: '/#demo',
+    playAt: '/lesson/c5',
     needs: ['c2'],
     practice:
       'Find where buyers keep stepping in. Then see what happens when price comes back.',
@@ -372,7 +380,8 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 6,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/c6',
     needs: ['c4', 'c5'],
     practice:
       'Sort ten charts into ranges and trends, and see why a tool that works in one fails in the other.',
@@ -385,7 +394,8 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 6,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/c7',
     needs: ['c5'],
     practice:
       'Hide and show volume, and watch a breakout go from convincing to empty.',
@@ -401,7 +411,7 @@ export const LESSONS: Lesson[] = [
     minutes: 6,
     truth: 'simulation',
     status: 'live',
-    playAt: '/#demo',
+    playAt: '/lesson/r1',
     needs: ['c5'],
     practice:
       'Set your stop before you buy, then replay the same trade with a tight stop, a stop with room, and none.',
@@ -414,7 +424,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 6,
     truth: 'simulation',
-    status: 'next',
+    status: 'live',
+    playAt: '/lesson/r2',
     needs: ['r1'],
     practice:
       'Drag your stop and watch the position size itself so a loss is always 1% of the account.',
@@ -427,7 +438,8 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 7,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/r3',
     needs: ['r2'],
     practice:
       'Score ten trades in R instead of cedis, and see how a 40% win rate can still pay.',
@@ -440,7 +452,8 @@ export const LESSONS: Lesson[] = [
     level: 'starter',
     minutes: 5,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/r4',
     practice:
       'Lose half an account, then try to win it back one trade at a time.',
   },
@@ -451,7 +464,8 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 6,
     truth: 'simulation',
-    status: 'next',
+    status: 'live',
+    playAt: '/lesson/r5',
     needs: ['m5', 'r2'],
     practice:
       'The same trade at 5× and at 25×. Watch the path, not the ending.',
@@ -464,7 +478,8 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 8,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/r6',
     needs: ['r3'],
     practice:
       'Run a strategy for 200 simulated trades and see its edge, or its lack of one, appear.',

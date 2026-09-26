@@ -233,6 +233,9 @@ export const LANDING = {
     tabs: { path: 'The roadmap', single: 'Single lessons' },
     stage: (n: number) => `Stage ${n}`,
     lessonsCount: (n: number) => `${n} lessons`,
+    progress: (done: number, total: number) => `${done} of ${total} done`,
+    done: 'Done',
+    again: 'Play again',
     summary: (stages: number) => `lessons · ${stages} stages`,
     minutes: (n: number) => `${n} min`,
     needs: 'Builds on',
@@ -427,15 +430,15 @@ export const LANDING = {
     items: [
       [
         'Now',
-        'Four lessons you can play today: support and stops, leverage, IPO 101, and noise vs signal. Accounts, and an onboarding chat that finds your starting point.',
+        'The first three stages of the roadmap, 21 lessons you play: how markets work, reading charts, and risk. Plus accounts, and an onboarding chat that finds your starting point.',
       ],
       [
         'Next',
-        'The lesson player: full charts, stages 1 to 3 of the roadmap, and progress saved to your account.',
+        'Technical analysis (stage 4): moving averages, RSI and patterns you can drag, with how often they actually worked.',
       ],
       [
         'Then',
-        'The coach, live. Technical analysis lessons with indicators you can drag.',
+        'The coach, live: it remembers your mistakes and builds your next lesson around them.',
       ],
       [
         'After',

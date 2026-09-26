@@ -12,7 +12,7 @@ import { MINDSET } from '@/content/mindset';
 const COPY = MINDSET.game;
 type Call = 'noise' | 'signal';
 
-export function SignalOrNoise() {
+export function SignalOrNoise({ onDone }: { onDone?: () => void } = {}) {
   const [index, setIndex] = useState(0);
   const [call, setCall] = useState<Call | null>(null);
   const [right, setRight] = useState(0);
@@ -100,6 +100,7 @@ export function SignalOrNoise() {
           <button
             type="button"
             onClick={() => {
+              if (index + 1 >= total) onDone?.();
               setIndex((n) => n + 1);
               setCall(null);
             }}
