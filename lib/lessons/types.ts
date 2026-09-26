@@ -32,6 +32,16 @@ export const WIDGET_NAMES = [
   'r-multiples',
   'drawdown',
   'expectancy',
+  'trendline',
+  'moving-averages',
+  'rsi-run',
+  'macd-build',
+  'atr-stops',
+  'pattern-test',
+  'double-top',
+  'fib-test',
+  'timeframes-trade',
+  'divergence',
 ] as const;
 
 export type WidgetName = (typeof WIDGET_NAMES)[number];

@@ -1,5 +1,5 @@
 /**
- * Stages 1–3 of the roadmap: the engines behind their lessons, and the
+ * Stages 1–4 of the roadmap: the engines behind their lessons, and the
  * lessons themselves (every one complete, every quiz with a right answer,
  * every widget registered, every number computable).
  *
@@ -40,7 +40,45 @@ import {
   totalR,
   tradesToRecover,
 } from '../lib/engines/trades.ts';
-import { SEEDS, TREND, RANGE } from '../content/lessons/seeds.ts';
+import {
+  GUESSED_STOP,
+  MARKETS,
+  RANGE,
+  SEEDS,
+  STAGE4_SEEDS,
+  TREND,
+} from '../content/lessons/seeds.ts';
+import * as reference from 'trading-signals';
+import {
+  atr,
+  barsUntilTurnDown,
+  bollinger,
+  crossovers,
+  ema,
+  firstAbove,
+  macd,
+  rsi,
+  sma,
+} from '../lib/engines/indicators.ts';
+import {
+  FIB_LEVELS_BP,
+  MADE_UP_LEVELS_BP,
+  buyTheDip,
+  channel,
+  divergence,
+  doubleTop,
+  findPatterns,
+  judgeLine,
+  lineThrough,
+  noiseStopOuts,
+  patternChart,
+  retracements,
+  rsiAtHighs,
+  strongRun,
+  testLevels,
+  testPatterns,
+  topSeries,
+} from '../lib/engines/ta.ts';
 import { LESSON_DEFS, WIDGET_NAMES } from '../content/lessons/index.ts';
 import { LESSONS, STAGES } from '../content/curriculum.ts';
 
@@ -270,12 +308,342 @@ check('climbing back: lose 50% and gain 10% a trade takes 8 trades', () => {
   equal(tradesToRecover(10_000, 1_000), null);
 });
 
-/* ── The lessons themselves ───────────────────────────────────────────── */
+/* ── Stage 4: indicators, against the reference library ───────────────── */
 
-const stageIds = STAGES.slice(0, 3).flatMap((stage) => [...stage.lessons]);
+type Updater = { update(value: unknown): unknown; getResult(): unknown };
+function referenceSeries(
+  make: () => Updater,
+  inputs: readonly unknown[],
+): unknown[] {
+  const indicator = make();
+  return inputs.map((input) => {
+    indicator.update(input);
+    try {
+      return indicator.getResult();
+    } catch {
+      return null;
+    }
+  });
+}
+function agrees(
+  name: string,
+  mine: readonly (number | null)[],
+  theirs: readonly unknown[],
+): void {
+  let compared = 0;
+  mine.forEach((value, i) => {
+    const other = theirs[i];
+    if (
+      value == null ||
+      other == null ||
+      typeof other !== 'number' ||
+      Number.isNaN(other)
+    )
+      return;
+    compared += 1;
+    ok(
+      Math.abs(value - other) <= 1e-9 * Math.max(1, Math.abs(other)),
+      `${name}[${i}]: ${value} vs ${other}`,
+    );
+  });
+  ok(compared > 50, `${name}: only ${compared} values compared`);
+}
+
+check('SMA, EMA, RSI, MACD, Bollinger and ATR match trading-signals', () => {
+  for (const seed of ['ref-a', 'ref-b', 'ref-c']) {
+    const bars = walkCandles(seed, {
+      count: 140,
+      start: 10_000,
+      drift: 3,
+      wobble: 60,
+    });
+    const closes = bars.map((bar) => bar.close);
+    const R = reference as unknown as Record<
+      string,
+      new (...args: unknown[]) => Updater
+    >;
+    agrees(
+      'sma',
+      sma(closes, 20),
+      referenceSeries(() => new R.SMA!(20), closes),
+    );
+    agrees(
+      'ema',
+      ema(closes, 20),
+      referenceSeries(() => new R.EMA!(20), closes),
+    );
+    agrees(
+      'rsi',
+      rsi(closes, 14),
+      referenceSeries(() => new R.RSI!(14), closes),
+    );
+    const theirs = referenceSeries(
+      () => new R.MACD!(new R.EMA!(12), new R.EMA!(26), new R.EMA!(9)),
+      closes,
+    ) as ({ macd: number; signal: number; histogram: number } | null)[];
+    const mine = macd(closes);
+    agrees(
+      'macd',
+      mine.macd,
+      theirs.map((r) => r?.macd ?? null),
+    );
+    agrees(
+      'macd signal',
+      mine.signal,
+      theirs.map((r) => r?.signal ?? null),
+    );
+    agrees(
+      'macd histogram',
+      mine.histogram,
+      theirs.map((r) => r?.histogram ?? null),
+    );
+    const bands = referenceSeries(
+      () => new R.BollingerBands!(20, 2),
+      closes,
+    ) as ({ upper: number; lower: number } | null)[];
+    const b = bollinger(closes);
+    agrees(
+      'bollinger upper',
+      b.upper,
+      bands.map((r) => r?.upper ?? null),
+    );
+    agrees(
+      'bollinger lower',
+      b.lower,
+      bands.map((r) => r?.lower ?? null),
+    );
+    agrees(
+      'atr',
+      atr(bars, 14),
+      referenceSeries(() => new R.ATR!(14), bars),
+    );
+  }
+});
 
 check(
-  'every lesson in stages 1–3 has a definition, and nothing else does',
+  'indicators wait until they have enough data, and refuse nonsense lengths',
+  () => {
+    const closes = walkCandles('warm', TREND.up).map((bar) => bar.close);
+    equal(sma(closes, 10)[8], null);
+    ok(sma(closes, 10)[9] != null);
+    equal(rsi(closes, 14)[13], null);
+    ok(rsi(closes, 14)[14] != null);
+    throws(() => sma(closes, 0));
+    throws(() => macd(closes, 26, 12));
+    deepStrictEqual(crossovers([1, 1, 3, 3, 1], [2, 2, 2, 2, 2]), [
+      { index: 2, direction: 'up' },
+      { index: 4, direction: 'down' },
+    ]);
+  },
+);
+
+/* ── Stage 4: the built charts hold for every seed ───────────────────── */
+
+check(
+  'trendlines: every line through two channel lows holds; any line through the trap breaks',
+  () => {
+    const good = [
+      ['A', 'B'],
+      ['A', 'C'],
+      ['A', 'D'],
+      ['B', 'C'],
+      ['B', 'D'],
+      ['C', 'D'],
+    ];
+    const trap = [
+      ['A', 'X'],
+      ['B', 'X'],
+      ['X', 'C'],
+      ['X', 'D'],
+    ];
+    for (let n = 0; n < 500; n += 1) {
+      const ch = channel(n === 0 ? STAGE4_SEEDS.channel : `ch-${n}`);
+      const by = Object.fromEntries(ch.lows.map((low) => [low.key, low]));
+      const report = (p: string, q: string) =>
+        judgeLine(ch.bars, lineThrough(by[p]!, by[q]!), ch.tolerance, 0);
+      for (const [p, q] of good) {
+        const r = report(p!, q!);
+        equal(r.breaks.length, 0, `ch-${n} ${p}${q} breaks`);
+        equal(r.touches.length, 4, `ch-${n} ${p}${q} touches`);
+      }
+      for (const [p, q] of trap)
+        ok(report(p!, q!).breaks.length > 0, `ch-${n} ${p}${q} should break`);
+    }
+  },
+);
+
+check(
+  'the moving-average lesson: longer averages turn later, and EMA beats SMA',
+  () => {
+    const { bars, top } = topSeries(STAGE4_SEEDS.top);
+    const closes = bars.map((bar) => bar.close);
+    const lag = (length: number) =>
+      barsUntilTurnDown(sma(closes, length), top) ?? 999;
+    ok(
+      lag(5) < lag(20) && lag(20) < lag(40),
+      `${lag(5)} ${lag(20)} ${lag(40)}`,
+    );
+    for (const length of [10, 20, 40])
+      ok(
+        (barsUntilTurnDown(ema(closes, length), top) ?? 999) <= lag(length),
+        `ema ${length}`,
+      );
+  },
+);
+
+check(
+  'the MACD lesson: MACD crosses down after the top, sooner than the 20/30 average cross',
+  () => {
+    const { bars, top } = topSeries(STAGE4_SEEDS.top);
+    const closes = bars.map((bar) => bar.close);
+    const m = macd(closes);
+    const after = (list: { index: number; direction: string }[]) =>
+      list.find((c) => c.direction === 'down' && c.index >= top)?.index ?? null;
+    const fast = after(crossovers(m.macd, m.signal));
+    const slow = after(crossovers(sma(closes, 20), sma(closes, 30)));
+    ok(fast !== null && slow !== null, 'both cross down after the top');
+    ok(fast! < slow!, `MACD ${fast} vs averages ${slow}`);
+  },
+);
+
+check(
+  'the RSI lesson: it passes 70 early, stays high, and price keeps rising',
+  () => {
+    const bars = strongRun(STAGE4_SEEDS.run);
+    const values = rsi(bars.map((bar) => bar.close));
+    const cross = firstAbove(values, 70);
+    ok(cross !== null && cross < 35, `crossed at ${cross}`);
+    ok(
+      (bars.at(-1)?.close ?? 0) > (bars[cross!]?.close ?? Infinity) + 500,
+      'price went on well past the cross',
+    );
+    ok(
+      values.filter((v) => v != null && v > 70).length >= 15,
+      'stayed above 70 a long time',
+    );
+  },
+);
+
+check(
+  'the ATR lesson: a guessed stop fits one market; an ATR stop fits both',
+  () => {
+    const guess = (wobble: number) =>
+      noiseStopOuts(STAGE4_SEEDS.stops, () => GUESSED_STOP, wobble).rateBp;
+    const byAtr = (wobble: number) =>
+      noiseStopOuts(STAGE4_SEEDS.stops, (_, a) => Math.round(2 * a), wobble)
+        .rateBp;
+    ok(
+      guess(MARKETS.wild) - guess(MARKETS.quiet) > 4_000,
+      'the guess is hit far more in the wild market',
+    );
+    ok(
+      Math.abs(byAtr(MARKETS.wild) - byAtr(MARKETS.quiet)) < 1_000,
+      'the ATR stop behaves alike in both',
+    );
+    ok(
+      noiseStopOuts('x', (_, a) => Math.round(0.5 * a)).rateBp >
+        noiseStopOuts('x', (_, a) => Math.round(3 * a)).rateBp,
+    );
+  },
+);
+
+check(
+  'the pattern lesson: on charts with no edge, patterns land near the baseline',
+  () => {
+    const rows = testPatterns(STAGE4_SEEDS.patterns);
+    const base = rows.find((row) => row.kind === 'any bar')!;
+    for (const row of rows) {
+      ok(row.found > 50, `${row.kind} found only ${row.found}`);
+      ok(
+        Math.abs(row.rateBp - base.rateBp) < 800,
+        `${row.kind} ${row.rateBp} vs ${base.rateBp}`,
+      );
+    }
+    const bars = walkCandles('p', RANGE);
+    for (const pattern of findPatterns(bars))
+      ok(pattern.index >= 0 && pattern.index < bars.length);
+    const shown = findPatterns(patternChart(STAGE4_SEEDS.patternChart));
+    equal(
+      new Set(shown.map((pattern) => pattern.kind)).size,
+      3,
+      'the lesson’s chart shows an engulfing, a hammer and a doji',
+    );
+  },
+);
+
+check(
+  'double tops: the neckline breaks in one ending and holds in the other, on every seed',
+  () => {
+    for (let n = 0; n < 300; n += 1) {
+      const seed = n === 0 ? STAGE4_SEEDS.doubleTop : `dt-${n}`;
+      const down = doubleTop(seed, 'break');
+      const up = doubleTop(seed, 'fail');
+      deepStrictEqual(down.seen, up.seen, 'no look-ahead');
+      ok((down.next.at(-1)?.close ?? Infinity) < down.neckline);
+      ok((up.next.at(-1)?.close ?? 0) > up.peak);
+      for (const i of down.peaks)
+        ok(Math.abs((down.seen[i]?.high ?? 0) - down.peak) <= 6);
+      const others = down.seen.filter((_, i) => !down.peaks.includes(i));
+      ok(
+        others.every((bar) => bar.high < down.peak - 6),
+        'only the two tops reach the peak',
+      );
+      equal(down.target, down.neckline - (down.peak - down.neckline));
+    }
+  },
+);
+
+check(
+  'Fibonacci levels and made-up levels react about equally often on random charts',
+  () => {
+    const fib = testLevels(STAGE4_SEEDS.fib, FIB_LEVELS_BP);
+    const made = testLevels(STAGE4_SEEDS.fib, MADE_UP_LEVELS_BP);
+    ok(fib.chances > 500 && made.chances > 500);
+    ok(
+      Math.abs(fib.rateBp - made.rateBp) < 600,
+      `${fib.rateBp} vs ${made.rateBp}`,
+    );
+    deepStrictEqual(retracements(11_000, 10_000, [5_000]), [10_500]);
+  },
+);
+
+check(
+  'buying the dip: with the bigger trend it wins far more than against it',
+  () => {
+    const up = buyTheDip(STAGE4_SEEDS.timeframes, 'up');
+    const down = buyTheDip(STAGE4_SEEDS.timeframes, 'down');
+    ok(up.trades > 100 && down.trades > 100);
+    ok(up.rateBp - down.rateBp > 3_000, `${up.rateBp} vs ${down.rateBp}`);
+  },
+);
+
+check(
+  'divergence: a higher high in price, a lower high in RSI, and the same chart for both endings',
+  () => {
+    for (let n = 0; n < 300; n += 1) {
+      const seed = n === 0 ? STAGE4_SEEDS.divergence : `dv-${n}`;
+      const a = divergence(seed, 'reversal');
+      const b = divergence(seed, 'continuation');
+      deepStrictEqual(a.seen, b.seen, 'no look-ahead');
+      ok(
+        (a.seen[a.highs[1]]?.high ?? 0) >
+          (a.seen[a.highs[0]]?.high ?? Infinity),
+        'price: higher high',
+      );
+      const [first, second] = rsiAtHighs(a);
+      ok(second < first, `RSI: lower high (${first} → ${second})`);
+      ok((a.next.at(-1)?.close ?? Infinity) < (a.seen.at(-1)?.close ?? 0));
+      ok((b.next.at(-1)?.close ?? 0) > (b.seen.at(-1)?.close ?? Infinity));
+    }
+  },
+);
+
+/* ── The lessons themselves ───────────────────────────────────────────── */
+
+const stageIds = STAGES.slice(0, 4).flatMap((stage) => [...stage.lessons]);
+
+check(
+  'every lesson in stages 1–4 has a definition, and nothing else does',
   () => {
     deepStrictEqual(Object.keys(LESSON_DEFS).sort(), [...stageIds].sort());
   },
@@ -365,4 +733,4 @@ if (failures.length) {
   console.error(`\n${failures.length} failed, ${passed} passed.`);
   process.exit(1);
 }
-console.log(`✓ stages 1–3: ${passed} checks passed.`);
+console.log(`✓ stages 1–4: ${passed} checks passed.`);

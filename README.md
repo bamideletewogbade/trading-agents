@@ -85,7 +85,28 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026, night)
+## Where things stand (26 Sep 2026, late)
+
+**Stage 4 of the roadmap: technical analysis, 10 lessons. 31 lessons you play in all.**
+
+- **The lessons:** trendlines and channels, moving averages, RSI, MACD built from its parts,
+  Bollinger Bands and ATR stops, candlestick patterns, chart patterns (the double top), Fibonacci,
+  several timeframes, and divergence.
+- **Honest tests.** Where a tool is famous for predicting things, the lesson counts: patterns
+  against "any candle at all", Fibonacci levels against made-up ones, both on simulated charts
+  with no edge built in. They land on the baseline, and the lesson says why that matters. Pattern
+  and divergence lessons play both endings of the same chart. Nothing claims real history yet: we
+  have no licensed data, so t6, t7 and t10 are now marked simulation.
+- **New engines:** `lib/engines/indicators.ts` (SMA, EMA, RSI, MACD, Bollinger, ATR, crossovers),
+  matched value for value against the trading-signals library in `pnpm check`; and
+  `lib/engines/ta.ts` (the built charts and the tests), with each chart's shape proven over
+  hundreds of seeds.
+- **The chart** now draws indicator lines, lines through two points, and an indicator pane (RSI,
+  MACD) under the price.
+- **10 new widgets**, 31 in all. `pnpm check` runs 113 checks; `pnpm walk:lessons` plays all 31
+  lessons and CI checks all 31 completions were saved.
+
+### Earlier that night
 
 **The lesson player, and stages 1–3 of the roadmap: 21 lessons you play.**
 

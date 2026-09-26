@@ -1,8 +1,9 @@
 /**
- * Plays every lesson in stages 1–3 in a phone-sized browser, the way a
+ * Plays every lesson in stages 1–4 in a phone-sized browser, the way a
  * learner would: does each widget's one thing, answers each question until
- * it's right, and finishes. Fails on any console error, a Continue that
- * never unlocks, or a lesson that doesn't reach its finish screen.
+ * it's right, and finishes. Fails on any console error, a widget that scrolls
+ * sideways, a Continue that never unlocks, or a lesson that doesn't reach its
+ * finish screen.
  *
  *     pnpm dev                               (in another terminal)
  *     pnpm walk:lessons                      every lesson
@@ -38,6 +39,16 @@ const ALL = [
   'r4',
   'r5',
   'r6',
+  't1',
+  't2',
+  't3',
+  't4',
+  't5',
+  't6',
+  't7',
+  't8',
+  't9',
+  't10',
 ];
 const chosen = args.filter((a) => !a.startsWith('http'));
 const IDS = chosen.length ? chosen : ALL;
@@ -139,6 +150,62 @@ const WIDGETS = {
   'r-multiples': (w) => slide(w, 5000),
   drawdown: (w) => slide(w, 5000),
   expectancy: (w) => click(w, 'Run 200 trades'),
+  trendline: async (w) => {
+    await click(w, 'A');
+    await click(w, 'X');
+    await w.getByText(/isn’t support/).waitFor();
+    await click(w, 'Start again');
+    await click(w, 'A');
+    await click(w, 'B');
+    await click(w, 'Copy it to the highs');
+    await w.getByText(/a channel/).waitFor();
+  },
+  'moving-averages': async (w) => {
+    await radio(w, 'EMA');
+    await slide(w, 40);
+  },
+  'rsi-run': async (w) => {
+    for (let i = 0; i < 6; i += 1) await click(w, 'Next 6 bars');
+    await w.getByText(/Selling when RSI first passed 70/).waitFor();
+  },
+  'macd-build': async (w) => {
+    for (let i = 0; i < 3; i += 1) await click(w, 'Add the next piece');
+  },
+  'atr-stops': async (w) => {
+    await radio(w, 'A wild market');
+    await slide(w, 20);
+  },
+  'pattern-test': async (w) => {
+    await click(w, 'Test on 200 simulated charts');
+    await w.getByText('Any candle at all', { exact: true }).waitFor();
+  },
+  'double-top': async (w) => {
+    await click(w, 'Line A');
+    await click(w, 'Line B');
+    await click(w, 'Play what happened');
+    await w.getByText(/The neckline broke/).waitFor();
+    await click(w, 'Replay: what if it held?');
+    await w.getByText(/The neckline held/).waitFor();
+  },
+  'fib-test': async (w) => {
+    await click(w, 'Test both on 300 random charts');
+    await w
+      .getByText(/bounces in/)
+      .first()
+      .waitFor();
+  },
+  'timeframes-trade': async (w) => {
+    await radio(w, 'Bigger trend down');
+    await click(w, 'Test buying hourly dips, 150 charts each way');
+    await w.getByText('Dips bought in a downtrend').waitFor();
+  },
+  divergence: async (w) => {
+    await click(w, 'Mark the two highs');
+    await click(w, 'Play what happened');
+    await w.getByText(/rolled over/).waitFor();
+    await click(w, 'Replay: the other way');
+    await w.getByText(/kept rising/).waitFor();
+  },
 };
 
 const continueButton = () => page.locator('div.sticky.bottom-0 button').last();
@@ -155,6 +222,12 @@ for (const id of IDS) {
         const act = WIDGETS[name];
         if (!act) throw new Error(`no walk step for widget ${name}`);
         await act(widget);
+        // A widget's later states (tables, results) mustn't push the page sideways.
+        const wide = await page.evaluate(
+          () => document.documentElement.scrollWidth - window.innerWidth,
+        );
+        if (wide > 0)
+          problems.push(`${id}: ${name} scrolls sideways by ${wide}px`);
         await page.screenshot({ path: `shots/lesson-${id}-${name}.png` });
       }
       const options = page.locator('fieldset button[aria-pressed]');
@@ -194,10 +267,11 @@ for (const id of IDS) {
   if (problems.length > before) console.log(`✗ ${id}`);
 }
 
-// Completion reached the roadmap: every walked lesson now shows as done.
+// Completion reached the roadmap: each stage header counts its finished
+// lessons ("3 of 8 done"), whichever stages the walk played.
 await page.goto(`${BASE}/roadmap`, { waitUntil: 'networkidle' });
-const ticks = await page.getByText('✓ Done').count();
-if (ticks < 1)
+const counted = await page.getByText(/\d+ of \d+ done/).count();
+if (counted < 1)
   problems.push('the roadmap shows no finished lessons after the walk');
 
 await browser.close();

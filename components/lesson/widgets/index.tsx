@@ -28,6 +28,18 @@ import {
   PositionSizeWidget,
   RMultiplesWidget,
 } from './risk';
+import {
+  AtrStopsWidget,
+  DivergenceWidget,
+  DoubleTopWidget,
+  FibTestWidget,
+  MacdBuildWidget,
+  MovingAveragesWidget,
+  PatternTestWidget,
+  RsiRunWidget,
+  TimeframesTradeWidget,
+  TrendlineWidget,
+} from './technical';
 
 /**
  * Every widget a lesson can name. The Record type makes a missing one a
@@ -67,4 +79,14 @@ export const WIDGETS: Record<
   'r-multiples': RMultiplesWidget,
   drawdown: DrawdownWidget,
   expectancy: ExpectancyWidget,
+  trendline: TrendlineWidget,
+  'moving-averages': MovingAveragesWidget,
+  'rsi-run': RsiRunWidget,
+  'macd-build': MacdBuildWidget,
+  'atr-stops': AtrStopsWidget,
+  'pattern-test': PatternTestWidget,
+  'double-top': DoubleTopWidget,
+  'fib-test': FibTestWidget,
+  'timeframes-trade': TimeframesTradeWidget,
+  divergence: DivergenceWidget,
 };

@@ -430,11 +430,11 @@ export const LANDING = {
     items: [
       [
         'Now',
-        'The first three stages of the roadmap, 21 lessons you play: how markets work, reading charts, and risk. Plus accounts, and an onboarding chat that finds your starting point.',
+        'The first four stages of the roadmap, 31 lessons you play: how markets work, reading charts, risk, and technical analysis, with every famous pattern tested against a coin flip. Plus accounts, and an onboarding chat that finds your starting point.',
       ],
       [
         'Next',
-        'Technical analysis (stage 4): moving averages, RSI and patterns you can drag, with how often they actually worked.',
+        'Fundamental analysis (stage 5): interest rates, inflation, reading a company’s accounts, valuation, and what moves the naira and the cedi.',
       ],
       [
         'Then',

@@ -199,4 +199,138 @@ export const WIDGET_COPY = {
     drawdown: 'Worst fall from a peak',
     perTrade: 'Expectancy per trade',
   },
+  trendline: {
+    pick: 'Tap two lows to draw a line through them',
+    low: (key: string) => `Low ${key}`,
+    clear: 'Start again',
+    copy: 'Copy it to the highs',
+    touches: (n: number) => `${n} touches`,
+    breaks: (n: number) =>
+      n === 0
+        ? 'price never closed through it'
+        : `price closed through it ${n} times`,
+    good: 'A line price keeps respecting. That’s a trendline.',
+    trap: 'Any two points make a line. Price ignored this one, so it isn’t support.',
+    channel: 'The same slope along the highs: a channel.',
+  },
+  averages: {
+    type: 'Type of average',
+    kind: { sma: 'SMA', ema: 'EMA' },
+    length: 'Length',
+    bars: (n: number) => `${n} bars`,
+    lag: (kind: string, length: number, bars: number | null) =>
+      bars === null
+        ? `Your ${kind} ${length} hadn’t turned down by the end of the chart.`
+        : `Price topped out. Your ${kind} ${length} only turned down ${bars} bars later.`,
+    slow: 'Add a slow 30-bar average',
+    crosses: (n: number, late: number | null) =>
+      late === null
+        ? `${n} crossovers, none after the top.`
+        : `${n} crossovers. The sell cross came ${late} bars after the top.`,
+    legend: {
+      price: 'Price',
+      fast: 'Your average',
+      slow: 'Slow average (dashed)',
+    },
+  },
+  rsiRun: {
+    more: (n: number) => `Next ${n} bars`,
+    value: 'RSI now',
+    crossed: 'RSI passed 70 here',
+    outcome: (sold: string, later: string, move: string) =>
+      `Selling when RSI first passed 70 meant selling at ${sold}. Price went on to ${later}: ${move} more.`,
+    legend: 'Lower pane: RSI, with lines at 30 and 70',
+  },
+  macdBuild: {
+    next: 'Add the next piece',
+    again: 'Start again',
+    steps: [
+      'Two averages of price: a fast one (12 bars, gold) and a slow one (26 bars, blue, dashed).',
+      'The MACD line is the fast average minus the slow one. Above zero, the fast one is on top.',
+      'The signal line is a 9-bar average of the MACD line (dashed). Crosses of the two are the “signals” people talk about.',
+      'The histogram is the gap between them. It shrinks before the lines cross, which is why people watch it.',
+    ],
+    pane: 'MACD',
+  },
+  atrStops: {
+    which: 'Market',
+    market: { quiet: 'A quiet market', wild: 'A wild market' },
+    atrNow: 'ATR now',
+    multiple: 'Stop distance, in ATRs',
+    times: (k: string) => `${k} × ATR`,
+    guess: (stop: string, rate: string) =>
+      `A guessed ${stop} stop: noise hits it ${rate} of the time here.`,
+    yours: (rate: string) =>
+      `Your ATR stop: noise hits it ${rate} of the time.`,
+    bands:
+      'Bollinger Bands (the grey lines) widen when the market gets wilder.',
+  },
+  patternTest: {
+    run: 'Test on 200 simulated charts',
+    names: {
+      engulfing: 'Bullish engulfing',
+      hammer: 'Hammer (pin bar)',
+      doji: 'Doji',
+      'any bar': 'Any candle at all',
+    },
+    kind: 'Pattern',
+    found: 'Found',
+    rose: 'Price higher 5 bars later',
+    marked: 'Marked on the chart: E engulfing · H hammer · D doji',
+    honest:
+      'These charts have no edge built in, so nothing on them can predict anything. A pattern that scores like “any candle at all” is doing nothing more than a coin flip.',
+  },
+  doubleTop: {
+    find: 'Where would the pattern be confirmed?',
+    line: (key: string) => `Line ${key.toUpperCase()}`,
+    right:
+      'Yes: the neckline, the low between the two tops. Until it breaks, it’s just two highs.',
+    wrong: 'Not that one. Look for the low between the two tops.',
+    play: 'Play what happened',
+    other: {
+      break: 'Replay: what if it held?',
+      fail: 'Replay: what if it broke?',
+    },
+    broke: (target: string) =>
+      `The neckline broke. The textbook target is the pattern’s height below it: ${target}.`,
+    held: 'The neckline held and price broke out above both tops. Two highs were never a pattern.',
+  },
+  fibTest: {
+    show: 'Show made-up levels too',
+    hide: 'Hide made-up levels',
+    run: 'Test both on 300 random charts',
+    fib: (levels: string) => `Fibonacci levels (${levels})`,
+    madeUp: (levels: string) => `Made-up levels (${levels})`,
+    rate: (reactions: number, chances: number, rate: string) =>
+      `${reactions} bounces in ${chances} chances: ${rate}`,
+  },
+  timeframesTrade: {
+    which: 'The bigger trend',
+    trend: { up: 'Bigger trend up', down: 'Bigger trend down' },
+    daily: 'Daily',
+    hourly: 'Hourly, the last day and a half',
+    run: 'Test buying hourly dips, 150 charts each way',
+    rows: {
+      up: 'Dips bought in an uptrend',
+      down: 'Dips bought in a downtrend',
+    },
+    wins: 'Won',
+    average: 'Average result',
+  },
+  divergence: {
+    mark: 'Mark the two highs',
+    price: (first: string, second: string) =>
+      `Price: ${first} → ${second}, a higher high`,
+    rsi: (first: string, second: string) =>
+      `RSI: ${first} → ${second}, a lower high`,
+    play: 'Play what happened',
+    other: {
+      reversal: 'Replay: the other way',
+      continuation: 'Replay: the other way',
+    },
+    reversal: 'It rolled over. The divergence was an early warning.',
+    continuation:
+      'It kept rising anyway. Divergence is a warning, not a signal.',
+    pane: 'RSI',
+  },
 };

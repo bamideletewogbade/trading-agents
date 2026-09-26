@@ -65,7 +65,7 @@ pnpm typecheck && pnpm lint
 pnpm shots             # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
 pnpm walk              # with pnpm dev running: plays the first 3 minutes in a browser, checks the numbers
 pnpm walk:onboarding   # with pnpm dev running: chats through onboarding to the desk
-pnpm walk:lessons      # with pnpm dev running: plays all 21 lessons of stages 1–3 to the finish
+pnpm walk:lessons      # with pnpm dev running: plays all 31 lessons of stages 1–4 to the finish
 pnpm db:generate       # after changing db/schema.ts: write the next migration (commit it)
 pnpm db:migrate        # apply migrations to DATABASE_URL (env or .dev.vars), over HTTPS for Neon
 pnpm probe:openrouter  # one live Jev call and one coach turn; costs well under a cent

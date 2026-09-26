@@ -488,15 +488,17 @@ export const LESSONS: Lesson[] = [
   // Technical analysis
   {
     id: 't1',
+    keywords: ['trendline', 'trend line', 'channel', 'support line'],
     title: 'Trendlines and channels',
     topic: 'technical',
     level: 'core',
     minutes: 7,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/t1',
     needs: ['c4'],
     practice:
-      'Draw them on a live chart and see how many touches it takes before a line means anything.',
+      'Draw lines through the lows of a chart and see which ones price respects, and which one is a trap.',
   },
   {
     id: 't2',
@@ -506,7 +508,8 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 8,
     truth: 'simulation',
-    status: 'next',
+    status: 'live',
+    playAt: '/lesson/t2',
     needs: ['c4'],
     practice:
       'Drag the length of an SMA and an EMA. Watch them lag, and watch crossovers arrive late.',
@@ -519,10 +522,11 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 8,
     truth: 'simulation',
-    status: 'next',
+    status: 'live',
+    playAt: '/lesson/t3',
     needs: ['c4'],
     practice:
-      'Push price up and watch RSI pass 70, and learn why "overbought" doesn’t mean "sell".',
+      'Play a strong run bar by bar, watch RSI pass 70, and learn why "overbought" doesn’t mean "sell".',
   },
   {
     id: 't4',
@@ -532,7 +536,8 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 7,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/t4',
     needs: ['t2'],
     practice:
       'Build MACD yourself from two moving averages, one step at a time.',
@@ -545,7 +550,8 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 7,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/t5',
     needs: ['r1'],
     practice:
       'Use ATR to put your stop outside the everyday noise, and compare it with a guess.',
@@ -557,11 +563,12 @@ export const LESSONS: Lesson[] = [
     topic: 'technical',
     level: 'core',
     minutes: 8,
-    truth: 'historical',
-    status: 'planned',
+    truth: 'simulation',
+    status: 'live',
+    playAt: '/lesson/t6',
     needs: ['c2', 'c5'],
     practice:
-      'Spot engulfing candles, pin bars and dojis, then see how often they worked on real history.',
+      'Spot engulfing candles, hammers and dojis, then count how often they beat any candle at all, on charts with no edge built in.',
   },
   {
     id: 't7',
@@ -576,11 +583,12 @@ export const LESSONS: Lesson[] = [
     topic: 'technical',
     level: 'core',
     minutes: 9,
-    truth: 'historical',
-    status: 'planned',
+    truth: 'simulation',
+    status: 'live',
+    playAt: '/lesson/t7',
     needs: ['c5', 't1'],
     practice:
-      'Double tops, head and shoulders, flags and triangles. Spot them, then study the ones that failed.',
+      'Find a double top’s neckline, then play both endings of the same chart. Nothing is a pattern until its line breaks.',
   },
   {
     id: 't8',
@@ -590,34 +598,44 @@ export const LESSONS: Lesson[] = [
     level: 'advanced',
     minutes: 6,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/t8',
     needs: ['c4'],
     practice:
       'Draw the levels, then test them on charts that were generated at random.',
   },
   {
     id: 't9',
+    keywords: ['timeframe', 'multi timeframe', 'daily', 'hourly', 'top down'],
     title: 'Reading several timeframes',
     topic: 'technical',
     level: 'advanced',
     minutes: 8,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/t9',
     needs: ['c3', 't2'],
     practice:
       'Take the direction from the daily chart and the timing from the hourly.',
   },
   {
     id: 't10',
+    keywords: [
+      'divergence',
+      'bearish divergence',
+      'rsi divergence',
+      'momentum',
+    ],
     title: 'Divergence',
     topic: 'technical',
     level: 'advanced',
     minutes: 7,
-    truth: 'historical',
-    status: 'planned',
+    truth: 'simulation',
+    status: 'live',
+    playAt: '/lesson/t10',
     needs: ['t3'],
     practice:
-      'Price makes a new high and RSI doesn’t. See what followed, across a hundred real cases.',
+      'Price makes a new high and RSI doesn’t. Mark it, then play both endings of the same chart.',
   },
 
   // Fundamental analysis

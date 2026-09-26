@@ -36,3 +36,23 @@ export const SEEDS = {
     { seed: 'sort-flat-0', kind: 'range', up: false },
   ],
 } as const;
+
+/** Stage 4 (technical analysis): the charts and tests each lesson pins. */
+export const STAGE4_SEEDS = {
+  channel: 'trend-line',
+  top: 'ma',
+  run: 'rsi',
+  stops: 'atr',
+  patterns: 'patterns',
+  /** A chart with each pattern on it, spaced so the labels don't collide. */
+  patternChart: 'patterns:show-3',
+  doubleTop: 'neckline',
+  fib: 'fib',
+  timeframes: 'mtf',
+  divergence: 'divergence',
+} as const;
+
+/** The two markets the ATR lesson compares, as the most a bar can wobble, in cents. */
+export const MARKETS = { quiet: 20, wild: 80 } as const;
+/** The stop a guess gives, in cents: the same in every market. */
+export const GUESSED_STOP = 60;
