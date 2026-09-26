@@ -68,6 +68,7 @@ pnpm walk:lessons      # with pnpm dev running: plays all 47 lessons of stages 1
 pnpm db:generate       # after changing db/schema.ts: write the next migration (commit it)
 pnpm db:migrate        # apply migrations to DATABASE_URL (env or .dev.vars), over HTTPS for Neon
 pnpm probe:openrouter  # one live Jev call and one coach turn; costs well under a cent
+pnpm probe:gates       # every Jev gate's labelled phrases, live, three runs; well under a cent
 npx oxfmt <files>      # format what you touched
 ```
 
@@ -94,7 +95,7 @@ npx oxfmt <files>      # format what you touched
 - **Lessons are data.** A lesson is a list of beats in `content/lessons/stage*.ts` (`say`,
   `widget`, `choice`, `reflect`), each tagged with its step of the loop. The player
   (`components/lesson/LessonPlayer.tsx`) never changes for a new lesson.
-  - Interaction lives in *widgets*: registered once in `components/lesson/widgets/index.tsx`,
+  - Interaction lives in _widgets_: registered once in `components/lesson/widgets/index.tsx`,
     named in `lib/lessons/types.ts`, each backed by an engine, and reusable by any lesson.
   - Every number in a lesson's words is computed in its `beats()` from an engine.
   - Charts a lesson depends on use seeds pinned in `content/lessons/seeds.ts`.
@@ -120,6 +121,17 @@ npx oxfmt <files>      # format what you touched
     prompt, so rewording a question retires its old mistakes rather than mismatching them.
     `/api/questions` builds round questions on the server; `ChoiceQuestion` draws them the same
     way lessons do.
+- **Every Jev call goes through `decide()`** (`lib/decisions/gate.ts`): rules first, the
+  authored fallback when Jev is off, a breaker, a one-hour cache, a per-person limit, one retry,
+  schema-checked answers, and the `decisions` ledger (a hash of the input, never the words). A
+  gate is a small pure object (`lib/decisions/reflect.ts`, `ask.ts`, `meaning.ts`): its questions,
+  how it reads hedged answers, and its fallback. Learner text goes in `state`, never in
+  instructions; the checks prove it. Routes call `decideFor(request, gate, input)`. Words a gate
+  can answer with live in `content/coach.ts`. Change a gate's questions → bump its `version` and
+  run `pnpm probe:gates`.
+- Anything a learner types passes the safety rules (`lib/decisions/safety.ts`): crisis phrases
+  show the support card (`components/coach/SupportCard.tsx`) and a hedged crisis answer does too.
+  Add phrases people really type, with a check each way in `scripts/check-decisions.ts`.
 - Onboarding questions are data. A new question means: a step, its reader and a Jev option set
   in `lib/onboarding/flow.ts`, its words and chips in `content/onboarding.ts`, and checks in
   `scripts/check-onboarding.ts` using real phrases people type. The chat screen doesn't change.

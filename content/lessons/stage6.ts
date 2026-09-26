@@ -200,6 +200,9 @@ export const STAGE_6: Record<string, LessonDef> = {
           tag: 'again',
           prompt: `Could you keep following rules through ${t.longestFlat} bars with no new high? What would help you?`,
           placeholder: 'e.g. smaller size, a journal, checking less often',
+          look: 'something that would help them keep to the rules, such as a smaller size, a journal or checking less often',
+          followUp:
+            'What’s one thing that would help you stick to the rules through a long flat stretch?',
         },
       ];
     },
@@ -337,6 +340,9 @@ export const STAGE_6: Record<string, LessonDef> = {
           prompt:
             'What would tell you a range is over, before your account does?',
           placeholder: 'e.g. a close below the floor, a stop hit, heavy volume',
+          look: 'a sign or a rule, such as a close below the floor, a stop being hit, or heavy volume on the break',
+          followUp:
+            'What one thing on the chart would make you stop buying the dips?',
         },
       ];
     },
@@ -455,6 +461,9 @@ export const STAGE_6: Record<string, LessonDef> = {
           prompt:
             'How did your picks compare with the volume rule? What did you look at when you decided?',
           placeholder: 'e.g. I took the big candles and ignored volume',
+          look: 'what they looked at to decide, such as the volume, the candle’s size or the close',
+          followUp:
+            'What did you look at first when you decided to take or skip?',
         },
       ];
     },
@@ -566,6 +575,9 @@ export const STAGE_6: Record<string, LessonDef> = {
           prompt:
             'Which style fits your week, honestly? How many hours could you give it?',
           placeholder: 'e.g. 30 minutes each evening, so swing',
+          look: 'a style, and a realistic amount of time in a day or week',
+          followUp:
+            'How many minutes a day could you really give it, and when?',
         },
       ];
     },
@@ -675,6 +687,9 @@ export const STAGE_6: Record<string, LessonDef> = {
             'Which releases matter for what you’d trade? What will you do the next time one is due?',
           placeholder:
             'e.g. check the calendar each Sunday, no trades on MPC day',
+          look: 'a specific release, or what they will do on release days',
+          followUp:
+            'What will you do on the next big release day: wait, cut your size, or sit out?',
         },
       ];
     },
@@ -791,6 +806,9 @@ export const STAGE_6: Record<string, LessonDef> = {
           prompt:
             'What part of your money is for trading, and what part for investing? What would you do in a crash?',
           placeholder: 'e.g. trading money is small; the rest goes in monthly',
+          look: 'how they would split their money, or what they would do in a crash',
+          followUp:
+            'What will you do the next time the market falls 20% in a month?',
         },
       ];
     },
@@ -923,6 +941,8 @@ export const STAGE_6: Record<string, LessonDef> = {
             'Write your strategy: entry, exit, stop and size, one line each.',
           placeholder:
             'e.g. Buy on a close above the 20-day high; sell on a close below the 10-day low; stop 2 ATR; risk 1%',
+          look: 'at least one of entry, exit, stop or size, as a rule someone else could follow',
+          followUp: 'Start with one line: when exactly would you buy?',
         },
       ];
     },

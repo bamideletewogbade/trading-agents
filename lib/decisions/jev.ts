@@ -112,6 +112,8 @@ export async function askJev(input: {
     });
     if (response.status === 402)
       throw new JevError(402, 'No prepaid credit on the OpenRouter account.');
+    if (response.status === 401 || response.status === 403)
+      throw new JevError(401, 'OpenRouter refused the key.');
     if (!response.ok)
       throw new JevError(502, `Jev returned ${response.status}.`);
     body = (await response.json()) as typeof body;

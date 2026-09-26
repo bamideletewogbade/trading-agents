@@ -1361,6 +1361,18 @@ check(
   },
 );
 
+check(
+  'every reflect question says what a good answer names, and has a follow-up',
+  () => {
+    for (const id of stageIds)
+      for (const beat of LESSON_DEFS[id]?.beats() ?? [])
+        if (beat.kind === 'reflect') {
+          ok((beat.look?.length ?? 0) > 10, `${id}: no look-for`);
+          ok(beat.followUp?.endsWith('?'), `${id}: no follow-up question`);
+        }
+  },
+);
+
 check('every widget a lesson names is a registered widget', () => {
   for (const id of stageIds)
     for (const beat of LESSON_DEFS[id]?.beats() ?? [])

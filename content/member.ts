@@ -62,6 +62,14 @@ export const ME = {
     stage: (title: string) => `Finished: ${title}`,
     streak: (days: number) => `${days}-day streak`,
   },
+  notes: {
+    title: 'Your notes',
+    none: 'When a lesson asks what you think, your answer is saved here.',
+    where: (n: number) =>
+      n > 10
+        ? `The latest 10 of ${n}. Kept on this phone only.`
+        : 'Kept on this phone only.',
+  },
   settings: {
     title: 'Settings',
     buzz: 'Buzz on answers',

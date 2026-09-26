@@ -100,7 +100,16 @@ export type Beat =
       gate?: boolean;
     }
   | { kind: 'choice'; tag: LoopTag; prompt: string; options: Option[] }
-  | { kind: 'reflect'; tag: LoopTag; prompt: string; placeholder: string };
+  | {
+      kind: 'reflect';
+      tag: LoopTag;
+      prompt: string;
+      placeholder: string;
+      /** What a good answer names, for the reflection gate (lib/decisions/reflect.ts). */
+      look?: string;
+      /** Asked once when an answer is too vague to act on. */
+      followUp?: string;
+    };
 
 export type LessonDef = {
   id: string;

@@ -81,7 +81,46 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026, stage 6)
+## Where things stand (26 Sep 2026, Jev)
+
+**Jev, made robust, and put to work.** Every yes/no or one-of decision now goes through one
+`decide()` (`lib/decisions/gate.ts`), so each gate gets the same protection:
+
+- **Rules first:** plain phrases answer with no call (a crisis phrase, a tip request, a two-word
+  answer, a query the keywords already match).
+- **Off means authored:** with no key, no credit or an outage, every gate falls back to authored
+  lines. Nothing ever waits on Jev being up.
+- **A breaker:** three failures pause calls for a minute; each failed trial doubles the pause,
+  up to ten minutes. No credit or a refused key pauses for half an hour.
+- **A cache:** the same words within an hour get the same answer free.
+- **A limit per person:** a burst of 20, then one call every 30 seconds.
+- **One retry** on a server error only; answers are checked against a schema before anyone reads
+  them.
+- **A ledger:** every decision goes to a new `decisions` table (gate, version, a hash of the
+  input but never the words, the verdict, cost, latency). Run `pnpm db:migrate` to add it.
+
+Where it's used:
+
+- **Reflections now answer back.** Stage 6's reflect questions used to discard what you typed.
+  Now "Save my answer" keeps it on the phone (a "Your notes" card on Me) and replies with an
+  authored line: praise when it's concrete, one narrower question when it's vague, and the
+  support card if it sounds like crisis. Jev asks four things in one call.
+- **The ask box finds lessons for any phrasing.** The phone answers first (rules and keywords);
+  only a miss goes to the server, where Jev picks from the live lessons, with "did you mean" when
+  it's unsure. Tip requests get the lessons on who profits from tips.
+- **A safety check on everything typed.** Crisis phrases in English and Pidgin ("I wan die", "I no
+  wan live again", "I tire for life") show a calm support card with Ghana's Mental Health
+  Authority free line, findahelpline.com and 112, and mark a week with no upsell (rule 9).
+- **Onboarding** moved onto `decide()`, so it shares the breaker, cache, limit and ledger.
+
+Checks: `pnpm check` adds 20 (every protection driven by a scripted Jev and a hand-moved clock,
+the safety phrases both ways, each gate's reading of hedged answers, and that no learner text
+ever reaches a question's instructions). `pnpm probe:gates` runs labelled phrases (Ghanaian and
+Nigerian English and Pidgin included) against the live Jev three times each and reports right,
+hedged, wrong and false crisis alarms. It needs `OPENROUTER_API_KEY` with credit; there was none
+in this session, so Jev itself hasn't been measured yet.
+
+### Earlier: stage 6
 
 **Stage 6 of the roadmap: strategies, 7 lessons. 47 lessons you play in all.**
 
@@ -104,8 +143,7 @@ Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases th
   next (s7).
 - **Checked over many seeds, not just the pinned one:** trend rules ahead on every trending
   market; the volume rule better per trade in at least 34 of 40 sets; steady buying ahead of
-  timing in at least 16 of 20 runs; the optimiser's pick worse out of sample in at least 20 of
-  30. The lessons say "usually" where the checks do.
+  timing in at least 16 of 20 runs; the optimiser's pick worse out of sample in at least 20 of 30. The lessons say "usually" where the checks do.
 - **Honest labels:** s1, s3, s6 and s7 were planned as "historical" but need price history we
   don't have licensed, so they're simulations and say so.
 - **7 new widgets**, 47 in all, in one lazily loaded chunk (8.6 KB gzipped). `pnpm walk:lessons`

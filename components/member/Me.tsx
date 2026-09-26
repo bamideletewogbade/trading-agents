@@ -2,11 +2,12 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { STAGES } from '@/content/curriculum';
+import { LESSONS, STAGES } from '@/content/curriculum';
 import { ME } from '@/content/member';
 import { DAILY_GOALS, type Badge } from '@/lib/progress/habit';
 import { setDailyGoal, useHabit } from '@/lib/client/progress';
 import { setBuzz, useBuzzSetting } from '@/lib/client/feel';
+import { useNotes } from '@/lib/client/notes';
 import { AccountPanel } from '@/components/auth/AccountPanel';
 import { PaletteSetting } from '@/components/shell/PaletteSetting';
 import { Segmented } from '@/components/ui/Segmented';
@@ -41,6 +42,42 @@ function Card({ title, children }: { title?: string; children: ReactNode }) {
     </section>
   );
 }
+
+/** What the learner wrote in lessons' reflect questions, newest first, from this phone. */
+function Notes() {
+  const notes = useNotes();
+  const shown = notes.slice(0, NOTES_SHOWN);
+  return (
+    <Card title={ME.notes.title}>
+      {shown.length === 0 ? (
+        <p className="type-small text-fg-2">{ME.notes.none}</p>
+      ) : (
+        <ul className="grid gap-3">
+          {shown.map((note) => (
+            <li
+              key={`${note.lesson}-${note.at}`}
+              className="rounded-md border border-line bg-raised p-3"
+            >
+              <p className="font-mono type-tick text-gold uppercase">
+                {LESSONS.find((l) => l.id === note.lesson)?.title ??
+                  note.lesson}
+              </p>
+              <p className="mt-1 type-small text-fg-2">{note.prompt}</p>
+              <p className="mt-2 type-body whitespace-pre-line text-fg">
+                {note.text}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-3 type-tick text-muted">
+        {ME.notes.where(notes.length)}
+      </p>
+    </Card>
+  );
+}
+
+const NOTES_SHOWN = 10;
 
 export function Me() {
   const habit = useHabit();
@@ -152,6 +189,8 @@ export function Me() {
           </ul>
         )}
       </Card>
+
+      <Notes />
 
       <Card title={ME.settings.title}>
         <div className="space-y-5">

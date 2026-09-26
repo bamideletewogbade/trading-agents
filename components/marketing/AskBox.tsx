@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LANDING } from '@/content/landing';
-import { TOPICS } from '@/content/curriculum';
-import { searchLessons, type Match } from '@/lib/curriculum/search';
+import { ASK_REPLY } from '@/content/coach';
+import { LESSONS, TOPICS, type Lesson } from '@/content/curriculum';
+import { SupportCard } from '@/components/coach/SupportCard';
+import { askFallback, askRule, type AskVerdict } from '@/lib/decisions/ask';
 
 /**
  * The open-ended box: type what you want to understand, in your own words,
@@ -12,16 +14,45 @@ import { searchLessons, type Match } from '@/lib/curriculum/search';
  * composed from the registered curriculum (lib/curriculum/search.ts), never
  * invented, so it can't point at a lesson that doesn't exist.
  *
+ * The phone answers first, instantly (lib/decisions/ask.ts: plain rules and
+ * the keyword search). Only when those find nothing does it ask the server,
+ * where Jev picks from the live lessons; if that's slow or down, the
+ * weakest keyword matches still show. Crisis phrases get the support card;
+ * requests for tips get the lessons on who profits from them.
+ *
  * The placeholder cycles through real questions people ask, so an empty box
  * still shows what it's for.
  */
+
+async function askServer(text: string): Promise<AskVerdict> {
+  try {
+    const response = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ text }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!response.ok) return askFallback(text);
+    const verdict = (await response.json()) as AskVerdict;
+    return typeof verdict?.kind === 'string' ? verdict : askFallback(text);
+  } catch {
+    return askFallback(text);
+  }
+}
+
+function lessonsOf(ids: readonly string[]): Lesson[] {
+  return ids.flatMap((id) => LESSONS.filter((lesson) => lesson.id === id));
+}
 
 const COPY = LANDING.ask;
 
 export function AskBox({ compact = false }: { compact?: boolean }) {
   const [query, setQuery] = useState('');
   const [asked, setAsked] = useState<string | null>(null);
+  const [answer, setAnswer] = useState<AskVerdict | 'pending' | null>(null);
   const [hint, setHint] = useState(0);
+  // Only the latest question's answer is shown, however the replies race.
+  const latest = useRef(0);
 
   useEffect(() => {
     const reduce = window.matchMedia(
@@ -35,14 +66,30 @@ export function AskBox({ compact = false }: { compact?: boolean }) {
     return () => window.clearInterval(timer);
   }, []);
 
-  const matches: Match[] = asked ? searchLessons(asked) : [];
+  async function submit(text: string) {
+    const turn = ++latest.current;
+    setAsked(text);
+    const local = askRule(text);
+    if (local) {
+      setAnswer(local);
+      return;
+    }
+    setAnswer('pending');
+    const verdict = await askServer(text);
+    if (turn === latest.current) setAnswer(verdict);
+  }
+
+  const shown =
+    answer && answer !== 'pending' && 'ids' in answer
+      ? lessonsOf(answer.ids)
+      : [];
 
   return (
     <div className={compact ? '' : 'mt-8'}>
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          setAsked(query.trim() || COPY.placeholders[hint] || '');
+          void submit(query.trim() || COPY.placeholders[hint] || '');
         }}
         className="group relative rounded-lg border border-edge bg-panel p-1.5 transition-colors focus-within:border-gold"
       >
@@ -73,19 +120,31 @@ export function AskBox({ compact = false }: { compact?: boolean }) {
       </form>
       <p className="mt-2 type-small text-muted">{COPY.hint}</p>
 
-      {asked !== null ? (
+      {asked !== null && answer !== null ? (
         <div className="mt-4" aria-live="polite">
-          {matches.length === 0 ? (
+          {answer === 'pending' ? (
+            <p className="animate-pulse font-mono type-small text-muted">
+              {ASK_REPLY.thinking}
+            </p>
+          ) : answer.kind === 'crisis' ? (
+            <SupportCard />
+          ) : shown.length === 0 ? (
             <p className="rounded-md border border-dashed border-edge p-4 type-small text-fg-2">
               {COPY.none}
             </p>
           ) : (
             <>
-              <p className="mb-2 font-mono type-tick text-muted uppercase">
-                {COPY.results(matches.length)} · “{asked}”
-              </p>
+              {answer.kind === 'tip' || answer.kind === 'either' ? (
+                <p className="mb-3 type-body text-fg">
+                  {ASK_REPLY[answer.kind]}
+                </p>
+              ) : (
+                <p className="mb-2 font-mono type-tick text-muted uppercase">
+                  {COPY.results(shown.length)} · “{asked}”
+                </p>
+              )}
               <ul className="grid gap-2">
-                {matches.map(({ lesson }, i) => (
+                {shown.map((lesson, i) => (
                   <li
                     key={lesson.id}
                     className="animate-bubble-in rounded-md border border-line bg-panel p-4"

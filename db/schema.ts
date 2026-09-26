@@ -117,3 +117,40 @@ export const learnerProfiles = pgTable('learner_profiles', {
     .notNull()
     .defaultNow(),
 });
+
+/**
+ * Every decision any gate made (lib/decisions/gate.ts), from whichever rung
+ * answered: a rule, Jev, the cache, or the authored fallback. It is the
+ * cost ledger (plan §6.7), the hallucination and outage record, and what
+ * the probes are compared against.
+ *
+ * `input_hash` groups repeats without keeping what anyone typed: the words
+ * go to Jev to be judged and are never stored here. `client` is the
+ * learner's id or, for a guest with no cookie yet, nothing.
+ */
+export const decisions = pgTable(
+  'decisions',
+  {
+    id: uuid('id')
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    gate: text('gate').notNull(),
+    version: integer('version').notNull(),
+    inputHash: text('input_hash').notNull(),
+    source: text('source').notNull(),
+    reason: text('reason'),
+    verdict: jsonb('verdict').notNull(),
+    answers: jsonb('answers'),
+    model: text('model'),
+    usdMicros: integer('usd_micros').notNull().default(0),
+    latencyMs: integer('latency_ms').notNull().default(0),
+    learnerId: uuid('learner_id'),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index('decisions_gate_idx').on(table.gate, table.createdAt),
+    index('decisions_learner_idx').on(table.learnerId, table.createdAt),
+  ],
+);

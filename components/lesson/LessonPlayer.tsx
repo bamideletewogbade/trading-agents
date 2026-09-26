@@ -23,6 +23,7 @@ import { currentPractice, recordMissed } from '@/lib/client/practice';
 import { questionKey } from '@/lib/progress/review';
 import { TruthBadge } from '@/components/shell/TruthBadge';
 import { ChoiceQuestion } from './ChoiceQuestion';
+import { Reflect } from './Reflect';
 import { FlameIcon } from '@/components/ui/icons';
 import { WIDGETS } from './widgets';
 
@@ -445,14 +446,14 @@ export function LessonPlayer({
         ) : null}
 
         {beat.kind === 'reflect' ? (
-          <label className="mt-4 block">
-            <span className="type-title text-fg">{beat.prompt}</span>
-            <textarea
-              rows={4}
-              placeholder={beat.placeholder}
-              className="mt-3 w-full rounded-md border border-edge bg-panel p-3 type-body text-fg outline-none focus:border-gold"
-            />
-          </label>
+          <Reflect
+            key={index}
+            lesson={id}
+            beat={index}
+            prompt={beat.prompt}
+            placeholder={beat.placeholder}
+            followUp={beat.followUp}
+          />
         ) : null}
       </div>
 

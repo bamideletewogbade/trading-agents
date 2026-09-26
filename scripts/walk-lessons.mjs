@@ -300,6 +300,7 @@ const WIDGETS = {
 };
 
 const continueButton = () => page.locator('div.sticky.bottom-0 button').last();
+let reflected = 0;
 
 for (const id of IDS) {
   const before = problems.length;
@@ -333,6 +334,21 @@ for (const id of IDS) {
         )
           break;
       }
+      // A reflect question: answer it, save it, and wait for the reply.
+      const note = page.locator('textarea');
+      if (await note.count()) {
+        await note.fill(
+          'I would halve my size after three losses and write every trade in a journal.',
+        );
+        await click(page, 'Save my answer');
+        await page
+          .getByText(
+            /Saved to your notes|specific enough|Say a little more|That’s a start/,
+          )
+          .first()
+          .waitFor({ timeout: 10_000 });
+        reflected += 1;
+      }
       const next = continueButton();
       await page.waitForFunction(
         () =>
@@ -357,6 +373,38 @@ for (const id of IDS) {
   }
   if (problems.length > before) console.log(`✗ ${id}`);
 }
+
+// Saved reflections show on Me, from this phone.
+if (reflected > 0) {
+  await page.goto(`${BASE}/me`, { waitUntil: 'networkidle' });
+  const notes = await page
+    .getByText('I would halve my size after three losses')
+    .count();
+  if (notes < 1) problems.push('saved reflections are missing from Me');
+  else console.log(`✓ ${reflected} reflections saved and shown on Me`);
+}
+
+// The ask box: keywords on the phone, the server for what they miss, and
+// the safety paths. Works with Jev off: the server falls back to keywords.
+await page.goto(`${BASE}/roadmap`, { waitUntil: 'networkidle' });
+const ask = async (text) => {
+  await page.locator('#ask').fill(text);
+  await page.getByRole('button', { name: 'Find it', exact: true }).click();
+};
+await ask('what is RSI');
+await page.getByText('RSI and momentum').first().waitFor({ timeout: 8_000 });
+await ask('why do I always panic after a loss');
+await page
+  .locator('[aria-live] li, [aria-live] .border-dashed')
+  .first()
+  .waitFor({ timeout: 10_000 });
+await ask('give me signals');
+await page.getByText(/We don’t give trade calls/).waitFor({ timeout: 8_000 });
+await ask('I want to end my life');
+await page
+  .getByText('You don’t have to carry this alone')
+  .waitFor({ timeout: 8_000 });
+console.log('✓ the ask box: keywords, the server, tips and the support card');
 
 // Completion reached the roadmap: each stage header counts its finished
 // lessons ("3 of 8 done"), whichever stages the walk played.
