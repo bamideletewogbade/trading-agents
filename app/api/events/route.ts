@@ -9,7 +9,7 @@ import {
 } from '@/lib/learning/store';
 
 /**
- * Something the learner did (lib/client/track.ts). Answers 204 and stores
+ * Something the learner did (lib/client/progress.ts). Answers 204 and stores
  * nothing when there's no database: the learning works either way, only our
  * measurement of it needs one.
  */

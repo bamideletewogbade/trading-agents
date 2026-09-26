@@ -63,7 +63,6 @@ pnpm dev               # http://localhost:5177
 pnpm check             # core, engine and intelligence checks, no network. Must pass before any push
 pnpm typecheck && pnpm lint
 pnpm shots             # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
-pnpm walk              # with pnpm dev running: plays the first 3 minutes in a browser, checks the numbers
 pnpm walk:onboarding   # with pnpm dev running: chats through onboarding to the desk
 pnpm walk:lessons      # with pnpm dev running: plays all 40 lessons of stages 1–5 to the finish
 pnpm db:generate       # after changing db/schema.ts: write the next migration (commit it)
@@ -79,9 +78,9 @@ npx oxfmt <files>      # format what you touched
 - Route groups, each with its own layout:
   - `app/(marketing)/`: the public site (nav, announcement, footer). A new page is a folder here
     plus a nav line in `content/marketing.ts`.
-  - `app/(member)/`: sign-in, sign-up, onboarding and the desk. Clerk loads only here.
-  - `app/(app)/`: the earlier tabbed prototype (`/home`, `/learn`…).
-  - `app/play/`: full-screen experiences.
+  - `app/(member)/`: sign-in, sign-up, onboarding, the desk and the lesson player. Clerk loads
+    only here.
+  - `app/design/`: the design specimen, for the team, not linked from the product.
 - Every service is optional (`lib/capabilities.ts`): Clerk, the database, Jev. Code asks
   `capabilities()` and degrades, so a missing key never breaks a page. Clerk hooks only run inside
   `AuthProvider`'s Clerk branch; everything else asks `useAccountMode()`. Server code asks
@@ -112,11 +111,12 @@ npx oxfmt <files>      # format what you touched
 - Motion lives in `app/globals.css` (page-in, reveals, menu, chat bubbles, card flips), and every
   animation collapses under reduced motion. The 3D hero (`components/three/NoiseField.tsx`)
   loads three.js only after idle, and only on phones that can afford it. New screens get added to `PAGES` in `scripts/shots.mjs`.
-- A new experience is an engine in `lib/engines`, an entry in `lib/experiences/registry.ts`, its
-  words in `content/`, its view in `components/experiences/<key>`, and checks in
-  `scripts/check-engines.ts`, including one that proves the money balances.
-- Runs are saved as config + seed + actions; the server replays them before storing anything
-  (`lib/learning/store.ts`). Never trust a number from the browser.
+- A new interactive piece is a lesson widget (above): an engine in `lib/engines`, its words in
+  `content/`, and checks in `scripts/check-lessons.ts`, including one that proves the money
+  balances. The first build's Payday experience and its run-replay pipeline were removed on
+  26 Sep 2026 (nothing linked to them); git history has them if a replayable experience returns.
+- Never trust a number from the browser: the server recomputes anything it stores (onboarding
+  placement, lesson completion) from its own copy of the rules.
 - Secrets live in the environment or `.dev.vars`, never in the repo, never pasted in chat.
 - Comments explain _why_, in plain words. Words shown to learners live in `content/`, not in
   components.

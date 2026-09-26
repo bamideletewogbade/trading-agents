@@ -18,8 +18,10 @@ import {
   checkNumbers,
   numbersIn,
 } from '../lib/intelligence/guard.ts';
-import { payday } from '../lib/experiences/payday.ts';
-import { PAYDAY } from '../content/scenarios/payday.ts';
+import { fromMinor } from '../lib/core/money.ts';
+import { realValue, savedThrough } from '../lib/engines/macro.ts';
+import type { Facts } from '../lib/experiences/types.ts';
+import { GHANA_2022 } from '../content/lessons/history.ts';
 
 let passed = 0;
 const failures: string[] = [];
@@ -90,22 +92,23 @@ await check(
 
 /* ── The numeric guard ─────────────────────────────────────────────────── */
 
-const GH = PAYDAY.GH.config;
-const EXAMPLE = {
-  rent: 90_000,
-  family: 40_000,
-  savings: 20_000,
-  scheme: 30_000,
-  spend: 120_000,
+// The inflation lesson's (f3) numbers: GH₵1,000 rolled through Ghana's
+// 2022 T-bills, and what it bought after that year's inflation.
+const saved = 100_000;
+const grown = savedThrough(saved, 'bills', GHANA_2022.billBp);
+const inflation = GHANA_2022.inflationBp.at(-1)!;
+const facts: Facts = {
+  numbers: {
+    saved: { kind: 'money', value: fromMinor(saved, 'GHS') },
+    grown: { kind: 'money', value: fromMinor(grown, 'GHS') },
+    buys: {
+      kind: 'money',
+      value: fromMinor(realValue(grown, inflation), 'GHS'),
+    },
+    inflation: { kind: 'bp', value: inflation },
+  },
+  pivotal: true,
 };
-let state = payday.init(GH, 'pilot');
-for (const action of [
-  { type: 'allocate', split: EXAMPLE },
-  { type: 'predict', days: 90 },
-  { type: 'play' },
-] as const)
-  state = payday.step(state, action).state;
-const facts = payday.facts(state);
 
 await check('numbers are read the way people write them', () => {
   deepStrictEqual(numbersIn('GH₵1,250.50 and 60% at 20× for 0.4 days'), [
@@ -118,7 +121,7 @@ await check('numbers are read the way people write them', () => {
 
 await check('the coach may repeat engine numbers', () => {
   const line =
-    'The GH₵600 repair left you short, so a loan app lent you GH₵400 and charged GH₵60. You owe GH₵460.';
+    'Your GH₵1,000 grew to GH₵1,214.16, but prices rose 54.1%, so it bought what GH₵787.90 did.';
   deepStrictEqual(checkNumbers(line, allowedNumbers(facts)), {
     ok: true,
     unknown: [],
@@ -126,10 +129,10 @@ await check('the coach may repeat engine numbers', () => {
 });
 
 await check('the coach may not invent one', () => {
-  const line = 'Most people keep GH₵2,000 aside, about 45 days of cover.';
+  const line = 'Most savers beat inflation by 12% with GH₵2,000 in bills.';
   deepStrictEqual(checkNumbers(line, allowedNumbers(facts)), {
     ok: false,
-    unknown: ['2000', '45'],
+    unknown: ['12', '2000'],
   });
 });
 

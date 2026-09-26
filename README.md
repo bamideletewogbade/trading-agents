@@ -21,17 +21,17 @@ _Sika_ is Twi for money. It's a working name, set in `lib/brand.ts`.
 
 ```bash
 pnpm install
-pnpm dev               # http://localhost:5177  (the landing page; the earlier prototype is at /home)
+pnpm dev               # http://localhost:5177
 pnpm check             # core, engine and intelligence checks: no network, about a second
 pnpm typecheck && pnpm lint
 pnpm shots             # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
-pnpm walk              # with pnpm dev running: plays the first 3 minutes, checks the numbers
+pnpm walk:lessons      # with pnpm dev running: plays every lesson to the finish
 pnpm build
 ```
 
 Copy `.dev.vars.example` to `.dev.vars`. Every service is optional (`lib/capabilities.ts`): with
-none set, the whole Payday month still plays; nothing is saved and the coach speaks its authored
-lines.
+none set, every lesson still plays; progress stays on the phone and nothing is saved on the
+server.
 
 - **Database:** `DATABASE_URL` to a Neon project, or to any local Postgres, then `pnpm db:migrate`.
 - **Accounts:** `CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from a Clerk application. Without
@@ -52,7 +52,7 @@ Runtime secrets go in the dashboard, where they survive every deploy (Settings �
 Secrets, type **Secret**):
 
 - `DATABASE_URL`: the Neon pooled connection string. Until it's set, the site works and saves
-  nothing (`/api/runs` answers 204). Run `pnpm db:migrate` against it once.
+  nothing on the server (`/api/events` answers 204). Run `pnpm db:migrate` against it once.
 - `OPENROUTER_API_KEY`, and `OPENROUTER_HAS_CREDIT=true` once the account has prepaid credit.
 - `CLERK_PUBLISHABLE_KEY` (a plain variable is fine, it's public) and `CLERK_SECRET_KEY`
   (Secret). In Clerk, add the site's URL to the allowed origins.
@@ -65,10 +65,6 @@ Other ways to deploy the same Worker, if Workers Builds is ever disconnected:
 - **From GitHub Actions**: Actions › Deploy › Run workflow, with `CLOUDFLARE_API_TOKEN` and
   `CLOUDFLARE_ACCOUNT_ID` in the repository's secrets. Manual only, so it never races Workers
   Builds.
-
-**A preview without a deploy.** `pnpm preview:build` turns the first 3 minutes into one
-self-contained HTML file (`dist-preview/sika-lab-payday.html`): the same engine and screens,
-running in the browser alone, saving nothing.
 
 ## How it is built
 

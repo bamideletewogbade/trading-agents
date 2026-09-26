@@ -17,13 +17,11 @@
     "deploy": "vinext build && wrangler deploy --config dist/server/wrangler.json",
     "shots": "node scripts/shots.mjs",
     "db:generate": "drizzle-kit generate",
-    "walk": "node scripts/walk-payday.mjs",
     "walk:onboarding": "node scripts/walk-onboarding.mjs",
     "walk:lessons": "node scripts/walk-lessons.mjs",
     "probe:openrouter": "node --experimental-strip-types scripts/probe-openrouter.ts",
     "secrets": "node scripts/push-secrets.mjs",
-    "db:migrate": "node --experimental-strip-types scripts/migrate.ts",
-    "preview:build": "node scripts/build-preview.mjs"
+    "db:migrate": "node --experimental-strip-types scripts/migrate.ts"
   },
   "dependencies": {
     "@clerk/backend": "3.20.1",

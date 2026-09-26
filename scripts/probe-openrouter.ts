@@ -18,8 +18,10 @@ import { askJev } from '../lib/decisions/jev.ts';
 import { readYesNo } from '../lib/decisions/read.ts';
 import { askJson, modelsFor } from '../lib/intelligence/openrouter.ts';
 import { allowedNumbers, checkNumbers } from '../lib/intelligence/guard.ts';
-import { payday } from '../lib/experiences/payday.ts';
-import { PAYDAY, debrief } from '../content/scenarios/payday.ts';
+import { formatBp, formatMoney, fromMinor } from '../lib/core/money.ts';
+import { realValue, savedThrough } from '../lib/engines/macro.ts';
+import type { Facts } from '../lib/experiences/types.ts';
+import { GHANA_2022 } from '../content/lessons/history.ts';
 
 for (const line of (() => {
   try {
@@ -72,33 +74,30 @@ try {
   );
 }
 
-// 2. The coach: the Payday debrief, rewritten by a model under the guard.
-const GH = PAYDAY.GH.config;
-let state = payday.init(GH, 'pilot');
-for (const action of [
-  {
-    type: 'allocate',
-    split: {
-      rent: 90_000,
-      family: 40_000,
-      savings: 20_000,
-      scheme: 30_000,
-      spend: 120_000,
-    },
+// 2. The coach: the inflation lesson's (f3) result, rewritten by a model under the guard.
+const saved = 100_000;
+const grown = savedThrough(saved, 'bills', GHANA_2022.billBp);
+const inflation = GHANA_2022.inflationBp.at(-1)!;
+const buys = realValue(grown, inflation);
+const facts: Facts = {
+  numbers: {
+    saved: { kind: 'money', value: fromMinor(saved, 'GHS') },
+    grown: { kind: 'money', value: fromMinor(grown, 'GHS') },
+    buys: { kind: 'money', value: fromMinor(buys, 'GHS') },
+    inflation: { kind: 'bp', value: inflation },
   },
-  { type: 'predict', days: 90 },
-  { type: 'play' },
-] as const)
-  state = payday.step(state, action).state;
-const facts = payday.facts(state);
-const authored = debrief(state.end!, PAYDAY.GH);
+  pivotal: true,
+};
+const authored = {
+  say: `${formatMoney(fromMinor(saved, 'GHS'))} rolled through 91-day T-bills in 2022 grew to ${formatMoney(fromMinor(grown, 'GHS'))}. Prices rose ${formatBp(inflation)}, so it bought what ${formatMoney(fromMinor(buys, 'GHS'))} had.`,
+};
 
 try {
   const reply = await askJson({
     profile: 'coach_fast',
     system:
-      'You are a calm, direct money coach for young people in Ghana. At most two short sentences, then one question. Use only the numbers given in FACTS, written as digits. Never give advice about the learner’s real money. No hype.',
-    user: `FACTS (the only numbers you may use): ${JSON.stringify(facts.numbers)}\nWhat happened, in words: ${authored.say}\nRewrite this for the learner, then ask one question that makes them think about savings.`,
+      'You are a calm, direct trading and investing coach for learners in Ghana. At most two short sentences, then one question. Use only the numbers given in FACTS, written as digits. Never give advice about the learner’s real money. No hype.',
+    user: `FACTS (the only numbers you may use): ${JSON.stringify(facts.numbers)}\nWhat happened, in words: ${authored.say}\nRewrite this for the learner, then ask one question that makes them think about real returns.`,
     schema: {
       name: 'coach_turn',
       schema: {

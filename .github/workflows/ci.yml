@@ -3,8 +3,7 @@
 # - check: the gate a contributor runs locally (pure checks with no network,
 #   types, lint, a production build).
 # - walk: the product itself. A real Postgres, the dev server, every screen at
-#   phone widths (`pnpm shots`), and the first 3 minutes played through by a
-#   browser (`pnpm walk`), and onboarding chatted through to the desk
+#   phone widths (`pnpm shots`), onboarding chatted through to the desk
 #   (`pnpm walk:onboarding`), and all 40 lessons of stages 1–5 played to the
 #   finish (`pnpm walk:lessons`). Screenshots are kept as an artifact either
 #   way.
@@ -69,13 +68,10 @@ jobs:
           for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:5177/ && exit 0; sleep 1; done
           cat dev.log; exit 1
       - run: pnpm shots
-      - run: pnpm walk
       - run: pnpm walk:onboarding
       - run: pnpm walk:lessons
       - name: The walkthroughs were saved
         run: |
-          psql "$DATABASE_URL" -At -c "select count(*) from experience_runs" | grep -qE '^[2-9]'
-          psql "$DATABASE_URL" -At -c "select count(*) from learning_events where type = 'another_requested'" | grep -q '^1$'
           psql "$DATABASE_URL" -At -c "select placement->>'stage' from learner_profiles where profile->>'goal' = 'ipo'" | grep -q '^0$'
           psql "$DATABASE_URL" -At -c "select count(distinct skill) from learning_events where type = 'lesson_completed'" | grep -q '^40$'
       - if: always()

@@ -33,13 +33,7 @@ const PAGES = [
   ['lesson-chart', '/lesson/c4'],
   ['lesson-ta', '/lesson/t1'],
   ['lesson-fa', '/lesson/f3'],
-  ['home', '/home'],
-  ['learn', '/learn'],
-  ['practice', '/practice'],
-  ['progress', '/progress'],
-  ['coach', '/coach'],
   ['design', '/design'],
-  ['payday', '/play/payday?country=GH'],
 ];
 const WIDTHS = [360, 375, 390];
 

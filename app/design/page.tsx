@@ -2,15 +2,12 @@ import type { ReactNode } from 'react';
 import {
   add,
   formatMoney,
-  fromMinor,
   money,
   ofBp,
   shareBp,
   times,
 } from '@/lib/core/money';
-import { TopBar } from '@/components/shell/TopBar';
 import { TruthBadge } from '@/components/shell/TruthBadge';
-import { ExperienceFrame } from '@/components/shell/ExperienceFrame';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Delta } from '@/components/ui/Delta';
@@ -59,10 +56,7 @@ export default function DesignPage() {
 
   return (
     <>
-      <TopBar
-        title="Design specimen"
-        action={<span className="type-label text-gold">Draft</span>}
-      />
+      <h1 className="type-display text-fg">Design specimen</h1>
       <p className="type-body text-fg-2">
         Every token and component from the design brief, for approval on a
         phone.
@@ -135,34 +129,6 @@ export default function DesignPage() {
             <Delta amount={gain} />
           </div>
         </Card>
-      </Section>
-
-      <Section title="An experience, framed">
-        <ExperienceFrame
-          title="Leverage"
-          truth="simulation"
-          summary={[
-            `You put in ${formatMoney(capital)} at 20×, so you control ${formatMoney(exposure)}.`,
-            `The market moved 3% against you. That cost ${formatMoney(fromMinor(-pnl.minor, pnl.currency))}, and you have ${formatMoney(left)} left.`,
-          ]}
-          actions={
-            <>
-              <Button kind="primary" block>
-                Try 50×
-              </Button>
-              <Button kind="quiet" block>
-                Explain it to me
-              </Button>
-            </>
-          }
-        >
-          <Stat
-            label="Your account"
-            value={formatMoney(left)}
-            hero
-            delta={<Delta amount={pnl} shareBp={shareBp(pnl, capital)} />}
-          />
-        </ExperienceFrame>
       </Section>
 
       <Section title="Truth badges">
