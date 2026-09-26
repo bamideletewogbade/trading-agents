@@ -11,9 +11,9 @@ export const BRAND = {
   name: 'Sika Lab',
   short: 'Sika',
   meaning: 'Sika means money in Twi.',
-  promise: 'Learn money by actually using it.',
+  promise: 'Learn to read the market. Practise before it costs you.',
   description:
-    'Practise real money decisions in simulations with a coach: budgets, emergencies, inflation, leverage and risk, in cedis and naira. Nothing here is real money.',
+    'Charts, technical and fundamental analysis, and trading strategies, taught as lessons you play in simulated and historical markets, with a coach that asks before it tells. A curated roadmap, or one lesson at a time. No signals, no real money.',
 } as const;
 
 export function siteUrl(): string {

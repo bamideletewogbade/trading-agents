@@ -19,7 +19,8 @@ import { chromium } from 'playwright';
 
 const BASE = (process.argv[2] ?? 'http://localhost:5177').replace(/\/$/, '');
 const PAGES = [
-  ['home', '/'],
+  ['landing', '/'],
+  ['home', '/home'],
   ['learn', '/learn'],
   ['practice', '/practice'],
   ['progress', '/progress'],

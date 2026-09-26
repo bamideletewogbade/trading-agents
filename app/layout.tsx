@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
 import { BRAND, siteUrl } from '@/lib/brand';
 import './globals.css';
 

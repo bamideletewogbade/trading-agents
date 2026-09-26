@@ -1,15 +1,24 @@
 # The financial intelligence gym
 
-A mobile-first web product where people in Ghana, then Nigeria and beyond, get better at money
-decisions by practising them in simulations with an AI coach. Working name Sika Lab, set in
+A mobile-first web product where people in Ghana, then Nigeria and beyond, learn to read markets
+and trade with discipline, by practising in simulations and historical replays with an AI coach. Working name Sika Lab, set in
 `lib/brand.ts`.
 
 ## Read before building anything
 
-1. `docs/product-spec.md`: what we're building and why. The product source of truth.
-2. `docs/implementation-plan.md`: stack, architecture, phases and exit criteria, what we port
-   from Kanea Studio, Learn with Bishop and Aksen Labs.
-3. `docs/design-brief.md`: the visual system (approved 25 Sep 2026), drawn at `/design`.
+1. **The landing page, `app/page.tsx`**, and **`content/curriculum.ts`**: since the reset on
+   26 Sep 2026 these are the brief. The product teaches trading and investing (charts,
+   technical and fundamental analysis, strategies) as a roadmap of playable lessons, each of
+   which also stands alone.
+2. `docs/research/competitors.md`: who else does this, what we take, and the GitHub
+   build-vs-fork call (build ours; adopt lightweight-charts; trading-signals as the answer key).
+3. `docs/product-spec.md`: the original why and what. Its principles still hold; its scope is
+   narrowed by (1).
+4. `docs/implementation-plan.md`: stack, architecture, phases, what we port from Kanea Studio,
+   Learn with Bishop and Aksen Labs.
+5. `docs/design-brief.md`: the visual system, drawn at `/design`. The landing page adds the
+   terminal voice: JetBrains Mono for labels and figures (`font-mono`), chart-paper grids, and
+   hollow/filled candles so direction never depends on colour.
 
 Build in phase order. Don't start a phase until the previous phase's exit criteria are met.
 
@@ -63,13 +72,14 @@ npx oxfmt <files>      # format what you touched
   `pnpm check` can run them under plain Node.
 - Colours come only from the tokens in `app/globals.css`; Tailwind's own palette is switched off.
   Type uses the `type-*` utilities; numbers that change or align get `num`.
-- Every page lives under `app/(app)/` (the shell with the tabs) unless it deliberately goes full
-  screen, like `app/play/`. New screens get added to `PAGES` in `scripts/shots.mjs`.
+- The landing page is `app/page.tsx`, full screen. The earlier tabbed prototype lives under
+  `app/(app)/` (its Home is now `/home`), and pages that deliberately go full screen live
+  elsewhere, like `app/play/`. New screens get added to `PAGES` in `scripts/shots.mjs`.
 - A new experience is an engine in `lib/engines`, an entry in `lib/experiences/registry.ts`, its
   words in `content/`, its view in `components/experiences/<key>`, and checks in
   `scripts/check-engines.ts`, including one that proves the money balances.
 - Runs are saved as config + seed + actions; the server replays them before storing anything
   (`lib/learning/store.ts`). Never trust a number from the browser.
 - Secrets live in the environment or `.dev.vars`, never in the repo, never pasted in chat.
-- Comments explain *why*, in plain words. Words shown to learners live in `content/`, not in
+- Comments explain _why_, in plain words. Words shown to learners live in `content/`, not in
   components.

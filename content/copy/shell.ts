@@ -5,7 +5,7 @@
  */
 
 export const TABS = [
-  { key: 'home', href: '/', label: 'Home' },
+  { key: 'home', href: '/home', label: 'Home' },
   { key: 'learn', href: '/learn', label: 'Learn' },
   { key: 'practice', href: '/practice', label: 'Practice' },
   { key: 'progress', href: '/progress', label: 'Progress' },

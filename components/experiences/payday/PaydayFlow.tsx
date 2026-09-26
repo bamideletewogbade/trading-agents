@@ -161,7 +161,7 @@ export function PaydayFlow({
           <TruthBadge truth="simulation" />
         </div>
         <Link
-          href="/"
+          href="/home"
           className="min-h-11 content-center px-2 type-small text-fg-2 hover:text-fg"
         >
           {PLAY.close}
@@ -492,7 +492,7 @@ function Reveal({
           {PLAY.reveal.playAgain}
         </Button>
         <Link
-          href="/"
+          href="/home"
           className="min-h-12 content-center text-center type-body text-fg-2 hover:text-fg"
         >
           {PLAY.reveal.home}

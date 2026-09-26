@@ -1,20 +1,26 @@
 # Sika Lab
 
-A financial intelligence gym: people in Ghana, then Nigeria and Kenya, get better at money
-decisions by practising them in simulations with an AI coach. Nothing in it is real money.
+Learn to read the market, and practise before it costs you. Charts, technical and fundamental
+analysis, and strategies, taught as lessons you play in simulated and historical markets, with an
+AI coach that asks before it tells. There's one curated roadmap, and every lesson also stands
+alone. For Ghana, then Nigeria and beyond. Nothing in it is real money, and it never gives
+signals.
 
-*Sika* is Twi for money. It's a working name, set in `lib/brand.ts`.
+_Sika_ is Twi for money. It's a working name, set in `lib/brand.ts`.
 
-- **Why and what:** `docs/product-spec.md`
+- **The brief since the 26 Sep reset:** the landing page (`app/page.tsx`) and the curriculum
+  (`content/curriculum.ts`: 50 lessons, 7 stages)
+- **Who else does this, and the GitHub build-vs-fork call:** `docs/research/competitors.md`
+- **Original why and what:** `docs/product-spec.md`
 - **How and in what order:** `docs/implementation-plan.md`
-- **How it looks:** `docs/design-brief.md` (draft, awaiting approval), drawn at `/design`
+- **How it looks:** `docs/design-brief.md`, drawn at `/design`
 - **Rules for anyone building here, people or agents:** `CLAUDE.md`
 
 ## Run it
 
 ```bash
 pnpm install
-pnpm dev               # http://localhost:5177  (Start on Home opens the Payday month)
+pnpm dev               # http://localhost:5177  (the landing page; the earlier prototype is at /home)
 pnpm check             # core, engine and intelligence checks: no network, about a second
 pnpm typecheck && pnpm lint
 pnpm shots             # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
@@ -63,18 +69,33 @@ running in the browser alone, saving nothing.
 
 Five layers; each talks only to the one below (plan §3).
 
-| Layer | Where | Holds |
-| --- | --- | --- |
-| Core | `lib/core`, `lib/engines` (Phase 1), `lib/experiences` | Money as integers in four currencies, phone numbers for GH/NG/KE, seeded randomness, the simulations' maths. Pure TypeScript; `pnpm check` runs it under plain Node |
-| Decisions | `lib/decisions` (Phase 2) | Jev's typed questions through OpenRouter's Decisions API, and the hedge-band readers |
-| Intelligence | `lib/intelligence` (Phase 2) | The coach: authored lines first, then cheap models, with guards on every number |
-| Services | `db/`, `lib/payments`, `lib/whatsapp` (later phases) | The only code that touches Neon, Paystack or Meta |
-| Surfaces | `app/`, `components/` | Screens. Words live in `content/`, not in components |
+| Layer        | Where                                                  | Holds                                                                                                                                                               |
+| ------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core         | `lib/core`, `lib/engines` (Phase 1), `lib/experiences` | Money as integers in four currencies, phone numbers for GH/NG/KE, seeded randomness, the simulations' maths. Pure TypeScript; `pnpm check` runs it under plain Node |
+| Decisions    | `lib/decisions` (Phase 2)                              | Jev's typed questions through OpenRouter's Decisions API, and the hedge-band readers                                                                                |
+| Intelligence | `lib/intelligence` (Phase 2)                           | The coach: authored lines first, then cheap models, with guards on every number                                                                                     |
+| Services     | `db/`, `lib/payments`, `lib/whatsapp` (later phases)   | The only code that touches Neon, Paystack or Meta                                                                                                                   |
+| Surfaces     | `app/`, `components/`                                  | Screens. Words live in `content/`, not in components                                                                                                                |
 
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (25 Sep 2026)
+## Where things stand (26 Sep 2026)
+
+**Reset.** The first build looked like a budgeting app. The product is now trading and
+investing education, and the landing page is the brief. Two lessons are playable on it, each
+backed by a pure, seeded engine with checks over thousands of seeds:
+
+- **Support, candles and stops** (`lib/engines/chart.ts`). Step through candles, find support,
+  then plan the trade and watch it meet the market. There are two endings: the tight stop gets
+  shaken out when support holds, and no stop is the worst loss when it breaks.
+- **Risk Lab: leverage** (`lib/engines/risk.ts`). $100 at 1–50×. The market ends at −3%, but
+  the path dips further, and at 25× the dip, not the ending, closes you out.
+
+Next is the lesson player: full charts with lightweight-charts, and stages 1–3 of the roadmap
+with progress saved.
+
+### Before the reset (25 Sep 2026)
 
 **Phase 0, foundations: done.** The stack, the pure core (money in four currencies, phones for
 Ghana/Nigeria/Kenya, seeded randomness), the design brief and `/design`, the shell with five tabs.

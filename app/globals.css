@@ -56,6 +56,10 @@
   --font-sans:
     'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
     Roboto, sans-serif;
+  /* Terminal voice: labels, tickers and figures that line up. */
+  --font-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas,
+    monospace;
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -235,5 +239,33 @@
     border-radius: 50%;
     background: var(--color-fg);
     border: 3px solid var(--color-gold);
+  }
+}
+
+/* Chart paper behind the landing page's hero: the trading-terminal grid,
+   fading out so it never competes with the words. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(var(--color-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, black 20%, transparent 90%);
+}
+
+/* The ticker of lessons on the landing page: one strip, duplicated, sliding
+   left forever. Paused for anyone who asked for less motion (the global rule
+   above cuts it to one frame), and on hover so it can be read. */
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@utility animate-ticker {
+  animation: ticker 60s linear infinite;
+  &:hover {
+    animation-play-state: paused;
   }
 }

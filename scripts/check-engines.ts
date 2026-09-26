@@ -29,6 +29,26 @@ import { payday } from '../lib/experiences/payday.ts';
 import { EXPERIENCES, experience } from '../lib/experiences/registry.ts';
 import { replay } from '../lib/experiences/types.ts';
 import { PAYDAY, debrief, eventLine } from '../content/scenarios/payday.ts';
+import {
+  CHART,
+  STOP_CHOICES,
+  anatomy,
+  chartScenario,
+  playPlan,
+  touches,
+  type Ending,
+} from '../lib/engines/chart.ts';
+import {
+  LEVERAGES,
+  LEVERAGE_LAB,
+  doubled,
+  liquidationMoveBp,
+  lossBand,
+  marketPath,
+  positionSize,
+  recoveryBp,
+  runLeverage,
+} from '../lib/engines/risk.ts';
 
 let passed = 0;
 const failures: string[] = [];
@@ -385,6 +405,188 @@ check('facts carry the numbers the coach may speak', () => {
   deepStrictEqual(facts.numbers.prediction, { kind: 'days', value: 90 });
   deepStrictEqual(facts.numbers.daysOfCover, { kind: 'days', value: 0 });
   equal(facts.pivotal, true);
+});
+
+/* ── Chart reading (landing page lesson; curriculum c2, c5, r1) ─────────── */
+
+const ENDINGS: Ending[] = ['bounce', 'break'];
+
+check(
+  'every chart has exactly three support and two resistance touches',
+  () => {
+    for (let n = 0; n < 1_000; n += 1) {
+      for (const ending of ENDINGS) {
+        const scenario = chartScenario(`c-${n}`, ending);
+        deepStrictEqual(
+          touches(scenario, scenario.support, 'support'),
+          [9, 17, 29],
+          `c-${n}`,
+        );
+        deepStrictEqual(
+          touches(scenario, scenario.resistance, 'resistance'),
+          [13, 22],
+          `c-${n}`,
+        );
+      }
+    }
+  },
+);
+
+check('candles are well formed and stay inside the fixed view', () => {
+  for (let n = 0; n < 1_000; n += 1) {
+    for (const ending of ENDINGS) {
+      const scenario = chartScenario(`c-${n}`, ending);
+      for (const candle of [...scenario.seen, ...scenario.next]) {
+        ok(
+          Number.isSafeInteger(
+            candle.open + candle.high + candle.low + candle.close,
+          ),
+        );
+        ok(candle.high >= Math.max(candle.open, candle.close), `c-${n} high`);
+        ok(candle.low <= Math.min(candle.open, candle.close), `c-${n} low`);
+        ok(
+          candle.low > CHART.view.low && candle.high < CHART.view.high,
+          `c-${n} view`,
+        );
+      }
+      const parts = anatomy(scenario.seen[5]!);
+      equal(parts.body + parts.upperWick + parts.lowerWick, parts.range);
+    }
+  }
+});
+
+check('both endings share the chart the learner saw (no look-ahead)', () => {
+  for (let n = 0; n < 200; n += 1) {
+    deepStrictEqual(
+      chartScenario(`c-${n}`, 'bounce').seen,
+      chartScenario(`c-${n}`, 'break').seen,
+    );
+  }
+});
+
+check(
+  'the lesson holds on every chart: the tight stop is shaken out, no stop is the worst break',
+  () => {
+    for (let n = 0; n < 1_000; n += 1) {
+      const bounce = chartScenario(`c-${n}`, 'bounce');
+      const broke = chartScenario(`c-${n}`, 'break');
+      const b = Object.fromEntries(
+        STOP_CHOICES.map((stop) => [stop, playPlan(bounce, stop)]),
+      );
+      const k = Object.fromEntries(
+        STOP_CHOICES.map((stop) => [stop, playPlan(broke, stop)]),
+      );
+      equal(b.tight!.stoppedAt, 0, `c-${n}: bounce shakes out the tight stop`);
+      equal(
+        b.room!.stoppedAt,
+        null,
+        `c-${n}: bounce spares the stop with room`,
+      );
+      ok(b.room!.pnl > 0 && b.none!.pnl > 0, `c-${n}: the bounce pays`);
+      ok(
+        k.room!.stoppedAt !== null && k.tight!.stoppedAt !== null,
+        `c-${n}: the break stops both`,
+      );
+      ok(
+        k.none!.pnl < k.room!.pnl && k.room!.pnl < 0,
+        `c-${n}: no stop loses most`,
+      );
+    }
+  },
+);
+
+check('a plan’s money balances to the cent', () => {
+  for (let n = 0; n < 500; n += 1) {
+    for (const ending of ENDINGS) {
+      const scenario = chartScenario(`c-${n}`, ending);
+      for (const stop of STOP_CHOICES) {
+        const result = playPlan(scenario, stop);
+        equal(result.pnl, (result.exit - scenario.entry) * scenario.shares);
+        if (result.stoppedAt !== null)
+          equal(result.pnl, -(result.risked as number));
+        ok(result.worst <= Math.min(0, result.pnl));
+      }
+    }
+  }
+});
+
+/* ── Risk Lab: leverage (spec §19; curriculum m5) ──────────────────────── */
+
+check(
+  'the market path starts at 0 and ends exactly where the lesson says',
+  () => {
+    for (let n = 0; n < 1_000; n += 1) {
+      const path = marketPath(LEVERAGE_LAB, `d-${n}`);
+      equal(path.length, LEVERAGE_LAB.steps + 1);
+      equal(path[0], 0);
+      equal(path[path.length - 1], LEVERAGE_LAB.endMoveBp);
+    }
+  },
+);
+
+check(
+  'liquidation lands where the maths says: 20× at −4.5%, 50× at −1.5%',
+  () => {
+    equal(liquidationMoveBp(LEVERAGE_LAB, 20), -450);
+    equal(liquidationMoveBp(LEVERAGE_LAB, 25), -350);
+    equal(liquidationMoveBp(LEVERAGE_LAB, 50), -150);
+    throws(() => liquidationMoveBp(LEVERAGE_LAB, 3));
+  },
+);
+
+check(
+  'leverage runs balance: survivors keep capital + leverage × move, the closed-out keep nothing',
+  () => {
+    for (let n = 0; n < 500; n += 1) {
+      for (const leverage of LEVERAGES) {
+        const run = runLeverage(LEVERAGE_LAB, leverage, `d-${n}`);
+        equal(run.final + -run.pnl, LEVERAGE_LAB.capital);
+        if (run.liquidatedAt === null) {
+          equal(
+            run.final,
+            LEVERAGE_LAB.capital +
+              mulDiv(run.position, LEVERAGE_LAB.endMoveBp, 10_000),
+          );
+          ok(run.worstBp > run.liquidationBp);
+        } else {
+          equal(run.final, 0);
+          ok((run.path[run.liquidatedAt] as number) <= run.liquidationBp);
+          ok(run.equity.slice(run.liquidatedAt).every((value) => value === 0));
+        }
+      }
+    }
+  },
+);
+
+check(
+  'the landing page’s day: 20× survives at −60%, 25× dies on the dip, not the ending',
+  () => {
+    const at20 = runLeverage(LEVERAGE_LAB, 20, 'day-4');
+    const at25 = runLeverage(LEVERAGE_LAB, 25, 'day-4');
+    equal(at20.liquidatedAt, null);
+    equal(at20.pnl, -6_000);
+    equal(lossBand(LEVERAGE_LAB, at20), 'lot');
+    ok(at25.liquidatedAt !== null);
+    ok(
+      at25.liquidationBp < LEVERAGE_LAB.endMoveBp,
+      'the ending alone would not have closed 25×',
+    );
+    equal(
+      lossBand(LEVERAGE_LAB, runLeverage(LEVERAGE_LAB, 1, 'day-4')),
+      'little',
+    );
+  },
+);
+
+check('recovery, doubling and position size', () => {
+  equal(recoveryBp(5_000), 10_000);
+  equal(recoveryBp(2_000), 2_500);
+  throws(() => recoveryBp(10_000));
+  equal(doubled(10_000, 12), 40_960_000);
+  throws(() => doubled(1, 60));
+  equal(positionSize(100_000, 100, 4_025, 3_910), 8);
+  ok(positionSize(100_000, 100, 4_025, 3_910) * (4_025 - 3_910) <= 1_000);
+  throws(() => positionSize(100_000, 100, 4_000, 4_000));
 });
 
 /* ── Report ────────────────────────────────────────────────────────────── */
