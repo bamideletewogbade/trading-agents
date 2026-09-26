@@ -27,6 +27,8 @@ export const XP = {
   firstTry: 5,
   /** Playing a lesson again: practice counts, a little. */
   replay: 2,
+  /** Each mistake answered right in a practice round. */
+  review: 2,
 } as const;
 
 /** Streak lengths that earn a badge. */

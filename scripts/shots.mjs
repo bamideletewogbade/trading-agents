@@ -31,6 +31,7 @@ const PAGES = [
   ['desk', '/desk'],
   ['lessons', '/lessons'],
   ['me', '/me'],
+  ['practice', '/practice'],
   ['lesson', '/lesson/m1'],
   ['lesson-chart', '/lesson/c4'],
   ['lesson-ta', '/lesson/t1'],
@@ -70,6 +71,17 @@ for (const width of WIDTHS) {
             at: now - (done.length - i) * day * 0.4,
             right: 2,
             total: 2,
+          })),
+        ),
+      );
+      localStorage.setItem(
+        'sika:practice',
+        JSON.stringify(
+          ['m1', 'm3', 'c1', 'm5'].map((lesson, i) => ({
+            kind: 'missed',
+            key: `${lesson}:0000000${i}`,
+            lesson,
+            at: now - (i + 1) * 3_600_000,
           })),
         ),
       );

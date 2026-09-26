@@ -20,7 +20,20 @@ import {
   xpOf,
   type Completion,
 } from '../lib/progress/habit.ts';
+import {
+  ROUND_SIZE,
+  SPACING_DAYS,
+  daysUntil,
+  dueOf,
+  lessonOfKey,
+  mergePractice,
+  nextDueOf,
+  queueOf,
+  questionKey,
+  type PracticeEvent,
+} from '../lib/progress/review.ts';
 import { STAGES } from '../content/curriculum.ts';
+import { LESSON_DEFS } from '../content/lessons/index.ts';
 
 let passed = 0;
 const failures: string[] = [];
@@ -209,6 +222,137 @@ check(
     );
   },
 );
+
+/* ── Practise your mistakes ───────────────────────────────────────────── */
+
+const DAY = 86_400_000;
+const t0 = at('2026-09-01T10:00:00Z');
+const ev = (
+  kind: PracticeEvent['kind'],
+  key: string,
+  when: number,
+): PracticeEvent => ({
+  kind,
+  key,
+  lesson: lessonOfKey(key),
+  at: when,
+});
+
+check(
+  'question keys are stable, lesson-scoped and unique within every lesson',
+  () => {
+    equal(
+      questionKey('f3', 'What is 2 + 2?'),
+      questionKey('f3', 'What is 2 + 2?'),
+    );
+    ok(
+      questionKey('f3', 'What is 2 + 2?') !==
+        questionKey('f3', 'What is 2 + 3?'),
+    );
+    equal(lessonOfKey(questionKey('t10', 'x')), 't10');
+    for (const [id, def] of Object.entries(LESSON_DEFS)) {
+      const keys = def
+        .beats()
+        .filter((beat) => beat.kind === 'choice')
+        .map((beat) =>
+          beat.kind === 'choice' ? questionKey(id, beat.prompt) : '',
+        );
+      equal(
+        new Set(keys).size,
+        keys.length,
+        `${id}: two questions share a key`,
+      );
+    }
+  },
+);
+
+check(
+  'a mistake is due at once, then after 1, 3 and 7 days, then learned',
+  () => {
+    const key = 'm1:00000001';
+    let log = [ev('missed', key, t0)];
+    deepStrictEqual(
+      dueOf(queueOf(log).items, t0).map((i) => i.key),
+      [key],
+    );
+    let now = t0;
+    for (const days of SPACING_DAYS.slice(1)) {
+      log = [...log, ev('right', key, now)];
+      const { items } = queueOf(log);
+      equal(items[0]?.due, now + days * DAY, `back after ${days} days`);
+      equal(dueOf(items, now + days * DAY - 1).length, 0, 'not early');
+      now += days * DAY;
+    }
+    log = [...log, ev('right', key, now)];
+    deepStrictEqual(queueOf(log), { items: [], learned: [key] });
+  },
+);
+
+check(
+  'a wrong answer starts it again; missing a learned one brings it back',
+  () => {
+    const key = 'c4:0000000a';
+    const log = [
+      ev('missed', key, t0),
+      ev('right', key, t0),
+      ev('wrong', key, t0 + DAY),
+    ];
+    deepStrictEqual(queueOf(log).items, [
+      { key, lesson: 'c4', box: 0, due: t0 + DAY },
+    ]);
+    const retired = [
+      ev('missed', key, t0),
+      ...[1, 2, 3, 4].map((n) => ev('right', key, t0 + n * 10 * DAY)),
+    ];
+    deepStrictEqual(queueOf(retired).learned, [key]);
+    const again = queueOf([...retired, ev('missed', key, t0 + 60 * DAY)]);
+    deepStrictEqual(again.learned, []);
+    equal(again.items[0]?.box, 0);
+    deepStrictEqual(
+      queueOf([ev('right', key, t0)]),
+      { items: [], learned: [] },
+      'reviewing nothing does nothing',
+    );
+  },
+);
+
+check(
+  'a round takes the oldest due first, at most a few, from one lesson if asked',
+  () => {
+    const log = Array.from({ length: 8 }, (_, i) =>
+      ev(
+        'missed',
+        `${i % 2 ? 'r1' : 't3'}:${String(i).padStart(8, '0')}`,
+        t0 + i * 1000,
+      ),
+    );
+    const { items } = queueOf(log);
+    const round = dueOf(items, t0 + DAY);
+    equal(round.length, ROUND_SIZE);
+    equal(round[0]?.key, 't3:00000000');
+    ok(dueOf(items, t0 + DAY, 10, 'r1').every((i) => i.lesson === 'r1'));
+    equal(
+      nextDueOf(
+        queueOf([...log, ev('right', 't3:00000000', t0 + DAY)]).items,
+        t0 + DAY + 1,
+      ),
+      t0 + 2 * DAY,
+    );
+    equal(daysUntil(t0 + DAY, t0), 1);
+    equal(daysUntil(t0, t0 + 5), 0);
+  },
+);
+
+check('merging practice logs keeps one record per answer', () => {
+  const phone = [ev('missed', 'm1:00000001', t0)];
+  const server = [
+    ev('missed', 'm1:00000001', t0 + 2_000),
+    ev('right', 'm1:00000001', t0 + DAY),
+  ];
+  const merged = mergePractice(phone, server);
+  equal(merged.length, 2);
+  deepStrictEqual(mergePractice(merged, server), merged);
+});
 
 if (failures.length) {
   console.error(failures.join('\n'));

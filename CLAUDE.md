@@ -79,8 +79,9 @@ npx oxfmt <files>      # format what you touched
   - `app/(marketing)/`: the public site (nav, announcement, footer). A new page is a folder here
     plus a nav line in `content/marketing.ts`.
   - `app/(member)/`: Clerk loads only here. Inside it, `(tabs)/` is the learner's home on a
-    phone (the path at `/desk`, `/lessons`, `/me`, with a bottom tab bar), `(focus)/` is sign-in,
-    sign-up and the onboarding chat, and `lesson/[id]` is the player, full screen.
+    phone (the path at `/desk`, `/practice`, `/lessons`, `/me`, with a bottom tab bar), `(focus)/`
+    is sign-in, sign-up and the onboarding chat, and `lesson/[id]` and `practice/round` run full
+    screen.
   - `app/design/`: the design specimen, for the team, not linked from the product.
 - Every service is optional (`lib/capabilities.ts`): Clerk, the database, Jev. Code asks
   `capabilities()` and degrades, so a missing key never breaks a page. Clerk hooks only run inside
@@ -112,6 +113,13 @@ npx oxfmt <files>      # format what you touched
     goal and badges are derived from that log by `lib/progress/habit.ts` (pure, checked in
     `scripts/check-progress.ts`), never stored. Honest by rule 9: XP counts learning, never money;
     missing a day costs the streak number and nothing else; nothing counts down or locks.
+  - Practise your mistakes: a question answered wrong first time in a lesson joins a spaced
+    queue (due now, then after 1, 3 and 7 days, then learned; wrong starts it again). The queue
+    is replayed from `question_missed` and `question_reviewed` events by
+    `lib/progress/review.ts`, never stored. A question is keyed by its lesson and a hash of its
+    prompt, so rewording a question retires its old mistakes rather than mismatching them.
+    `/api/questions` builds round questions on the server; `ChoiceQuestion` draws them the same
+    way lessons do.
 - Onboarding questions are data. A new question means: a step, its reader and a Jev option set
   in `lib/onboarding/flow.ts`, its words and chips in `content/onboarding.ts`, and checks in
   `scripts/check-onboarding.ts` using real phrases people type. The chat screen doesn't change.

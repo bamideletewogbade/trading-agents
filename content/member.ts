@@ -8,10 +8,14 @@ export const TABS = {
   label: 'Main',
   items: [
     { href: '/desk', label: 'Learn', icon: 'path' },
+    { href: '/practice', label: 'Practice', icon: 'practice' },
     { href: '/lessons', label: 'Lessons', icon: 'book' },
     { href: '/me', label: 'Me', icon: 'me' },
   ],
 } as const;
+
+export const TAB_DUE = (n: number) =>
+  n === 1 ? '1 question to practise' : `${n} questions to practise`;
 
 export const HABIT = {
   streak: (days: number) => (days === 1 ? '1 day' : `${days} days`),

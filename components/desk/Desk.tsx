@@ -7,6 +7,8 @@ import { HABIT } from '@/content/member';
 import { STAGES, lesson, type Lesson } from '@/content/curriculum';
 import { loadProfile, type Saved } from '@/lib/client/profile';
 import { useHabit } from '@/lib/client/progress';
+import { usePractice } from '@/lib/client/practice';
+import { PRACTICE } from '@/content/practice';
 import { FlameIcon } from '@/components/ui/icons';
 
 /**
@@ -133,6 +135,7 @@ export function Desk() {
     saved: null,
   });
   const habit = useHabit();
+  const practice = usePractice();
   const completed = habit.completed;
 
   useEffect(() => {
@@ -272,6 +275,31 @@ export function Desk() {
           {DESK.allDone}
         </p>
       )}
+
+      {practice.due.length ? (
+        <Link
+          href="/practice/round"
+          className="mt-3 flex items-center gap-3 rounded-xl border border-line bg-panel p-3"
+        >
+          <span
+            aria-hidden
+            className="coin grid size-11 shrink-0 place-items-center font-mono type-heading font-bold text-ink [--face:var(--color-gold)] [--rim:var(--color-gold-deep)]"
+          >
+            {practice.due.length}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block type-small font-semibold text-fg">
+              {PRACTICE.card.title}
+            </span>
+            <span className="block type-tick text-fg-2">
+              {PRACTICE.card.due(practice.due.length)}
+            </span>
+          </span>
+          <span className="btn-3d inline-flex min-h-10 shrink-0 items-center rounded-md bg-gold px-3 type-small font-bold text-ink">
+            {PRACTICE.card.cta}
+          </span>
+        </Link>
+      ) : null}
 
       {saved?.where === 'device' ? (
         <p className="mt-4 rounded-md border border-dashed border-edge p-3 type-small text-fg-2">

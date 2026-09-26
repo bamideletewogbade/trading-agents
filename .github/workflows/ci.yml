@@ -74,6 +74,8 @@ jobs:
         run: |
           psql "$DATABASE_URL" -At -c "select placement->>'stage' from learner_profiles where profile->>'goal' = 'ipo'" | grep -q '^0$'
           psql "$DATABASE_URL" -At -c "select count(distinct skill) from learning_events where type = 'lesson_completed'" | grep -q '^40$'
+          psql "$DATABASE_URL" -At -c "select count(*) from learning_events where type = 'question_missed'" | grep -qvE '^0$'
+          psql "$DATABASE_URL" -At -c "select count(*) from learning_events where type = 'question_reviewed'" | grep -qvE '^0$'
       - if: always()
         uses: actions/upload-artifact@v4
         with:

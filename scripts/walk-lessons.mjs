@@ -3,7 +3,7 @@
  * learner would: does each widget's one thing, answers each question until
  * it's right, and finishes. Fails on any console error, a widget that scrolls
  * sideways, a Continue that never unlocks, or a lesson that doesn't reach its
- * finish screen.
+ * finish screen. After a full walk it plays a round of the mistakes it made.
  *
  *     pnpm dev                               (in another terminal)
  *     pnpm walk:lessons                      every lesson
@@ -322,6 +322,40 @@ await page.goto(`${BASE}/roadmap`, { waitUntil: 'networkidle' });
 const counted = await page.getByText(/\d+ of \d+ done/).count();
 if (counted < 1)
   problems.push('the roadmap shows no finished lessons after the walk');
+
+// Practise your mistakes: the walk tries options in order, so it misses
+// plenty on the way. After a full walk those mistakes must come back as a
+// practice round that plays to the end.
+if (!chosen.length) {
+  await page.goto(`${BASE}/practice`, { waitUntil: 'networkidle' });
+  const begin = page.getByRole('link', { name: 'Start practice' });
+  if (!(await begin.count()))
+    problems.push('no mistakes were ready to practise after the walk');
+  else {
+    await begin.click();
+    await page.waitForURL(/\/practice\/round/);
+    for (let q = 0; q < 8; q += 1) {
+      if (await page.getByText('Practice complete').isVisible()) break;
+      const options = page.locator('fieldset button[aria-pressed]');
+      await options.first().waitFor({ timeout: 8_000 });
+      const count = await options.count();
+      for (let i = 0; i < count; i += 1) {
+        await options.nth(i).click();
+        if (
+          await page
+            .locator('[aria-live] .text-gold')
+            .filter({ hasText: 'Right' })
+            .count()
+        )
+          break;
+      }
+      await continueButton().click();
+    }
+    await page.getByText('Practice complete').waitFor({ timeout: 8_000 });
+    await page.screenshot({ path: 'shots/practice-done.png' });
+    console.log('✓ practice round played to the end');
+  }
+}
 
 await browser.close();
 if (problems.length) {

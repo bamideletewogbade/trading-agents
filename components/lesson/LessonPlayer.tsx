@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
 import { PLAYER } from '@/content/lessons/widgets';
+import { PRACTICE } from '@/content/practice';
 import {
   LESSONS,
   STAGES,
@@ -18,7 +19,10 @@ import {
   useDailyGoal,
 } from '@/lib/client/progress';
 import { buzz } from '@/lib/client/feel';
+import { currentPractice, recordMissed } from '@/lib/client/practice';
+import { questionKey } from '@/lib/progress/review';
 import { TruthBadge } from '@/components/shell/TruthBadge';
+import { ChoiceQuestion } from './ChoiceQuestion';
 import { FlameIcon } from '@/components/ui/icons';
 import { WIDGETS } from './widgets';
 
@@ -144,7 +148,7 @@ export function LessonPlayer({
     // markCompleted writes the phone's log before it touches the network, so
     // the streak and goal can be shown at once, then "saved" when it lands.
     const saving = markCompleted(id, score);
-    const after = habitOf(currentLog(), goalTarget);
+    const after = habitOf(currentLog(), goalTarget, currentPractice());
     const stage = STAGES.find((s) =>
       (s.lessons as readonly string[]).includes(id),
     );
@@ -262,6 +266,14 @@ export function LessonPlayer({
               className="btn-3d flex min-h-14 items-center justify-center rounded-lg bg-gold px-5 text-center type-body font-bold text-ink"
             >
               {PLAYER.done.next}: {lessonById(next).title} →
+            </Link>
+          ) : null}
+          {questions.length > right ? (
+            <Link
+              href={`/practice/round?lesson=${id}`}
+              className="btn-3d flex min-h-12 items-center justify-center rounded-lg border border-gold bg-raised px-4 type-small font-semibold text-gold [--depth:var(--color-gold-deep)]"
+            >
+              {PRACTICE.missed(questions.length - right)}
             </Link>
           ) : null}
           <Link
@@ -407,80 +419,29 @@ export function LessonPlayer({
         ) : null}
 
         {beat.kind === 'choice' ? (
-          <fieldset className="mt-4">
-            <legend className="type-title text-fg">{beat.prompt}</legend>
-            <div className="mt-4 space-y-3">
-              {beat.options.map((option, i) => {
-                const chosen = Boolean(picks[index]?.includes(i));
-                const latest = picks[index]?.at(-1) === i;
-                const popping = pop?.beat === index && pop.option === i;
-                return (
-                  <div key={option.label} className="relative">
-                    <button
-                      type="button"
-                      aria-pressed={chosen}
-                      onClick={() => {
-                        const first = (picks[index]?.length ?? 0) === 0;
-                        setPicks((all) => ({
-                          ...all,
-                          [index]: [
-                            ...(all[index] ?? []).filter((p) => p !== i),
-                            i,
-                          ],
-                        }));
-                        if (option.correct) {
-                          buzz('right');
-                          if (first)
-                            setPop({ beat: index, option: i, at: Date.now() });
-                        } else buzz('wrong');
-                      }}
-                      className={`btn-3d flex min-h-14 w-full items-center gap-3 rounded-lg border px-4 py-3 text-left type-body ${
-                        chosen
-                          ? option.correct
-                            ? 'border-gold bg-gold-soft text-fg [--depth:var(--color-gold-deep)]'
-                            : 'border-loss bg-panel text-fg [--depth:var(--color-loss-deep)]'
-                          : 'border-edge bg-raised text-fg [--depth:var(--color-line)]'
-                      } ${latest ? (option.correct ? 'animate-pop' : 'animate-shake') : ''}`}
-                    >
-                      <span
-                        aria-hidden
-                        className={`grid size-7 shrink-0 place-items-center rounded-full border font-mono type-small ${chosen ? (option.correct ? 'border-gold bg-gold text-ink' : 'border-loss text-loss') : 'border-edge text-fg-2'}`}
-                      >
-                        {chosen
-                          ? option.correct
-                            ? '✓'
-                            : '✕'
-                          : String.fromCharCode(65 + i)}
-                      </span>
-                      <span className="min-w-0">{option.label}</span>
-                    </button>
-                    {popping ? (
-                      <span
-                        key={pop.at}
-                        aria-hidden
-                        className="pointer-events-none absolute -top-2 right-3 rounded-full bg-gold px-2 py-0.5 font-mono type-tick font-bold text-ink animate-float-up"
-                      >
-                        +{XP.firstTry} XP
-                      </span>
-                    ) : null}
-                    {latest ? (
-                      <p
-                        className={`mt-2 ml-10 type-small animate-bubble-in ${option.correct ? 'text-fg' : 'text-fg-2'}`}
-                        aria-live="polite"
-                      >
-                        <span
-                          className={`font-semibold ${option.correct ? 'text-gold' : 'text-loss'}`}
-                        >
-                          {option.correct ? PLAYER.right : PLAYER.notQuite}.
-                        </span>{' '}
-                        {option.feedback}
-                      </p>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-          </fieldset>
+          <ChoiceQuestion
+            prompt={beat.prompt}
+            options={beat.options}
+            picks={picks[index] ?? []}
+            pop={pop?.beat === index ? pop : null}
+            xp={XP.firstTry}
+            onPick={(i) => {
+              const first = (picks[index]?.length ?? 0) === 0;
+              const option = beat.options[i];
+              setPicks((all) => ({
+                ...all,
+                [index]: [...(all[index] ?? []).filter((p) => p !== i), i],
+              }));
+              if (option?.correct) {
+                buzz('right');
+                if (first) setPop({ beat: index, option: i, at: Date.now() });
+              } else {
+                buzz('wrong');
+                // A wrong first answer joins the practice queue.
+                if (first) recordMissed(id, questionKey(id, beat.prompt));
+              }
+            }}
+          />
         ) : null}
 
         {beat.kind === 'reflect' ? (

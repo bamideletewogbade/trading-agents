@@ -81,7 +81,18 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026, design pass)
+## Where things stand (26 Sep 2026, practice)
+
+**Practise your mistakes.** A question you get wrong first time in a lesson comes back in a
+Practice tab, spaced out so it sticks: due at once, then after 1, 3 and 7 days, then learned for
+good. A wrong answer starts it again. Rounds are five questions, drawn exactly as in the lesson;
+each right answer earns 2 XP, and a day of practice keeps the streak alive. The queue is replayed
+from events (`lib/progress/review.ts`, 5 new checks), so it follows an account across phones.
+Entry points: the Practice tab (with a count), a card on the path, and "Practise the ones you
+missed" on a lesson's finish screen. `pnpm walk:lessons` now plays a practice round after the
+lessons, and CI checks the misses and answers were saved.
+
+### Earlier: the design pass
 
 **A product people want to come back to, built for the phone.**
 

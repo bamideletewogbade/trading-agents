@@ -2,8 +2,10 @@
 
 import { useSyncExternalStore } from 'react';
 import { STAGES } from '@/content/curriculum';
+import type { PracticeEvent } from '@/lib/progress/review';
 import {
   DAILY_GOALS,
+  XP,
   badgesOf,
   dayOf,
   daysOf,
@@ -18,6 +20,7 @@ import {
   type Level,
   type Streak,
 } from '@/lib/progress/habit';
+import { mergeServerPractice, usePracticeLog } from './practice';
 import { sessionHeaders } from './session';
 
 /**
@@ -168,12 +171,25 @@ export function clock(): { today: string; offset: number } {
   return { today: dayOf(now, offset), offset };
 }
 
-/** Everything the path and the profile show, worked out from the log. */
-export function habitOf(log: readonly Completion[], goal: number): Habit {
+/**
+ * Everything the path and the profile show, worked out from the lesson log
+ * and the practice log. Practice counts: each mistake fixed earns a little
+ * XP, and a day spent practising keeps the streak alive.
+ */
+export function habitOf(
+  log: readonly Completion[],
+  goal: number,
+  practice: readonly PracticeEvent[] = [],
+): Habit {
   const { today, offset } = clock();
   const completed = [...new Set(log.map((c) => c.id))];
-  const xp = xpOf(log);
-  const streak = streakOf(daysOf(log, offset), today);
+  const answers = practice.filter((e) => e.kind !== 'missed');
+  const xp =
+    xpOf(log) + XP.review * answers.filter((e) => e.kind === 'right').length;
+  const streak = streakOf(
+    [...daysOf(log, offset), ...answers.map((e) => dayOf(e.at, offset))],
+    today,
+  );
   return {
     xp,
     level: levelOf(xp),
@@ -185,7 +201,7 @@ export function habitOf(log: readonly Completion[], goal: number): Habit {
 }
 
 export function useHabit(): Habit {
-  return habitOf(useLog(), useDailyGoal());
+  return habitOf(useLog(), useDailyGoal(), usePracticeLog());
 }
 
 /** Record a finished lesson. Resolves to where it was saved. */
@@ -222,7 +238,11 @@ export async function syncCompleted(): Promise<void> {
       signal: AbortSignal.timeout(6_000),
     });
     if (response.status !== 200) return;
-    const body = (await response.json()) as { log?: unknown };
+    const body = (await response.json()) as {
+      log?: unknown;
+      practice?: unknown;
+    };
+    mergeServerPractice(body.practice);
     if (!Array.isArray(body.log)) return;
     const server = body.log.filter(isCompletion);
     const merged = mergeLogs(readLog(), server);
