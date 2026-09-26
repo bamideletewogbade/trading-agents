@@ -7,10 +7,22 @@ packages:
 # The same approvals written twice, because pnpm 11 reads `allowBuilds` and
 # pnpm 10.11 (still on some deploy hosts) reads `onlyBuiltDependencies`, each
 # ignoring the other's key without saying so.
+# sharp arrives with miniflare (wrangler's local runtime) and ships ready-made
+# binaries; its script only compiles from source as a fallback. Declined
+# explicitly, because pnpm 11 stops an install on a build nobody decided on.
 allowBuilds:
   esbuild: true
   workerd: true
+  sharp: false
 
 onlyBuiltDependencies:
   - esbuild
   - workerd
+
+ignoredBuiltDependencies:
+  - sharp
+
+# Don't install a release until it's a day old: most poisoned packages are
+# caught and pulled within hours. pnpm 11 does this by default and rejects a
+# lockfile that doesn't, so the rule lives here too and every install agrees.
+minimumReleaseAge: 1440
