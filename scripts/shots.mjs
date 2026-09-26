@@ -29,6 +29,8 @@ const PAGES = [
   ['sign-up', '/sign-up'],
   ['onboarding', '/onboarding'],
   ['desk', '/desk'],
+  ['lessons', '/lessons'],
+  ['me', '/me'],
   ['lesson', '/lesson/m1'],
   ['lesson-chart', '/lesson/c4'],
   ['lesson-ta', '/lesson/t1'],
@@ -51,6 +53,40 @@ for (const width of WIDTHS) {
     deviceScaleFactor: 2,
     isMobile: true,
     hasTouch: true,
+  });
+  // A learner a few days in, so the path, streak and badges show what a
+  // real phone shows (an empty desk hides layout problems).
+  await context.addInitScript(() => {
+    try {
+      if (localStorage.getItem('sika:log')) return;
+      const day = 86_400_000;
+      const now = Date.now();
+      const done = ['m0', 'm1', 'm2', 'm3', 'm4', 'f0', 'm5', 'm6', 'c1'];
+      localStorage.setItem(
+        'sika:log',
+        JSON.stringify(
+          done.map((id, i) => ({
+            id,
+            at: now - (done.length - i) * day * 0.4,
+            right: 2,
+            total: 2,
+          })),
+        ),
+      );
+      localStorage.setItem(
+        'sika:profile',
+        JSON.stringify({
+          name: 'Ama',
+          country: 'GH',
+          goal: 'income',
+          experience: 'dabbled',
+          markets: ['stocks'],
+          time: 'daily',
+        }),
+      );
+    } catch {
+      // Storage blocked: the pages render their empty states instead.
+    }
   });
   const page = await context.newPage();
   for (const [name, path] of PAGES) {

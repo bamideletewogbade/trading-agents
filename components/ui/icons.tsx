@@ -151,3 +151,37 @@ export function TriangleDown(props: IconProps) {
     </Icon>
   );
 }
+
+export function PersonIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6" />
+    </Icon>
+  );
+}
+
+/** The path: coins joined by a winding trail. */
+export function PathIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="7" cy="5.5" r="2" />
+      <circle cx="17" cy="12" r="2" />
+      <circle cx="7" cy="18.5" r="2" />
+      <path d="M9 6.5c4 1 6 2 7 3.7M15.2 13.2c-2 2-4.5 3.5-6.4 4.6" />
+    </Icon>
+  );
+}
+
+/** The streak. Drawn filled, so it reads as a flame at chip size. */
+export function FlameIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path
+        fill="currentColor"
+        stroke="none"
+        d="M12.6 2.5c.4 3-1.6 4.6-3.2 6.4-1.5 1.7-2.9 3.5-2.9 6.1a5.5 5.5 0 0 0 11 0c0-2-.9-3.6-2-4.9-.2 1.3-.9 2.2-1.9 2.6.5-3.4-.4-6.9-1-10.2z"
+      />
+    </Icon>
+  );
+}

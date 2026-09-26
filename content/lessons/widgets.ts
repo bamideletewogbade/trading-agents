@@ -26,19 +26,30 @@ export const PLAYER = {
   done: {
     kicker: 'Lesson complete',
     score: (right: number, total: number) =>
-      total === 0 ? '' : `${right} of ${total} answered right first time`,
+      total === 0 ? '' : `${right} of ${total} right first time`,
+    xp: (xp: number) => `+${xp} XP`,
+    xpUnit: 'XP',
+    replay: 'Practice',
+    streakStarted: 'Streak started',
+    streakDay: (days: number) => `${days}-day streak`,
+    goal: (done: number, goal: number) =>
+      `${Math.min(done, goal)} of ${goal} today`,
+    goalMet: 'Daily goal met',
+    stage: (title: string) => `Stage finished: ${title}`,
+    badge: 'New badge on your Me page',
     remember: 'Remember',
     next: 'Next lesson',
-    roadmap: 'Back to the roadmap',
-    desk: 'Your desk',
+    path: 'Back to your path',
     again: 'Play it again',
     saved: 'Progress saved',
     savedLocal: 'Progress saved on this phone',
   },
+  xpLabel: (xp: number) => `${xp} XP this lesson`,
+  loading: 'Loading…',
   notFound: {
-    title: 'That lesson isn’t playable yet',
-    body: 'It’s on the roadmap. Stages 1 to 3 are playable now.',
-    cta: 'See the roadmap',
+    title: 'That lesson isn’t ready yet',
+    body: 'It’s on the path, and it’s coming. Here are the ones you can play now.',
+    cta: 'See all lessons',
   },
 };
 

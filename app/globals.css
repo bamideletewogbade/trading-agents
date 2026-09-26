@@ -31,6 +31,8 @@
   /* Gold means "you" or "look here". Never decoration. */
   --color-gold: #ebae3f;
   --color-gold-soft: color-mix(in srgb, #ebae3f 12%, transparent);
+  /* The underside of a gold coin or button: what makes it look pressable. */
+  --color-gold-deep: #a8761c;
 
   /* States. Always with an icon and a word; see components/ui/Delta.tsx. */
   --color-gain: #2bc4a0;
@@ -47,6 +49,8 @@
   --color-series-7: #d55181;
   --color-gain-mark: #199e70;
   --color-loss-mark: #e66767;
+  --color-gain-deep: #137a60;
+  --color-loss-deep: #a8463a;
   --color-ended: #4a5260;
 
   --color-scrim: rgb(0 0 0 / 0.6);
@@ -84,6 +88,8 @@
   --color-loss: #f0924f;
   --color-gain-mark: #3987e5;
   --color-loss-mark: #d95926;
+  --color-gain-deep: #2b5f9e;
+  --color-loss-deep: #a4541f;
 }
 
 @layer base {
@@ -420,4 +426,209 @@ html.js [data-reveal][data-shown] {
 }
 @utility animate-burst {
   animation: burst 900ms var(--ease-out) both;
+}
+
+/* ── The game layer: things you press, things that answer back ─────────
+   Tactile 3D buttons and coins, and the short motions that reward a tap.
+   Every one of them collapses to its end state under reduced motion (the
+   rule near the top), and none of them carries meaning on its own: words
+   and icons say what happened, motion only makes it feel good. */
+
+/* A button with an underside: it sinks when pressed, like a real key. */
+@utility btn-3d {
+  --depth: var(--color-gold-deep);
+  box-shadow: 0 4px 0 var(--depth);
+  transform: translateY(0);
+  transition:
+    transform 90ms var(--ease-out),
+    box-shadow 90ms var(--ease-out);
+  &:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--depth);
+  }
+  &:disabled {
+    box-shadow: none;
+  }
+}
+
+/* A coin on the path: a lit face over a thick edge. */
+@utility coin {
+  --face: var(--color-raised);
+  --rim: var(--color-line);
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, white 16%, var(--face)) 0%,
+    var(--face) 60%
+  );
+  box-shadow:
+    0 6px 0 var(--rim),
+    inset 0 -3px 0 color-mix(in srgb, black 18%, var(--face));
+  transition:
+    transform 110ms var(--ease-out),
+    box-shadow 110ms var(--ease-out);
+  &:active {
+    transform: translateY(4px);
+    box-shadow:
+      0 2px 0 var(--rim),
+      inset 0 -3px 0 color-mix(in srgb, black 18%, var(--face));
+  }
+}
+
+/* The next beat of a lesson sliding in, forwards or back. */
+@keyframes slide-in-next {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slide-in-back {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-slide-next {
+  animation: slide-in-next 300ms var(--ease-out) both;
+}
+@utility animate-slide-back {
+  animation: slide-in-back 300ms var(--ease-out) both;
+}
+
+/* A right answer: a small, happy pop. */
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@utility animate-pop {
+  animation: pop 320ms var(--ease-out) both;
+}
+
+/* A wrong answer: a short shake, like a head saying no. */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+@utility animate-shake {
+  animation: shake 360ms ease-in-out both;
+}
+
+/* "+5 XP" floating up from where it was earned. */
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.9);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(1);
+  }
+}
+@utility animate-float-up {
+  animation: float-up 1100ms var(--ease-out) both;
+}
+
+/* The finish coin: a 3D spin that settles face up. */
+@keyframes coin-spin {
+  from {
+    transform: rotateY(-540deg) scale(0.6);
+  }
+  to {
+    transform: rotateY(0) scale(1);
+  }
+}
+@utility animate-coin-spin {
+  animation: coin-spin 1300ms var(--ease-out) both;
+}
+
+/* The lesson waiting for you on the path: a ring that breathes out. */
+@keyframes ring-out {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+@utility animate-ring-out {
+  animation: ring-out 1.8s var(--ease-out) infinite;
+}
+
+/* The streak flame: a slow flicker, only when today counts. */
+@keyframes flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(0);
+  }
+  50% {
+    transform: scale(1.08) rotate(-3deg);
+  }
+}
+@utility animate-flicker {
+  animation: flicker 1.6s ease-in-out infinite;
+}
+
+/* Charts drawing themselves in: each candle rises into place in turn. */
+@keyframes candle-in {
+  from {
+    opacity: 0;
+    transform: scaleY(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-candle-in {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: candle-in 420ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 14ms);
+}
+@keyframes line-draw {
+  from {
+    stroke-dashoffset: var(--len, 2000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@utility animate-line-draw {
+  stroke-dasharray: var(--len, 2000);
+  animation: line-draw 900ms var(--ease-out) both;
 }

@@ -32,22 +32,29 @@ export default function RoadmapPage() {
         </div>
       </Section>
       <Section
-        kicker={LANDING.loop.kicker}
-        title={LANDING.loop.title}
-        lead={LANDING.loop.lead}
+        kicker={LANDING.steps.kicker}
+        title={LANDING.steps.title}
+        lead={LANDING.steps.lead}
         tone="panel"
       >
-        <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-7">
-          {LANDING.loop.steps.map(([name, detail], i) => (
+        <ol className="grid gap-3 sm:grid-cols-3">
+          {LANDING.steps.items.map(([name, detail], i) => (
             <li
               key={name}
-              className="rounded-md border border-line bg-panel p-4"
+              className="flex gap-4 rounded-xl border border-line bg-panel p-4 sm:flex-col"
             >
-              <p className="font-mono type-tick text-gold num">
-                {String(i + 1).padStart(2, '0')}
-              </p>
-              <p className="mt-2 type-body font-semibold text-fg">{name}</p>
-              <p className="mt-1 type-small text-fg-2">{detail}</p>
+              <span
+                aria-hidden
+                className="coin grid size-12 shrink-0 place-items-center font-mono type-heading font-bold text-ink [--face:var(--color-gold)] [--rim:var(--color-gold-deep)]"
+              >
+                {i + 1}
+              </span>
+              <span>
+                <span className="block type-heading text-fg">{name}</span>
+                <span className="mt-1 block type-small text-fg-2">
+                  {detail}
+                </span>
+              </span>
             </li>
           ))}
         </ol>

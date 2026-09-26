@@ -13,7 +13,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "typecheck": "tsc --noEmit",
-    "check": "node --experimental-strip-types scripts/check-core.ts && node --experimental-strip-types scripts/check-engines.ts && node --experimental-strip-types scripts/check-intelligence.ts && node --experimental-strip-types scripts/check-onboarding.ts && node --experimental-strip-types scripts/check-lessons.ts",
+    "check": "node --experimental-strip-types scripts/check-core.ts && node --experimental-strip-types scripts/check-engines.ts && node --experimental-strip-types scripts/check-intelligence.ts && node --experimental-strip-types scripts/check-onboarding.ts && node --experimental-strip-types scripts/check-lessons.ts && node --experimental-strip-types scripts/check-progress.ts",
     "deploy": "vinext build && wrangler deploy --config dist/server/wrangler.json",
     "shots": "node scripts/shots.mjs",
     "db:generate": "drizzle-kit generate",

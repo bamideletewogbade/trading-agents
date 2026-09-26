@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 /**
  * The lesson widgets' chart: candles, bars or a line, with optional volume
  * underneath, levels across, labelled markers, indicator lines over the
@@ -154,6 +156,13 @@ export function PriceChart({
   pane?: Pane;
   className?: string;
 }) {
+  // Candles on screen at first sight draw in one after another; candles
+  // revealed later (a replay, the next bars) appear at once.
+  const [firstCount] = useState(bars.length);
+  const drawIn = (i: number) => ({
+    className: 'animate-candle-in',
+    style: { ['--i' as string]: i < firstCount ? i : 0 },
+  });
   const count = Math.max(slots ?? bars.length, 1);
   const width = count * SLOT;
   const overlayValues = lines.flatMap((line) =>
@@ -260,7 +269,12 @@ export function PriceChart({
             const tone = up ? 'stroke-gain-mark' : 'stroke-loss-mark';
             if (mode === 'bar')
               return (
-                <g key={i} className={tone} strokeWidth={1.5}>
+                <g
+                  key={i}
+                  className={`${tone} ${drawIn(i).className}`}
+                  style={drawIn(i).style}
+                  strokeWidth={1.5}
+                >
                   <line
                     x1={x}
                     x2={x}
@@ -287,7 +301,7 @@ export function PriceChart({
             const top = y(Math.max(bar.open, bar.close));
             const bottom = y(Math.min(bar.open, bar.close));
             return (
-              <g key={i}>
+              <g key={i} {...drawIn(i)}>
                 <line
                   x1={x}
                   x2={x}

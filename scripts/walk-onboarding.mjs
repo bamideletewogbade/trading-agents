@@ -60,9 +60,12 @@ try {
   for (const expected of ['How an IPO works', 'stage 1', 'IPO 101 first'])
     if (!summary.includes(expected))
       problems.push(`summary is missing “${expected}”`);
-  await page.getByRole('button', { name: 'Take me to my desk' }).click();
+  await page.getByRole('button', { name: 'Show me my path' }).click();
   await page.waitForURL(`${BASE}/desk`, { timeout: 15_000 });
-  await page.getByText('Ama.').first().waitFor({ timeout: 15_000 });
+  await page
+    .getByText(/Good (morning|afternoon|evening), Ama/)
+    .first()
+    .waitFor({ timeout: 15_000 });
   const desk = await page.locator('main').innerText();
   if (!desk.includes('How an IPO works: the Dangote offer'))
     problems.push('the desk does not start with IPO 101');

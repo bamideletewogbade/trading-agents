@@ -78,8 +78,9 @@ npx oxfmt <files>      # format what you touched
 - Route groups, each with its own layout:
   - `app/(marketing)/`: the public site (nav, announcement, footer). A new page is a folder here
     plus a nav line in `content/marketing.ts`.
-  - `app/(member)/`: sign-in, sign-up, onboarding, the desk and the lesson player. Clerk loads
-    only here.
+  - `app/(member)/`: Clerk loads only here. Inside it, `(tabs)/` is the learner's home on a
+    phone (the path at `/desk`, `/lessons`, `/me`, with a bottom tab bar), `(focus)/` is sign-in,
+    sign-up and the onboarding chat, and `lesson/[id]` is the player, full screen.
   - `app/design/`: the design specimen, for the team, not linked from the product.
 - Every service is optional (`lib/capabilities.ts`): Clerk, the database, Jev. Code asks
   `capabilities()` and degrades, so a missing key never breaks a page. Clerk hooks only run inside
@@ -103,14 +104,24 @@ npx oxfmt <files>      # format what you touched
   - `scripts/check-lessons.ts` proves it's complete: a widget, a prediction and a "why"; exactly
     one right answer per question; registered widgets only; the seeds still show what the words
     say.
-  - Progress is `lesson_completed` events (`/api/progress`), mirrored on the phone
-    (`lib/client/progress.ts`).
+  - The lesson page builds the beats on the server and passes them to the player as data, and
+    widgets load lazily (`components/lesson/widgets/index.tsx`), so a phone downloads one
+    lesson, not forty.
+  - Progress is `lesson_completed` events (`/api/progress` returns them with times and scores),
+    mirrored on the phone as a log (`lib/client/progress.ts`). XP, levels, the streak, the daily
+    goal and badges are derived from that log by `lib/progress/habit.ts` (pure, checked in
+    `scripts/check-progress.ts`), never stored. Honest by rule 9: XP counts learning, never money;
+    missing a day costs the streak number and nothing else; nothing counts down or locks.
 - Onboarding questions are data. A new question means: a step, its reader and a Jev option set
   in `lib/onboarding/flow.ts`, its words and chips in `content/onboarding.ts`, and checks in
   `scripts/check-onboarding.ts` using real phrases people type. The chat screen doesn't change.
-- Motion lives in `app/globals.css` (page-in, reveals, menu, chat bubbles, card flips), and every
-  animation collapses under reduced motion. The 3D hero (`components/three/NoiseField.tsx`)
-  loads three.js only after idle, and only on phones that can afford it. New screens get added to `PAGES` in `scripts/shots.mjs`.
+- Motion lives in `app/globals.css` (page-in, reveals, menu, chat bubbles, card flips, and the
+  game layer: `btn-3d` buttons that sink when pressed, `coin`s, beat slides, pop and shake on
+  answers, "+XP" floats, the finish coin's 3D spin, candles drawing in), and every animation
+  collapses under reduced motion. Motion never carries meaning alone. CSS 3D is fine anywhere;
+  WebGL only in the hero (`components/three/NoiseField.tsx`), which loads three.js after idle
+  and only on phones that can afford it. Haptics go through `lib/client/feel.ts`, with an off
+  switch on the Me screen. New screens get added to `PAGES` in `scripts/shots.mjs`.
 - A new interactive piece is a lesson widget (above): an engine in `lib/engines`, its words in
   `content/`, and checks in `scripts/check-lessons.ts`, including one that proves the money
   balances. The first build's Payday experience and its run-replay pipeline were removed on

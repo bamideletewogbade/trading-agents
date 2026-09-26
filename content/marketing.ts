@@ -26,7 +26,7 @@ export const MARKETING = {
     ],
     signIn: 'Sign in',
     start: 'Start free',
-    desk: 'Your desk',
+    desk: 'Continue learning',
     menu: 'Menu',
     close: 'Close menu',
     menuNote: 'No signals. No real money. Just skill.',

@@ -11,10 +11,10 @@ export const ROADMAP_PAGE = {
       'A curated path from your first chart to a 30-day paper challenge, or any single lesson on its own: technical analysis, fundamental analysis, risk and strategies.',
   },
   hero: {
-    kicker: 'The roadmap',
+    kicker: 'The path',
     titleLead: 'From your first chart to',
     titleGold: 'trading with a plan.',
-    lead: 'Seven stages, in the order that makes sense: how markets work, reading charts, risk, technical analysis, fundamental analysis, strategies, then proving it. Already trade? Take any single lesson on its own.',
+    lead: 'Seven stages, in order: how markets work, reading charts, risk, technical analysis, fundamental analysis, strategies, then proving it. Already trading? Pick any lesson on its own.',
   },
   ask: 'Or just ask',
 };
@@ -105,8 +105,8 @@ export const PRICING_PAGE = {
   hero: {
     kicker: 'Pricing',
     titleLead: 'Free to start.',
-    titleGold: 'Pay when it’s earned it.',
-    lead: 'Learn the basics for free, for as long as you like. When you want the whole roadmap, the coach and the replays, buy a pass. We’re setting prices with our first learners, so they’re not up here yet.',
+    titleGold: 'Pay only if it helps.',
+    lead: 'Learn the basics free, for as long as you like. Later, a pass will add the coach and market replays. We’re setting the price with our first learners, so it isn’t here yet.',
   },
   tiers: [
     {

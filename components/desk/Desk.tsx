@@ -3,18 +3,19 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { DESK } from '@/content/desk';
-import { ONBOARDING } from '@/content/onboarding';
-import { STAGES, TOPICS, lesson } from '@/content/curriculum';
+import { HABIT } from '@/content/member';
+import { STAGES, lesson, type Lesson } from '@/content/curriculum';
 import { loadProfile, type Saved } from '@/lib/client/profile';
-import { syncCompleted, useCompleted } from '@/lib/client/progress';
-import { Reveal } from '@/components/motion/Reveal';
+import { useHabit } from '@/lib/client/progress';
+import { FlameIcon } from '@/components/ui/icons';
 
 /**
- * The desk: where a learner lands after onboarding, and every visit after.
- * Reads the profile (server first, then the phone's copy) and shows where
- * they start, their first three lessons, and the roadmap with their stage
- * marked. It holds no rules of its own: placement comes from
- * lib/onboarding/flow.ts, lessons from content/curriculum.ts.
+ * The path: where a learner lands after onboarding, and every visit after.
+ * Streak, level and today's goal at the top; the next lesson as one big
+ * button; then every stage as a trail of coins to tap. Done coins are gold
+ * and ticked, the next one breathes, the rest wait. It holds no rules of its
+ * own: placement comes from lib/onboarding/flow.ts, lessons from
+ * content/curriculum.ts, the numbers from lib/progress/habit.ts.
  */
 
 function partOfDay(): 'morning' | 'afternoon' | 'evening' {
@@ -22,16 +23,120 @@ function partOfDay(): 'morning' | 'afternoon' | 'evening' {
   return hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
 }
 
+/** How far each coin sits from the centre line, so the path winds. */
+const WIND = [0, 46, 70, 46, 0, -46, -70, -46];
+
+type CoinState = 'done' | 'next' | 'open' | 'soon';
+
+function Coin({
+  item,
+  state,
+  index,
+}: {
+  item: Lesson;
+  state: CoinState;
+  index: number;
+}) {
+  const offset = WIND[index % WIND.length] ?? 0;
+  const tone =
+    state === 'done' || state === 'next'
+      ? '[--face:var(--color-gold)] [--rim:var(--color-gold-deep)] text-ink'
+      : state === 'open'
+        ? '[--face:var(--color-raised)] [--rim:var(--color-line)] text-fg-2'
+        : '[--face:var(--color-panel)] [--rim:var(--color-line)] text-muted opacity-60';
+  const face = (
+    <span
+      className={`coin relative grid size-[68px] place-items-center ${tone}`}
+    >
+      {state === 'next' ? (
+        <span
+          aria-hidden
+          className="absolute inset-0 rounded-full border-2 border-gold animate-ring-out"
+        />
+      ) : null}
+      <span aria-hidden className="text-2xl font-bold">
+        {state === 'done' ? '✓' : state === 'soon' ? '·' : '▶'}
+      </span>
+    </span>
+  );
+  const label = (
+    <span className="mt-3 block max-w-[150px] text-center type-tick leading-4 text-fg-2">
+      {item.title}
+      {state === 'soon' ? (
+        <span className="block text-muted">{DESK.soon}</span>
+      ) : null}
+    </span>
+  );
+  return (
+    <li className="flex justify-center">
+      <div
+        className="flex flex-col items-center"
+        style={{ transform: `translateX(${offset}px)` }}
+      >
+        {state === 'next' ? (
+          <span className="mb-2 rounded-md bg-gold px-2 py-0.5 font-mono type-tick font-bold text-ink uppercase animate-pop">
+            {DESK.here}
+          </span>
+        ) : null}
+        {item.playAt && state !== 'soon' ? (
+          <Link
+            href={item.playAt}
+            className="flex flex-col items-center rounded-full outline-offset-4"
+            aria-label={`${item.title}${state === 'done' ? `, ${DESK.done}` : ''}`}
+          >
+            {face}
+            {label}
+          </Link>
+        ) : (
+          <div className="flex flex-col items-center">
+            {face}
+            {label}
+          </div>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function Ring({ done, goal }: { done: number; goal: number }) {
+  const share = Math.min(1, goal ? done / goal : 0);
+  const r = 15;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg viewBox="0 0 36 36" className="size-9 -rotate-90" aria-hidden>
+      <circle
+        cx="18"
+        cy="18"
+        r={r}
+        fill="none"
+        strokeWidth="4"
+        className="stroke-line"
+      />
+      <circle
+        cx="18"
+        cy="18"
+        r={r}
+        fill="none"
+        strokeWidth="4"
+        strokeLinecap="round"
+        className="stroke-gold transition-[stroke-dashoffset] duration-700"
+        strokeDasharray={c}
+        strokeDashoffset={c * (1 - share)}
+      />
+    </svg>
+  );
+}
+
 export function Desk() {
   const [state, setState] = useState<{ loaded: boolean; saved: Saved | null }>({
     loaded: false,
     saved: null,
   });
-  const completed = useCompleted();
+  const habit = useHabit();
+  const completed = habit.completed;
 
   useEffect(() => {
     let live = true;
-    void syncCompleted();
     void loadProfile().then((saved) => {
       if (live) setState({ loaded: true, saved });
     });
@@ -48,83 +153,128 @@ export function Desk() {
     );
 
   const saved = state.saved;
-  if (!saved)
+  const startStage = saved?.placement.stage ?? 0;
+  const firstLive = STAGES.flatMap((s) => [...s.lessons]).find(
+    (id) => lesson(id).status === 'live',
+  );
+
+  if (!saved && completed.length === 0)
     return (
-      <div className="mx-auto max-w-[560px] px-4 py-16 text-center">
+      <div className="mx-auto max-w-[520px] px-4 py-14 text-center">
         <span
           aria-hidden
-          className="mx-auto grid size-14 place-items-center rounded-full bg-gold font-mono type-title font-bold text-ink"
+          className="coin mx-auto grid size-[72px] place-items-center font-mono type-title font-bold text-ink [--face:var(--color-gold)] [--rim:var(--color-gold-deep)]"
         >
           S
         </span>
-        <h1 className="mt-5 type-display text-fg">{DESK.empty.title}</h1>
+        <h1 className="mt-6 type-display text-fg">{DESK.empty.title}</h1>
         <p className="mt-3 type-body text-fg-2">{DESK.empty.body}</p>
         <Link
           href="/onboarding"
-          className="mt-6 inline-flex min-h-12 items-center rounded-md bg-gold px-6 type-body font-semibold text-ink"
+          className="btn-3d mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-md bg-gold px-6 type-body font-semibold text-ink sm:w-auto"
         >
           {DESK.empty.cta}
         </Link>
+        {firstLive ? (
+          <Link
+            href={lesson(firstLive).playAt ?? '/lessons'}
+            className="mt-4 block min-h-11 type-small text-fg-2 underline underline-offset-4"
+          >
+            {DESK.empty.skip}
+          </Link>
+        ) : null}
       </div>
     );
 
-  const { profile, placement } = saved;
-  const stage = STAGES[placement.stage];
-  // The next lesson: the first of their three not yet done, then the first
-  // playable lesson on the roadmap from their stage onwards.
-  const fromStage = STAGES.slice(placement.stage).flatMap((item) => [
-    ...item.lessons,
-  ]);
+  // The next lesson: the first of their placement lessons not yet done,
+  // then the first playable lesson from their stage onwards, then any.
+  const order = [
+    ...(saved?.placement.lessons ?? []),
+    ...STAGES.slice(startStage).flatMap((s) => [...s.lessons]),
+    ...STAGES.flatMap((s) => [...s.lessons]),
+  ];
   const nextUp =
-    placement.lessons.find(
+    order.find(
       (id) => !completed.includes(id) && lesson(id).status === 'live',
-    ) ??
-    fromStage.find(
-      (id) => !completed.includes(id) && lesson(id).status === 'live',
-    ) ??
-    null;
+    ) ?? null;
+  const next = nextUp ? lesson(nextUp) : null;
 
   return (
-    <div className="mx-auto max-w-[1100px] px-4 py-10 sm:px-8">
-      <Reveal>
-        <p className="font-mono type-label text-gold">{DESK.meta.title}</p>
-        <h1 className="mt-2 text-[2.25rem] leading-[2.5rem] font-[700] tracking-[-0.03em] text-fg sm:text-[3rem] sm:leading-[3.25rem]">
-          {DESK.greeting(partOfDay(), profile.name)}
-        </h1>
-        <p className="mt-3 type-body text-fg-2">
-          {DESK.start(placement.stage + 1, stage?.title ?? '')}
-        </p>
-        {placement.reasons.map((reason) => (
-          <p key={reason} className="mt-1 type-small text-muted">
-            {ONBOARDING.summary.reasons[reason]}
-          </p>
-        ))}
-      </Reveal>
+    <div className="mx-auto max-w-[560px] overflow-x-clip px-4 pt-5">
+      <h1 className="type-title text-fg">
+        {DESK.greeting(partOfDay(), saved?.profile.name)}
+      </h1>
 
-      {nextUp ? (
-        <Link
-          href={lesson(nextUp).playAt ?? '/roadmap'}
-          className="group mt-6 flex items-center justify-between gap-4 rounded-lg border border-gold bg-gold-soft p-4"
-        >
-          <span className="min-w-0">
-            <span className="block font-mono type-tick text-gold uppercase">
-              {completed.length ? DESK.continue : DESK.first}
-            </span>
-            <span className="block type-heading text-fg">
-              {lesson(nextUp).title}
-            </span>
-          </span>
-          <span
-            aria-hidden
-            className="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-lg text-ink transition-transform group-hover:translate-x-1"
+      <div className="mt-4 grid grid-cols-3 gap-2">
+        <div className="rounded-lg border border-line bg-panel p-3">
+          <p className="font-mono type-tick text-muted uppercase">
+            {DESK.streak}
+          </p>
+          <p
+            className={`mt-1 flex items-center gap-1 type-heading num ${habit.streak.today ? 'text-gold' : 'text-fg'}`}
           >
-            ▶
+            <FlameIcon
+              width={18}
+              height={18}
+              className={habit.streak.today ? 'animate-flicker' : 'opacity-50'}
+            />
+            {HABIT.streak(habit.streak.current)}
+          </p>
+        </div>
+        <div className="rounded-lg border border-line bg-panel p-3">
+          <p className="font-mono type-tick text-muted uppercase">
+            {DESK.level}
+          </p>
+          <p className="mt-1 type-heading text-fg num">{habit.level.level}</p>
+          <div
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-line"
+            aria-hidden
+          >
+            <div
+              className="h-full rounded-full bg-gold transition-[width] duration-700"
+              style={{ width: `${habit.level.progressBp / 100}%` }}
+            />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 rounded-lg border border-line bg-panel p-3">
+          <Ring done={habit.goal.done} goal={habit.goal.goal} />
+          <div className="min-w-0">
+            <p className="font-mono type-tick text-muted uppercase">
+              {DESK.today}
+            </p>
+            <p className="type-small font-semibold text-fg num">
+              {habit.goal.met
+                ? HABIT.goalMet
+                : HABIT.goal(habit.goal.done, habit.goal.goal)}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {next ? (
+        <Link
+          href={next.playAt ?? '/lessons'}
+          className="group relative mt-4 block overflow-hidden rounded-xl border border-gold bg-gold-soft p-4"
+        >
+          <span className="block font-mono type-tick text-gold uppercase">
+            {completed.length ? DESK.continue : DESK.first}
+          </span>
+          <span className="mt-1 block type-heading text-fg">{next.title}</span>
+          <span className="mt-1 block type-small text-fg-2">
+            {DESK.minutes(next.minutes)} · {next.practice}
+          </span>
+          <span className="btn-3d mt-4 flex min-h-12 items-center justify-center rounded-md bg-gold type-body font-bold text-ink">
+            {completed.length ? DESK.resume : DESK.start}
           </span>
         </Link>
-      ) : null}
+      ) : (
+        <p className="mt-4 rounded-lg border border-gold bg-gold-soft p-4 type-small text-fg">
+          {DESK.allDone}
+        </p>
+      )}
 
-      {saved.where === 'device' ? (
-        <p className="mt-6 rounded-md border border-dashed border-edge p-4 type-small text-fg-2">
+      {saved?.where === 'device' ? (
+        <p className="mt-4 rounded-md border border-dashed border-edge p-3 type-small text-fg-2">
           {DESK.device}{' '}
           <Link
             href="/sign-up"
@@ -135,115 +285,59 @@ export function Desk() {
         </p>
       ) : null}
 
-      <section className="mt-10">
-        <h2 className="font-mono type-label text-muted">{DESK.next}</h2>
-        <ol className="mt-3 grid gap-3 md:grid-cols-3">
-          {placement.lessons.map((id, i) => {
-            const item = lesson(id);
-            return (
-              <Reveal
-                as="li"
-                key={id}
-                delay={i * 80}
-                className={`flex flex-col rounded-lg border bg-panel p-5 ${i === 0 ? 'border-gold' : 'border-line'}`}
+      <ol className="mt-8 space-y-10">
+        {STAGES.map((stage, s) => {
+          const items = stage.lessons.map((id) => lesson(id));
+          const finished = items.filter((item) =>
+            completed.includes(item.id),
+          ).length;
+          return (
+            <li key={stage.key}>
+              <div
+                className={`rounded-xl border p-4 ${s === startStage ? 'border-gold bg-gold-soft' : 'border-line bg-panel'}`}
               >
-                <p className="font-mono type-tick text-gold uppercase">
-                  {i + 1} · {TOPICS[item.topic].label}
-                </p>
-                <p className="mt-2 type-heading text-fg">{item.title}</p>
-                <p className="mt-2 flex-1 type-small text-fg-2">
-                  {item.practice}
-                </p>
-                {completed.includes(id) ? (
-                  <p className="mt-4 font-mono type-tick text-gold uppercase">
-                    ✓ {DESK.done}
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="font-mono type-tick text-gold uppercase">
+                    {DESK.stage(s + 1)}
+                    {s === startStage && saved ? ` · ${DESK.yourStart}` : ''}
                   </p>
-                ) : null}
-                {item.playAt ? (
-                  <Link
-                    href={item.playAt}
-                    className={`mt-4 inline-flex min-h-12 items-center justify-center rounded-md px-5 type-body font-semibold ${i === 0 ? 'bg-gold text-ink' : 'border border-edge bg-raised text-fg'}`}
-                  >
-                    {DESK.play} →
-                  </Link>
-                ) : (
-                  <p className="mt-4 font-mono type-tick text-muted uppercase">
-                    ◐ {DESK.soon}
+                  <p className="font-mono type-tick text-muted num">
+                    {DESK.progress(finished, items.length)}
                   </p>
-                )}
-              </Reveal>
-            );
-          })}
-        </ol>
-      </section>
-
-      <section className="mt-12 grid gap-8 lg:grid-cols-[1fr_320px]">
-        <div>
-          <h2 className="font-mono type-label text-muted">{DESK.path}</h2>
-          <ol className="mt-3 space-y-2">
-            {STAGES.map((item, i) => (
-              <li
-                key={item.key}
-                className={`flex items-center gap-3 rounded-md border p-3 ${i === placement.stage ? 'border-gold bg-gold-soft' : 'border-line bg-panel'} ${i < placement.stage ? 'opacity-60' : ''}`}
-              >
-                <span
-                  className={`grid size-9 shrink-0 place-items-center rounded-full border font-mono type-small ${i === placement.stage ? 'border-gold bg-gold text-ink' : 'border-edge text-fg-2'}`}
+                </div>
+                <h2 className="mt-1 type-heading text-fg">{stage.title}</h2>
+                <div
+                  className="mt-3 h-1.5 overflow-hidden rounded-full bg-line"
+                  aria-hidden
                 >
-                  {i + 1}
-                </span>
-                <span className="min-w-0 flex-1 type-small font-semibold text-fg">
-                  {item.title}
-                </span>
-                <span className="shrink-0 font-mono type-tick text-muted num">
-                  {item.lessons.filter((id) => completed.includes(id)).length}/
-                  {item.lessons.length}
-                </span>
-                {i === placement.stage ? (
-                  <span className="shrink-0 font-mono type-tick text-gold uppercase">
-                    {DESK.here}
-                  </span>
-                ) : null}
-              </li>
-            ))}
-          </ol>
-          <Link
-            href="/onboarding"
-            className="mt-4 inline-flex min-h-11 items-center type-small text-fg-2 underline underline-offset-4 hover:text-fg"
-          >
-            {DESK.redo}
-          </Link>
-        </div>
-        <div>
-          <h2 className="font-mono type-label text-muted">
-            {DESK.quick.title}
-          </h2>
-          <ul className="mt-3 space-y-2">
-            {DESK.quick.items.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className="group flex min-h-14 items-center justify-between gap-3 rounded-md border border-line bg-panel px-4 py-3 transition-colors hover:border-gold"
-                >
-                  <span>
-                    <span className="block type-small font-semibold text-fg">
-                      {item.label}
-                    </span>
-                    <span className="block type-tick text-muted">
-                      {item.note}
-                    </span>
-                  </span>
-                  <span
-                    aria-hidden
-                    className="text-gold transition-transform group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+                  <div
+                    className="h-full rounded-full bg-gold transition-[width] duration-700"
+                    style={{ width: `${(finished / items.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <ol className="mt-6 space-y-7">
+                {items.map((item, i) => (
+                  <Coin
+                    key={item.id}
+                    item={item}
+                    index={i}
+                    state={
+                      completed.includes(item.id)
+                        ? 'done'
+                        : item.id === nextUp
+                          ? 'next'
+                          : item.status === 'live'
+                            ? 'open'
+                            : 'soon'
+                    }
+                  />
+                ))}
+              </ol>
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }

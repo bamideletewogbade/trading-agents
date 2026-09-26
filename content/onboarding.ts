@@ -178,7 +178,7 @@ export const ONBOARDING = {
         'And first, a short one on who makes money from you. It’ll change how those offers look.',
     } satisfies Record<Reason, string>,
     first: 'Your first three lessons',
-    go: 'Take me to my desk',
+    go: 'Show me my path',
     change: 'Change an answer',
     saved: 'Saved',
     savedLocal: 'Saved on this phone. Create an account to keep it everywhere.',

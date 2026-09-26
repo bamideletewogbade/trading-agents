@@ -25,7 +25,7 @@ export const AUTH = {
   },
   bar: {
     guest: 'Guest',
-    desk: 'Desk',
+    desk: 'Learn',
     site: 'Site',
   },
 } as const;

@@ -81,7 +81,30 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026, later still)
+## Where things stand (26 Sep 2026, design pass)
+
+**A product people want to come back to, built for the phone.**
+
+- **Removed what users never saw:** the first build's tabbed prototype and Payday budgeting flow,
+  its run-replay API and preview harness. Nothing linked to them.
+- **The habit loop, Sololearn-style but honest:** XP (10 a lesson, 5 per first-try answer, 2
+  for a replay), levels, a daily streak, a daily goal you pick, and badges for a first lesson,
+  each finished stage and streaks of 3, 7 and 30 days. All derived from the lesson log
+  (`lib/progress/habit.ts`), never stored. No hearts, no lock-outs, no countdowns.
+- **The member screens:** a bottom tab bar (Learn, Lessons, Me). Learn is a path of 3D coins
+  with streak, level and today's goal on top and one big Continue. Lessons is a searchable
+  library. Me shows level, streak, badges, the goal, a buzz switch and the colour palette.
+- **The lesson player, full screen:** beats slide in, right answers pop, buzz and float "+5 XP",
+  wrong ones shake and explain, and the finish screen spins a 3D coin with the XP earned, the
+  streak and today's goal, plus a badge when a stage is done. Charts draw themselves in. All
+  of it collapses under reduced motion.
+- **Lighter pages:** lessons build their beats on the server and load only their own widgets:
+  a lesson page's JavaScript went from 286 KB to 207 KB. The landing went from 16 sections to 8
+  in plain words, and from 627 KB to 533 KB.
+- **Checks:** `pnpm check` runs 114 (the habit loop is new). `pnpm shots` now seeds a learner a
+  few days in, which caught a sideways scroll on the path; `pnpm walk:lessons` plays all 40.
+
+### Earlier: stage 5
 
 **Stage 5 of the roadmap: fundamental analysis, 9 lessons. 40 lessons you play in all.**
 
