@@ -1,5 +1,5 @@
 /**
- * Plays every lesson in stages 1–5 in a phone-sized browser, the way a
+ * Plays every lesson in stages 1–6 in a phone-sized browser, the way a
  * learner would: does each widget's one thing, answers each question until
  * it's right, and finishes. Fails on any console error, a widget that scrolls
  * sideways, a Continue that never unlocks, or a lesson that doesn't reach its
@@ -58,6 +58,13 @@ const ALL = [
   'f7',
   'f8',
   'f9',
+  's1',
+  's2',
+  's3',
+  's4',
+  's5',
+  's6',
+  's7',
 ];
 const chosen = args.filter((a) => !a.startsWith('http'));
 const IDS = chosen.length ? chosen : ALL;
@@ -247,6 +254,41 @@ const WIDGETS = {
     await w.getByText(/Your result/).waitFor();
     await click(w, 'Replay: what if the good news fades?');
     await w.getByText(/faded/).first().waitFor();
+  },
+  'trend-rules': async (w) => {
+    await click(w, 'Play to the end');
+    await w.getByText(/Now play the other market/).waitFor();
+    await radio(w, 'Mostly sideways');
+    await click(w, 'Play to the end');
+  },
+  'range-rules': async (w) => {
+    await click(w, 'Play to the end');
+    await radio(w, /^Stop$/);
+  },
+  'breakout-picks': async (w) => {
+    for (let i = 0; i < 12; i += 1) {
+      await click(w, i % 2 ? 'Skip it' : 'Take it');
+      if (i < 11) await click(w, 'Next breakout');
+    }
+    await w.getByText('Your picks').waitFor();
+  },
+  'trade-styles': async (w) => {
+    await radio(w, 'Swing');
+    await radio(w, 'Position');
+    await w.getByText('All three').waitFor();
+  },
+  'news-rules': async (w) => {
+    await radio(w, 'Wait for it to settle');
+    await click(w, 'Next release');
+    await click(w, 'Play the whole season');
+    await w.getByText(/All \d+ releases/).waitFor();
+  },
+  'invest-vs-trade': (w) => slide(w, 120),
+  'strategy-builder': async (w) => {
+    await click(w, 'Backtest on the past');
+    await click(w, 'Forward-test on what came next');
+    await click(w, 'Let the computer optimise');
+    await w.getByText(/The optimiser’s pick/).waitFor();
   },
   divergence: async (w) => {
     await click(w, 'Mark the two highs');

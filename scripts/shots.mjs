@@ -36,6 +36,7 @@ const PAGES = [
   ['lesson-chart', '/lesson/c4'],
   ['lesson-ta', '/lesson/t1'],
   ['lesson-fa', '/lesson/f3'],
+  ['lesson-strat', '/lesson/s1'],
   ['design', '/design'],
 ];
 const WIDTHS = [360, 375, 390];

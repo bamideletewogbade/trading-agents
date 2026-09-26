@@ -81,7 +81,39 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026, practice)
+## Where things stand (26 Sep 2026, stage 6)
+
+**Stage 6 of the roadmap: strategies, 7 lessons. 47 lessons you play in all.**
+
+- **The lessons:** trend following, range trading, breakouts, swing, day and position trading,
+  news trading, investing is not trading, and building your own strategy. None says "this
+  strategy works". Each shows what a strategy is for, how it fails, and how to test one.
+- **One honest backtester** (`lib/engines/strategy.ts`). A rule decides on a bar's close and
+  acts at the next bar's open, so it can't see the future; stops fill through gaps; every entry
+  and exit pays the spread; trades are sized by the 1% rule (lesson r2) in a cash account.
+  `pnpm check` proves the money balances and that rewriting the future never changes a trade
+  already closed.
+- **What each lesson shows, on made-up markets:** trend rules win big in trends, lose small and
+  often sideways, and sit for long stretches without a new high (s1). Range rules win often
+  until the break; without a stop one trade takes 12% of the account (s2). A dozen breakouts to
+  take or skip, against a heavy-volume rule (s3). The day trader pays the most spread and
+  watches 640 hours to finish level, in a market where the moves took weeks (s4). A season of
+  releases: the straddle slips past its orders and loses more than planned on most days;
+  waiting loses about its plan at worst (s5). Ten years of monthly buying against selling after
+  falls (s6). Build rules, backtest, forward-test, then watch "optimising" do worse on what came
+  next (s7).
+- **Checked over many seeds, not just the pinned one:** trend rules ahead on every trending
+  market; the volume rule better per trade in at least 34 of 40 sets; steady buying ahead of
+  timing in at least 16 of 20 runs; the optimiser's pick worse out of sample in at least 20 of
+  30. The lessons say "usually" where the checks do.
+- **Honest labels:** s1, s3, s6 and s7 were planned as "historical" but need price history we
+  don't have licensed, so they're simulations and say so.
+- **7 new widgets**, 47 in all, in one lazily loaded chunk (8.6 KB gzipped). `pnpm walk:lessons`
+  plays all 47; CI checks all 47 completions were saved.
+- **Fixed on the way:** with reduced motion on, staggered animations still waited out their
+  delays, so a chart's later candles stayed blank for a moment. Delays now collapse too.
+
+### Earlier: practice
 
 **Practise your mistakes.** A question you get wrong first time in a lesson comes back in a
 Practice tab, spaced out so it sticks: due at once, then after 1, 3 and 7 days, then learned for

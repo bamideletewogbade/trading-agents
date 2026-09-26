@@ -51,6 +51,13 @@ export const WIDGET_NAMES = [
   'dollar-earnings',
   'carry-trade',
   'news-pullback',
+  'trend-rules',
+  'range-rules',
+  'breakout-picks',
+  'trade-styles',
+  'news-rules',
+  'invest-vs-trade',
+  'strategy-builder',
 ] as const;
 
 export type WidgetName = (typeof WIDGET_NAMES)[number];

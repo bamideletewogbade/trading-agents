@@ -64,3 +64,17 @@ export const STAGE5_SEEDS = {
   carry: 'carry',
   pullback: 'bank',
 } as const;
+
+/** Stage 6 (strategies): the markets and seasons each lesson pins. */
+export const STAGE6_SEEDS = {
+  trend: 'trend-rules',
+  range: 'range-rules',
+  breakouts: 'breakouts-27',
+  styles: 'styles-1',
+  news: 'news-season-4',
+  investing: 'invest-1',
+  builder: 'builder-7',
+} as const;
+
+/** How many breakouts the learner judges in the breakouts lesson. */
+export const BREAKOUT_COUNT = 12;

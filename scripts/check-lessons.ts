@@ -1,5 +1,5 @@
 /**
- * Stages 1–5 of the roadmap: the engines behind their lessons, and the
+ * Stages 1–6 of the roadmap: the engines behind their lessons, and the
  * lessons themselves (every one complete, every quiz with a right answer,
  * every widget registered, every number computable).
  *
@@ -47,6 +47,8 @@ import {
   SEEDS,
   STAGE4_SEEDS,
   STAGE5_SEEDS,
+  STAGE6_SEEDS,
+  BREAKOUT_COUNT,
   TREND,
 } from '../content/lessons/seeds.ts';
 import { GHANA_2022, NIGERIA_2023 } from '../content/lessons/history.ts';
@@ -116,6 +118,27 @@ import {
   testPatterns,
   topSeries,
 } from '../lib/engines/ta.ts';
+import {
+  HOURS_PER_DAY,
+  HEAVY_VOLUME_TENTHS,
+  INVESTING,
+  NEWS_DAY,
+  PLANS,
+  SPREAD,
+  STRATEGIES,
+  allChoices,
+  backtest,
+  breakoutResults,
+  breakoutSetup,
+  investing,
+  market,
+  newsSeason,
+  optimise,
+  rulesOf,
+  tradeBreakout,
+  tradeStyles,
+  type BreakoutSetup,
+} from '../lib/engines/strategy.ts';
 import { LESSON_DEFS, WIDGET_NAMES } from '../content/lessons/index.ts';
 import { LESSONS, STAGES } from '../content/curriculum.ts';
 
@@ -975,12 +998,295 @@ check(
   },
 );
 
-/* ── The lessons themselves ───────────────────────────────────────────── */
+/* ── Stage 6: strategies ──────────────────────────────────────────────── */
 
-const stageIds = STAGES.slice(0, 5).flatMap((stage) => [...stage.lessons]);
+const every = <T>(n: number, make: (i: number) => T): T[] =>
+  Array.from({ length: n }, (_, i) => make(i));
+const sumOf = (values: readonly number[]) =>
+  values.reduce((sum, value) => sum + value, 0);
+
+check('the backtester can’t see the future, and its money balances', () => {
+  for (const seed of ['bt-0', 'bt-1', 'bt-2']) {
+    const bars = market(seed, PLANS.mixed).bars;
+    for (const choice of allChoices()) {
+      const rules = rulesOf(choice);
+      const test = backtest(bars, rules);
+      const half = Math.ceil(SPREAD / 2);
+      equal(
+        test.end,
+        test.start + sumOf(test.trades.map((t) => t.pnl)),
+        `${seed} ${choice.entry}`,
+      );
+      equal(test.equity.at(-1), test.end, 'the last mark is the end');
+      equal(test.equity.length, bars.length);
+      let cash = test.start;
+      let lastExit = -1;
+      for (const trade of test.trades) {
+        ok(trade.entryAt > lastExit, 'one trade at a time');
+        ok(trade.entryAt >= 1 && trade.exitAt >= trade.entryAt);
+        // Decided on a close, filled at the next open plus half the spread.
+        equal(trade.entry, bars[trade.entryAt]!.open + half);
+        equal(trade.cost, trade.units * 2 * half);
+        ok(trade.units * trade.entry <= cash, 'never more than the cash');
+        if (trade.stop !== null) {
+          ok(
+            trade.units * (trade.entry - trade.stop) <=
+              Math.floor((cash * rules.riskBp) / 10_000),
+            'never risks more than planned',
+          );
+          if (trade.why === 'stop')
+            ok(trade.exit <= trade.stop - half, 'a stop fills at or past it');
+        }
+        cash += trade.pnl;
+        lastExit = trade.exitAt;
+      }
+      // Change everything after bar k: trades closed before k can't change.
+      const k = 200;
+      const other = market(
+        `${seed}:other`,
+        PLANS.mixed,
+        bars[k - 1]!.close,
+      ).bars;
+      const rewritten = backtest([...bars.slice(0, k), ...other], rules);
+      deepStrictEqual(
+        rewritten.trades.filter((t) => t.exitAt < k),
+        test.trades.filter((t) => t.exitAt < k),
+        `${seed} ${choice.entry}/${choice.exit}: saw the future`,
+      );
+    }
+  }
+});
+
+check('trend rules win in trends, lose in ranges, and sit flat a lot', () => {
+  const trendyBars = market('tr-0', PLANS.trendy).bars.length;
+  const runs = every(16, (i) => ({
+    trades: backtest(market(`tr-${i}`, PLANS.trendy).bars, STRATEGIES.trend)
+      .trades,
+    trendy: backtest(market(`tr-${i}`, PLANS.trendy).bars, STRATEGIES.trend)
+      .stats,
+    choppy: backtest(market(`tr-${i}`, PLANS.choppy).bars, STRATEGIES.trend)
+      .stats,
+  }));
+  ok(
+    runs.every((r) => r.trendy.returnBp > 0),
+    'trendy: always ahead',
+  );
+  ok(runs.filter((r) => r.choppy.returnBp < 0).length >= 12, 'choppy: behind');
+  for (const { trades } of runs) {
+    const won = trades.filter((t) => t.pnl > 0).map((t) => t.r);
+    const lost = trades.filter((t) => t.pnl <= 0).map((t) => t.r);
+    if (won.length && lost.length)
+      ok(
+        sumOf(won) * lost.length >= -5 * sumOf(lost) * won.length,
+        'the average win is many times the average loss',
+      );
+  }
+  ok(
+    runs.every((r) => r.trendy.longestFlat * 5 >= trendyBars),
+    'flat for a fifth of the time or more',
+  );
+  const pinned = market(STAGE6_SEEDS.trend, PLANS.trendy).bars;
+  const trendy = backtest(pinned, STRATEGIES.trend).stats;
+  const choppy = backtest(
+    market(STAGE6_SEEDS.trend, PLANS.choppy).bars,
+    STRATEGIES.trend,
+  ).stats;
+  ok(trendy.returnBp > 0 && trendy.winRateBp < 5_000, 's1: fewer than half');
+  ok(trendy.longestFlat * 3 >= pinned.length, 's1: a third of the time flat');
+  ok(choppy.returnBp < 0 && choppy.trades > trendy.trades, 's1: choppy');
+});
 
 check(
-  'every lesson in stages 1–5 has a definition, and nothing else does',
+  'range rules: small wins in the range; without a stop, the break takes them all',
+  () => {
+    const inRangeTrades: { pnl: number }[] = [];
+    for (const seed of [STAGE6_SEEDS.range, ...every(8, (i) => `rg-${i}`)]) {
+      const { bars, regimes } = market(seed, PLANS.rangeThenBreak);
+      const breakAt = regimes.indexOf('down');
+      const stop = backtest(bars, STRATEGIES.range);
+      const none = backtest(bars, STRATEGIES.rangeNoStop);
+      const aside = backtest(bars, STRATEGIES.rangeStandAside);
+      const inRange = stop.trades.filter((t) => t.exitAt < breakAt);
+      ok(inRange.length >= 2, `${seed}: trades in the range`);
+      inRangeTrades.push(...inRange);
+      ok(
+        Math.min(...none.trades.map((t) => t.pnl)) <
+          5 * Math.min(...stop.trades.map((t) => t.pnl)),
+        `${seed}: no stop, one loss five times the worst stopped one`,
+      );
+      ok(none.stats.returnBp < stop.stats.returnBp, `${seed}: none trails`);
+      ok(aside.stats.returnBp > stop.stats.returnBp, `${seed}: aside leads`);
+    }
+    ok(
+      inRangeTrades.filter((t) => t.pnl > 0).length * 10 >=
+        inRangeTrades.length * 7,
+      'mostly wins in the range',
+    );
+    const pinned = market(STAGE6_SEEDS.range, PLANS.rangeThenBreak).bars;
+    ok(backtest(pinned, STRATEGIES.range).stats.returnBp < 0, 's2: stop');
+    ok(
+      backtest(pinned, STRATEGIES.rangeStandAside).stats.returnBp > 0,
+      's2: stand aside',
+    );
+    const { regimes } = market(STAGE6_SEEDS.range, PLANS.rangeThenBreak);
+    ok(
+      backtest(pinned, STRATEGIES.range).trades.filter(
+        (t) => t.exitAt >= regimes.indexOf('down') && t.why === 'stop',
+      ).length >= 2,
+      's2: the rules kept buying the fall',
+    );
+    const none = backtest(pinned, STRATEGIES.rangeNoStop).trades;
+    ok(
+      -Math.min(...none.map((t) => t.pnl)) >
+        none.filter((t) => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0),
+      's2: one loss bigger than all the wins together',
+    );
+  },
+);
+
+check(
+  'breakouts: the volume rule’s trades average more than taking them all',
+  () => {
+    const setsOf = (seed: string) =>
+      every(BREAKOUT_COUNT, (i) => breakoutSetup(`${seed}:${i}`));
+    const heavy = (s: BreakoutSetup) => s.volumeTenths >= HEAVY_VOLUME_TENTHS;
+    // Twenty breakouts at a time: the lesson's dozen can be luckier or not.
+    const better = every(40, (k) =>
+      every(20, (i) => breakoutSetup(`bo-${k}:${i}`)),
+    ).filter((setups) => {
+      const all = breakoutResults(setups, () => true);
+      const vol = breakoutResults(setups, heavy);
+      return vol.taken > 0 && vol.totalR * all.taken > all.totalR * vol.taken;
+    }).length;
+    ok(better >= 34, `better per trade in ${better} of 40`);
+    for (const setup of setsOf('bo-shape')) {
+      ok(
+        setup.bars
+          .slice(0, setup.at)
+          .every((bar) => bar.high < setup.ceiling && bar.low > 9_800),
+        'a range before',
+      );
+      ok(setup.bars[setup.at]!.close > setup.ceiling, 'a close above');
+    }
+    const pinned = setsOf(STAGE6_SEEDS.breakouts);
+    const all = breakoutResults(pinned, () => true);
+    const vol = breakoutResults(pinned, heavy);
+    ok(vol.totalR > all.totalR, 's3: more in total');
+    ok(
+      pinned.some((s) => heavy(s) && tradeBreakout(s).r < 0) &&
+        pinned.some((s) => !heavy(s) && tradeBreakout(s).r > 0),
+      's3: a clue, not a guarantee',
+    );
+  },
+);
+
+check(
+  'styles: the day trader trades most, pays most, watches most, and trails here',
+  () => {
+    for (const seed of [STAGE6_SEEDS.styles, 'st-1', 'st-2', 'st-3']) {
+      const [day, swing, position] = tradeStyles(seed);
+      equal(day!.style, 'day');
+      ok(day!.test.stats.trades > swing!.test.stats.trades, seed);
+      ok(day!.test.stats.costs > swing!.test.stats.costs, seed);
+      ok(day!.hoursWatched > swing!.hoursWatched, seed);
+      ok(swing!.hoursWatched > position!.hoursWatched, seed);
+      ok(day!.test.stats.returnBp < swing!.test.stats.returnBp, seed);
+      // Out by every close.
+      ok(
+        day!.test.trades.every(
+          (t) =>
+            Math.floor(t.entryAt / HOURS_PER_DAY) ===
+            Math.floor(t.exitAt / HOURS_PER_DAY),
+        ),
+        `${seed}: a day trade held overnight`,
+      );
+    }
+    const [, , position] = tradeStyles(STAGE6_SEEDS.styles);
+    ok(position!.test.stats.trades >= 1, 's4: the position trader trades');
+  },
+);
+
+check(
+  'news: the straddle fills past its levels; waiting loses about its plan at worst',
+  () => {
+    for (const seed of [STAGE6_SEEDS.news, ...every(6, (i) => `nw-${i}`)]) {
+      const season = newsSeason(seed);
+      const half = Math.ceil(NEWS_DAY.normalSpread / 2);
+      ok(
+        season.straddle.every((t) => t.slippage > 0),
+        `${seed}: slippage`,
+      );
+      ok(
+        season.straddle.filter((t) => -t.pnl > NEWS_DAY.risk).length * 2 >
+          season.straddle.length,
+        `${seed}: the straddle loses more than planned on most days`,
+      );
+      ok(
+        season.wait.every((t) => -t.pnl <= NEWS_DAY.risk + t.units * 2 * half),
+        `${seed}: waiting’s worst is its plan plus the spread`,
+      );
+      ok(
+        sumOf(season.straddle.map((t) => t.pnl)) <
+          sumOf(season.wait.map((t) => t.pnl)),
+        `${seed}: straddle trails waiting`,
+      );
+      for (const day of season.days) {
+        const pre = day.bars[day.at - 1]!.close;
+        const first = day.bars[day.at]!.open;
+        ok(Math.abs(first - pre) > NEWS_DAY.level, 'the jump passes the level');
+      }
+    }
+  },
+);
+
+check(
+  'investing: steady buying beats timing on most seeds; missing the best months always costs',
+  () => {
+    const runs = every(20, (i) => investing(`iv-${i}`));
+    for (const run of runs) {
+      equal(run.paidIn, INVESTING.monthly * INVESTING.months);
+      equal(run.steady.length, INVESTING.months + 1);
+      ok(run.missed.at(-1)! < run.steady.at(-1)!, 'missing the best costs');
+    }
+    ok(
+      runs.filter((r) => r.timer.at(-1)! < r.steady.at(-1)!).length >= 16,
+      'timing trails',
+    );
+    const pinned = investing(STAGE6_SEEDS.investing);
+    ok(pinned.steady.at(-1)! > pinned.timer.at(-1)!, 's6: steady first');
+    ok(pinned.timer.at(-1)! > pinned.missed.at(-1)!, 's6: missed last');
+    ok(pinned.steady.at(-1)! > pinned.paidIn, 's6: more than paid in');
+  },
+);
+
+check(
+  'optimising: the best of the past usually does worse on what came next',
+  () => {
+    const runs = every(30, (i) => optimise(`op-${i}`));
+    const drops = runs.filter(
+      (r) => r.future.stats.returnBp < r.past.stats.returnBp,
+    ).length;
+    ok(drops >= 20, `worse next time in ${drops} of 30`);
+    ok(
+      sumOf(runs.map((r) => r.future.stats.returnBp)) >
+        sumOf(runs.map((r) => r.futureAverageBp)),
+      'but some of it was real: better than an average pick',
+    );
+    const pinned = optimise(STAGE6_SEEDS.builder);
+    ok(
+      pinned.future.stats.returnBp * 2 < pinned.past.stats.returnBp,
+      's7: less than half next time',
+    );
+    equal(pinned.tried, allChoices().length);
+  },
+);
+
+/* ── The lessons themselves ───────────────────────────────────────────── */
+
+const stageIds = STAGES.slice(0, 6).flatMap((stage) => [...stage.lessons]);
+
+check(
+  'every lesson in stages 1–6 has a definition, and nothing else does',
   () => {
     deepStrictEqual(Object.keys(LESSON_DEFS).sort(), [...stageIds].sort());
   },
@@ -1070,4 +1376,4 @@ if (failures.length) {
   console.error(`\n${failures.length} failed, ${passed} passed.`);
   process.exit(1);
 }
-console.log(`✓ stages 1–5: ${passed} checks passed.`);
+console.log(`✓ stages 1–6: ${passed} checks passed.`);

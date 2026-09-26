@@ -797,11 +797,12 @@ export const LESSONS: Lesson[] = [
     topic: 'strategies',
     level: 'core',
     minutes: 10,
-    truth: 'historical',
-    status: 'planned',
+    truth: 'simulation',
+    status: 'live',
+    playAt: '/lesson/s1',
     needs: ['t2', 'r2'],
     practice:
-      'Run the rules on a replay, including the long flat months nobody posts about.',
+      'Run the rules on a made-up market, including the long flat stretches nobody posts about.',
   },
   {
     id: 's2',
@@ -811,10 +812,11 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 9,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/s2',
     needs: ['c5', 'r1'],
     practice:
-      'Buy support and sell resistance, until the range breaks. Then see what your rules did.',
+      'Buy the dips in a range until it breaks, with and without a stop. Then see what your rules did.',
   },
   {
     id: 's3',
@@ -823,11 +825,12 @@ export const LESSONS: Lesson[] = [
     topic: 'strategies',
     level: 'core',
     minutes: 9,
-    truth: 'historical',
-    status: 'planned',
+    truth: 'simulation',
+    status: 'live',
+    playAt: '/lesson/s3',
     needs: ['c7'],
     practice:
-      'Tell real breakouts from fakes using closes and volume, then trade twenty of them.',
+      'Tell real breakouts from fakes using closes and volume, then trade a dozen of them.',
   },
   {
     id: 's4',
@@ -836,10 +839,11 @@ export const LESSONS: Lesson[] = [
     level: 'core',
     minutes: 7,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/s4',
     needs: ['c3'],
     practice:
-      'Trade the same market on three timeframes, and see what each one costs you in time.',
+      'Trade the same market on three timeframes, and see what each one costs you in time and spreads.',
   },
   {
     id: 's5',
@@ -848,10 +852,11 @@ export const LESSONS: Lesson[] = [
     level: 'advanced',
     minutes: 7,
     truth: 'simulation',
-    status: 'planned',
+    status: 'live',
+    playAt: '/lesson/s5',
     needs: ['f6'],
     practice:
-      'See why spreads widen and stops slip in the second the numbers drop.',
+      'Trade a season of releases three ways: a straddle, waiting for it to settle, and sitting out.',
   },
   {
     id: 's6',
@@ -866,10 +871,11 @@ export const LESSONS: Lesson[] = [
     topic: 'strategies',
     level: 'starter',
     minutes: 8,
-    truth: 'historical',
-    status: 'planned',
+    truth: 'simulation',
+    status: 'live',
+    playAt: '/lesson/s6',
     practice:
-      'Buy a little every month for ten years of history, against trading in and out of it.',
+      'Buy a little every month for ten years of a made-up index, against trading in and out of it.',
   },
   {
     id: 's7',
@@ -878,11 +884,12 @@ export const LESSONS: Lesson[] = [
     topic: 'strategies',
     level: 'advanced',
     minutes: 15,
-    truth: 'historical',
-    status: 'planned',
+    truth: 'simulation',
+    status: 'live',
+    playAt: '/lesson/s7',
     needs: ['r6', 's1'],
     practice:
-      'Write your rules, backtest them on replays, then forward-test them on paper.',
+      'Write your rules, backtest them, then forward-test them on prices they have never seen.',
   },
 
   // Prove it

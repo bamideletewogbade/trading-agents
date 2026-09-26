@@ -27,6 +27,7 @@ const charts = () => import('./charts');
 const risk = () => import('./risk');
 const technical = () => import('./technical');
 const fundamental = () => import('./fundamental');
+const strategy = () => import('./strategy');
 const chartDemo = () => import('@/components/landing/ChartDemo');
 
 export const WIDGETS: Record<WidgetName, Widget> = {
@@ -116,4 +117,11 @@ export const WIDGETS: Record<WidgetName, Widget> = {
   'dollar-earnings': from(fundamental, (m) => m.DollarEarningsWidget),
   'carry-trade': from(fundamental, (m) => m.CarryTradeWidget),
   'news-pullback': from(fundamental, (m) => m.NewsPullbackWidget),
+  'trend-rules': from(strategy, (m) => m.TrendRulesWidget),
+  'range-rules': from(strategy, (m) => m.RangeRulesWidget),
+  'breakout-picks': from(strategy, (m) => m.BreakoutPicksWidget),
+  'trade-styles': from(strategy, (m) => m.TradeStylesWidget),
+  'news-rules': from(strategy, (m) => m.NewsRulesWidget),
+  'invest-vs-trade': from(strategy, (m) => m.InvestVsTradeWidget),
+  'strategy-builder': from(strategy, (m) => m.StrategyBuilderWidget),
 };
