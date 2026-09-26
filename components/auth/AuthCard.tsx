@@ -20,7 +20,7 @@ export function AuthCard({ kind }: { kind: 'sign-in' | 'sign-up' }) {
       <SignUp
         routing="hash"
         signInUrl="/sign-in"
-        fallbackRedirectUrl="/onboarding"
+        fallbackRedirectUrl="/desk"
       />
     );
 
@@ -30,7 +30,7 @@ export function AuthCard({ kind }: { kind: 'sign-in' | 'sign-up' }) {
       <h2 className="mt-2 type-title text-fg">{AUTH.guest.title}</h2>
       <p className="mt-2 type-small text-fg-2">{AUTH.guest.body}</p>
       <Link
-        href="/onboarding"
+        href="/desk"
         className="mt-6 flex min-h-12 items-center justify-center rounded-md bg-gold px-5 type-body font-semibold text-ink"
       >
         {AUTH.guest.cta}

@@ -13,6 +13,7 @@ export function Section({
   lead,
   children,
   tone = 'plain',
+  split = false,
 }: {
   id?: string;
   kicker: string;
@@ -20,14 +21,18 @@ export function Section({
   lead?: string;
   children?: ReactNode;
   tone?: 'plain' | 'panel';
+  /** On a laptop, the words on the left and the content beside them, not under. */
+  split?: boolean;
 }) {
   return (
     <section
       id={id}
       className={`scroll-mt-20 border-t border-line py-16 sm:py-24 ${tone === 'panel' ? 'bg-panel/40' : ''}`}
     >
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-8">
-        <Reveal>
+      <div
+        className={`mx-auto max-w-[1200px] px-4 sm:px-8 ${split ? 'lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start lg:gap-14' : ''}`}
+      >
+        <Reveal className={split ? 'lg:sticky lg:top-28' : undefined}>
           <p className="font-mono type-label text-gold">{kicker}</p>
           {title ? (
             <h2 className="mt-3 max-w-[24ch] text-[1.875rem] leading-[2.25rem] font-[650] tracking-[-0.02em] text-balance text-fg sm:text-[2.75rem] sm:leading-[3.125rem]">
@@ -40,7 +45,9 @@ export function Section({
             </p>
           ) : null}
         </Reveal>
-        {children ? <div className="mt-10">{children}</div> : null}
+        {children ? (
+          <div className={split ? 'mt-10 lg:mt-0' : 'mt-10'}>{children}</div>
+        ) : null}
       </div>
     </section>
   );

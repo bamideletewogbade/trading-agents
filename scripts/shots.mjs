@@ -3,7 +3,7 @@
  * nothing scrolls sideways (CLAUDE.md rule 8).
  *
  *     pnpm dev                 (in another terminal)
- *     pnpm shots               screenshots at 375 px into shots/, overflow checked at 360, 375, 390
+ *     pnpm shots               screenshots at 375 px into shots/, overflow checked at 360, 375, 390, 1024, 1440
  *     pnpm shots <url>         against another server, e.g. a preview deploy
  *
  * Two pictures per page: `<name>.png` is the first screen exactly as a phone
@@ -21,6 +21,7 @@ const BASE = (process.argv[2] ?? 'http://localhost:5177').replace(/\/$/, '');
 const PAGES = [
   ['landing', '/'],
   ['roadmap', '/roadmap'],
+  ['glossary', '/glossary'],
   ['mindset', '/mindset'],
   ['ipo', '/ipo'],
   ['community', '/community'],
@@ -39,7 +40,9 @@ const PAGES = [
   ['lesson-strat', '/lesson/s1'],
   ['design', '/design'],
 ];
-const WIDTHS = [360, 375, 390];
+// Phones first; then a small laptop and a desktop, which have their own layouts.
+const WIDTHS = [360, 375, 390, 1024, 1440];
+const DESKTOP = 1024;
 
 // Cloud sessions ship a Chromium at this path; elsewhere Playwright finds its own.
 const bundled = '/opt/pw-browsers/chromium';
@@ -51,10 +54,10 @@ mkdirSync('shots', { recursive: true });
 const problems = [];
 for (const width of WIDTHS) {
   const context = await browser.newContext({
-    viewport: { width, height: 812 },
-    deviceScaleFactor: 2,
-    isMobile: true,
-    hasTouch: true,
+    viewport: { width, height: width >= DESKTOP ? 900 : 812 },
+    deviceScaleFactor: width >= DESKTOP ? 1 : 2,
+    isMobile: width < DESKTOP,
+    hasTouch: width < DESKTOP,
   });
   // A learner a few days in, so the path, streak and badges show what a
   // real phone shows (an empty desk hides layout problems).
@@ -127,6 +130,8 @@ for (const width of WIDTHS) {
       await page.screenshot({ path: `shots/${name}-full.png`, fullPage: true });
       await hide.evaluate((node) => node.remove());
     }
+    if (width === 1440)
+      await page.screenshot({ path: `shots/desktop-${name}.png` });
   }
   await context.close();
 }
@@ -137,5 +142,5 @@ if (problems.length) {
   process.exit(1);
 }
 console.log(
-  `✓ ${PAGES.length} pages at ${WIDTHS.join(', ')} px: no sideways scrolling. Screenshots in shots/.`,
+  `✓ ${PAGES.length} pages at ${WIDTHS.join(', ')} px: no sideways scrolling. Screenshots in shots/ (desktop-*.png at 1440).`,
 );

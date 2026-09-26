@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { PLAYER } from '@/content/lessons/widgets';
 import { PRACTICE } from '@/content/practice';
 import {
@@ -114,6 +114,20 @@ export function LessonPlayer({
     at: number;
   } | null>(null);
   const [finished, setFinished] = useState<Finished | null>(null);
+
+  // On a keyboard, Enter continues, as it does in most apps. Never while
+  // typing in a box or on another control, which keep their own Enter.
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key !== 'Enter' || event.defaultPrevented || event.repeat)
+        return;
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('textarea, input, select, button, a, label')) return;
+      document.querySelector<HTMLButtonElement>('[data-continue]')?.click();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   if (!meta || beats.length === 0) return null;
   const beat = beats[index]!;
@@ -306,9 +320,9 @@ export function LessonPlayer({
   const progress = ((index + (ready ? 1 : 0.5)) / beats.length) * 100;
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[720px] flex-col overflow-x-clip">
-      <div className="sticky top-0 z-30 border-b border-line bg-ink/92 px-4 pt-3 pb-2.5 backdrop-blur">
-        <div className="flex items-center gap-3">
+    <div className="flex min-h-dvh flex-col overflow-x-clip">
+      <div className="sticky top-0 z-30 border-b border-line bg-ink/92 pt-3 pb-2.5 backdrop-blur">
+        <div className="mx-auto flex max-w-[760px] items-center gap-3 px-4 sm:px-6">
           <Link
             href="/desk"
             className="grid size-10 shrink-0 place-items-center rounded-md text-fg-2 hover:text-fg"
@@ -343,7 +357,7 @@ export function LessonPlayer({
             {sessionXp}
           </span>
         </div>
-        <div className="mt-2 flex min-w-0 items-center justify-between gap-2">
+        <div className="mx-auto mt-2 flex max-w-[760px] min-w-0 items-center justify-between gap-2 px-4 sm:px-6">
           <p className="min-w-0 truncate type-small font-semibold text-fg">
             <span className="font-mono type-tick font-normal text-muted uppercase">
               {TOPICS[meta.topic].label} ·{' '}
@@ -358,7 +372,7 @@ export function LessonPlayer({
 
       <div
         key={index}
-        className={`flex-1 px-4 py-6 ${dir === 'next' ? 'animate-slide-next' : 'animate-slide-back'}`}
+        className={`mx-auto w-full max-w-[760px] flex-1 px-4 py-6 sm:px-6 lg:py-12 ${beat.kind === 'say' ? 'lg:flex lg:flex-col lg:items-start lg:justify-center lg:pb-28' : ''} ${dir === 'next' ? 'animate-slide-next' : 'animate-slide-back'}`}
       >
         <p className="inline-flex items-center gap-1.5 rounded-full border border-line bg-panel px-2.5 py-1 font-mono type-tick text-gold uppercase">
           <span aria-hidden>{TAG_ICON[beat.tag]}</span>
@@ -457,8 +471,8 @@ export function LessonPlayer({
         ) : null}
       </div>
 
-      <div className="sticky bottom-0 z-30 border-t border-line bg-ink/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
-        <div className="flex gap-2">
+      <div className="sticky bottom-0 z-30 border-t border-line bg-ink/95 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
+        <div className="mx-auto flex max-w-[760px] gap-2 px-4 sm:px-6">
           {index > 0 ? (
             <button
               type="button"
@@ -470,9 +484,10 @@ export function LessonPlayer({
           ) : null}
           <button
             type="button"
+            data-continue
             disabled={!ready}
             onClick={() => (last ? void finish() : go(index + 1))}
-            className="btn-3d min-h-12 flex-1 rounded-lg bg-gold px-5 type-body font-bold text-ink disabled:bg-raised disabled:text-muted"
+            className="btn-3d min-h-12 flex-1 rounded-lg bg-gold px-5 type-body font-bold text-ink disabled:bg-raised disabled:text-muted sm:ml-auto sm:min-w-56 sm:flex-none"
           >
             {ready
               ? last

@@ -3,14 +3,14 @@
  * footer. Who we're talking to, so every line can be checked against it:
  *
  * - Nigerians and Ghanaians, mostly 18–35: students, young professionals,
- *   people with a side hustle, and people already in a signals group.
+ *   people with a side hustle, and people who already follow traders online.
  * - Curious because of the Dangote IPO, crypto, forex, or a friend's
  *   screenshot of profits.
  * - Want extra income. Have been burned, or know someone who has.
  *
  * The voice: a smart friend who trades properly. Direct, warm, a little
  * funny, never hype. We say "skill", "practice" and "risk" where others say
- * "profit", "signals" and "financial freedom".
+ * "profit" and "financial freedom".
  */
 
 export const MARKETING = {
@@ -19,6 +19,7 @@ export const MARKETING = {
     label: 'Main',
     links: [
       { href: '/roadmap', label: 'Roadmap' },
+      { href: '/glossary', label: 'Glossary' },
       { href: '/mindset', label: 'Mindset' },
       { href: '/ipo', label: 'IPO 101', badge: 'New' },
       { href: '/community', label: 'Community' },
@@ -29,7 +30,7 @@ export const MARKETING = {
     desk: 'Continue learning',
     menu: 'Menu',
     close: 'Close menu',
-    menuNote: 'No signals. No real money. Just skill.',
+    menuNote: 'Start from zero. Pretend money. Real skill.',
   },
 
   announcement: {
@@ -50,7 +51,7 @@ export const MARKETING = {
           { href: '/roadmap', label: 'The roadmap' },
           { href: '/mindset', label: 'Noise vs signal' },
           { href: '/ipo', label: 'How IPOs work' },
-          { href: '/#risk-lab', label: 'Risk Lab' },
+          { href: '/glossary', label: 'Glossary' },
         ],
       },
       {
@@ -58,12 +59,12 @@ export const MARKETING = {
         links: [
           { href: '/community', label: 'Community' },
           { href: '/pricing', label: 'Pricing' },
-          { href: '/sign-up', label: 'Start free' },
+          { href: '/desk', label: 'Start free' },
         ],
       },
     ],
     disclaimer:
-      'Educational only. Not financial advice, and never a recommendation to buy or sell anything. Every price on this site is simulated or clearly marked as historical data. Nothing here moves real money.',
+      'Educational only, not financial advice. Every price on this site is simulated or clearly marked as historical data. Nothing here moves real money.',
     made: 'Built for Ghana and Nigeria, then the rest of Africa.',
   },
 } as const;

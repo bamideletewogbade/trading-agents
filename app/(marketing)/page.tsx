@@ -1,12 +1,10 @@
 import Link from 'next/link';
 import { LANDING } from '@/content/landing';
-import { STAGES, lesson } from '@/content/curriculum';
-import { DANGOTE } from '@/content/ipo';
+import { STAGES, TOPICS, lesson } from '@/content/curriculum';
+import { GLOSSARY, GLOSSARY_PAGE } from '@/content/glossary';
 import { BRAND } from '@/lib/brand';
-import { formatMoney, fromMinor } from '@/lib/core/money';
-import { companyValue, trillionsHundredths } from '@/lib/engines/ipo';
 import { ChartDemo } from '@/components/landing/ChartDemo';
-import { LeverageDemo } from '@/components/landing/LeverageDemo';
+import { TruthBadge } from '@/components/shell/TruthBadge';
 import { AskBox } from '@/components/marketing/AskBox';
 import { Section } from '@/components/marketing/Section';
 import { Reveal } from '@/components/motion/Reveal';
@@ -29,30 +27,6 @@ export const metadata = {
 };
 
 const L = LANDING;
-const naira = (kobo: number) => formatMoney(fromMinor(kobo, 'NGN'));
-
-function offerFacts() {
-  const value = trillionsHundredths(companyValue(DANGOTE.offer));
-  const day = (iso: string) =>
-    new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      timeZone: 'UTC',
-    });
-  return [
-    [L.ipoTeaser.facts.price, naira(DANGOTE.offer.price)],
-    [
-      L.ipoTeaser.facts.minimum,
-      naira(DANGOTE.offer.minimum * DANGOTE.offer.price),
-    ],
-    [
-      L.ipoTeaser.facts.window,
-      `${day(DANGOTE.offer.opens)} – ${day(DANGOTE.offer.closes)}`,
-    ],
-    [L.ipoTeaser.facts.size, `≈ ₦${Math.round(value / 100)} trillion`],
-  ] as const;
-}
-
 export default function LandingPage() {
   return (
     <>
@@ -78,7 +52,7 @@ export default function LandingPage() {
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/sign-up"
+                href="/desk"
                 className="btn-3d relative inline-flex min-h-13 items-center justify-center rounded-lg bg-gold px-7 type-body font-bold text-ink"
               >
                 {L.hero.primary}
@@ -142,7 +116,7 @@ export default function LandingPage() {
         </ol>
         <p className="mt-5 max-w-[60ch] type-body text-fg">{L.steps.habit}</p>
         <Link
-          href="/mindset"
+          href={lesson(STAGES[0].lessons[0]).playAt ?? '/desk'}
           className="mt-3 inline-flex min-h-11 items-center type-small font-semibold text-gold underline underline-offset-4"
         >
           {L.steps.mindset} →
@@ -205,70 +179,73 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* ── Risk Lab ─────────────────────────────────────────────────── */}
+      {/* ── Made for Ghana and Nigeria ──────────────────────────────── */}
       <Section
-        id="risk-lab"
-        kicker={L.risk.kicker}
-        title={L.risk.title}
-        lead={L.risk.lead}
+        kicker={L.local.kicker}
+        title={L.local.title}
+        lead={L.local.lead}
         tone="panel"
       >
-        <Reveal className="max-w-[640px]">
-          <LeverageDemo />
-        </Reveal>
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {L.local.lessons.map((id, i) => {
+            const item = lesson(id);
+            return (
+              <Reveal
+                as="li"
+                key={id}
+                delay={i * 50}
+                className="flex flex-col rounded-xl border border-line bg-panel p-4"
+              >
+                <span className="flex items-center justify-between gap-2">
+                  <span className="font-mono type-tick text-gold uppercase">
+                    {TOPICS[item.topic].label}
+                  </span>
+                  <TruthBadge truth={item.truth} />
+                </span>
+                <span className="mt-2 type-heading text-fg">{item.title}</span>
+                <span className="mt-1 flex-1 type-small text-fg-2">
+                  {item.practice}
+                </span>
+                {item.playAt ? (
+                  <Link
+                    href={item.playAt}
+                    className="mt-4 inline-flex min-h-11 items-center self-start rounded-md bg-gold px-4 type-small font-semibold text-ink"
+                  >
+                    {L.local.play} →
+                  </Link>
+                ) : null}
+              </Reveal>
+            );
+          })}
+        </ul>
       </Section>
 
-      {/* ── The Dangote moment ───────────────────────────────────────── */}
+      {/* ── Glossary ─────────────────────────────────────────────────── */}
       <Section
-        kicker={L.ipoTeaser.kicker}
-        title={L.ipoTeaser.title}
-        lead={L.ipoTeaser.lead}
+        kicker={GLOSSARY_PAGE.teaser.kicker}
+        title={GLOSSARY_PAGE.teaser.title}
+        lead={GLOSSARY_PAGE.teaser.lead}
+        split
       >
-        <dl className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          {offerFacts().map(([label, value], i) => (
-            <Reveal
-              key={label}
-              delay={i * 60}
-              className="rounded-xl border border-line bg-panel p-4"
-            >
-              <dt className="font-mono type-tick text-muted">{label}</dt>
-              <dd className="mt-1 font-mono type-heading text-fg num">
-                {value}
-              </dd>
-            </Reveal>
-          ))}
+        <dl className="grid gap-2 sm:grid-cols-2">
+          {GLOSSARY_PAGE.teaser.featured.flatMap((name, i) =>
+            GLOSSARY.filter((t) => t.term === name).map((t) => (
+              <Reveal
+                key={t.term}
+                delay={i * 40}
+                className="rounded-xl border border-line bg-panel p-4"
+              >
+                <dt className="type-body font-semibold text-fg">{t.term}</dt>
+                <dd className="mt-1 type-small text-fg-2">{t.definition}</dd>
+              </Reveal>
+            )),
+          )}
         </dl>
         <Link
-          href="/ipo"
+          href="/glossary"
           className="btn-3d mt-5 inline-flex min-h-12 items-center justify-center rounded-lg bg-gold px-6 type-body font-bold text-ink"
         >
-          {L.ipoTeaser.cta} →
-        </Link>
-      </Section>
-
-      {/* ── Never, and the price ─────────────────────────────────────── */}
-      <Section kicker={L.never.kicker} tone="panel">
-        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {L.never.items.map((item, i) => (
-            <Reveal
-              as="li"
-              key={item}
-              delay={i * 40}
-              className="flex items-center gap-3 rounded-lg border border-line bg-panel px-4 py-3 type-body text-fg"
-            >
-              <span aria-hidden className="font-mono text-loss">
-                ✕
-              </span>
-              {item}
-            </Reveal>
-          ))}
-        </ul>
-        <p className="mt-6 max-w-[60ch] type-body text-fg">{L.never.free}</p>
-        <Link
-          href="/pricing"
-          className="mt-3 inline-flex min-h-11 items-center type-small font-semibold text-gold underline underline-offset-4"
-        >
-          {L.never.pricing} →
+          {GLOSSARY_PAGE.teaser.cta(GLOSSARY.length)} →
         </Link>
       </Section>
 
@@ -282,7 +259,7 @@ export default function LandingPage() {
           <p className="max-w-[52ch] type-body text-fg-2">{L.closing.lead}</p>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
             <Link
-              href="/sign-up"
+              href="/desk"
               className="btn-3d inline-flex min-h-13 items-center justify-center rounded-lg bg-gold px-7 type-body font-bold text-ink"
             >
               {L.closing.cta}

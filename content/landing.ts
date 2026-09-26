@@ -9,10 +9,10 @@ export const LANDING = {
     eyebrow: 'For Ghana and Nigeria · Learn by doing',
     titleLead: 'Learn to trade.',
     titleGold: 'Practise before you risk real money.',
-    lead: 'Short lessons you play on your phone. Learn to read charts, understand the news and protect your money. No signals. No real money. No get-rich-quick.',
+    lead: 'Short lessons you play, starting from zero. Learn to read charts, understand the news and protect your money, with pretend money first. No get-rich-quick.',
     primary: 'Start free',
     secondary: 'Try a lesson here',
-    promises: ['Short lessons', 'No real money', 'No signals'],
+    promises: ['Start from zero', 'Short lessons', 'Pretend money'],
   },
 
   ask: {
@@ -53,7 +53,7 @@ export const LANDING = {
     ],
     habit:
       'Earn XP, keep a daily streak and watch your path fill up. A few minutes a day is enough.',
-    mindset: 'New to all this? Start with noise vs signal',
+    mindset: 'New to all this? Lesson one starts with what a price is',
   },
 
   demo: {
@@ -184,7 +184,7 @@ export const LANDING = {
   risk: {
     kicker: 'Risk Lab',
     title: 'See how fast leverage can wipe you out.',
-    lead: 'Most signal groups never show you this. Try it with a pretend $100.',
+    lead: 'Few people see this before they trade. Try it with a pretend $100.',
     setup: 'You have $100. Choose your leverage.',
     position: 'Position',
     closedAt: 'Closed out if the market falls',
@@ -215,30 +215,12 @@ export const LANDING = {
     },
   },
 
-  ipoTeaser: {
-    kicker: 'Everyone is talking about it',
-    title: 'Curious about the Dangote IPO?',
-    lead: 'Learn what buying in an IPO really means: what you apply for, what you might get, and what can happen on listing day. We explain it. We don\u2019t tell you to buy.',
-    facts: {
-      price: 'Offer price',
-      minimum: 'Minimum',
-      window: 'Offer window',
-      size: 'Company at offer price',
-    },
-    cta: 'Learn how IPOs work',
-  },
-
-  never: {
-    kicker: 'What you\u2019ll never see here',
-    items: [
-      'Buy or sell signals',
-      'Promised profits or profit screenshots',
-      'Countdown timers or fake urgency',
-      'An AI that touches your money',
-      'Leaderboards ranked by profit',
-    ],
-    free: 'Free to start. If we ever charge, you can pay with mobile money, and nothing renews unless you say so.',
-    pricing: 'See pricing',
+  local: {
+    kicker: 'Made for here',
+    title: 'Money lessons built on Ghana and Nigeria.',
+    lead: 'Real inflation from Ghana’s 2022 and Nigeria’s 2023, the cedi and the naira, T-bills, commodities, IPOs and the fees nobody mentions.',
+    lessons: ['f3', 'f7', 'f8', 'f0', 'm6', 's6'],
+    play: 'Play it',
   },
 
   closing: {

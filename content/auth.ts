@@ -6,12 +6,12 @@ export const AUTH = {
   },
   signUp: {
     title: 'Start free',
-    lead: 'An account keeps your progress across phones. It takes a minute, and there’s no card.',
+    lead: 'An account keeps your progress on every device you use. It takes a minute, and there’s no card.',
   },
   side: {
     kicker: 'Why an account',
     points: [
-      'Your progress and your coach’s notes, on any phone',
+      'Your progress and your coach’s notes, on any device',
       'A starting point chosen for you, not a course from zero',
       'First in line for the Floor, our community',
     ],
@@ -19,7 +19,7 @@ export const AUTH = {
   },
   guest: {
     title: 'Accounts are switching on soon',
-    body: 'You can do everything as a guest in the meantime. Your answers and progress stay on this phone.',
+    body: 'You can do everything as a guest in the meantime. Your answers and progress stay on this device.',
     cta: 'Continue as a guest',
     back: 'Back to the site',
   },

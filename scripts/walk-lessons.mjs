@@ -399,7 +399,7 @@ await page
   .first()
   .waitFor({ timeout: 10_000 });
 await ask('give me signals');
-await page.getByText(/We don’t give trade calls/).waitFor({ timeout: 8_000 });
+await page.getByText(/Lessons won’t tell you what to buy/).waitFor({ timeout: 8_000 });
 await ask('I want to end my life');
 await page
   .getByText('You don’t have to carry this alone')

@@ -166,7 +166,7 @@ export const ONBOARDING = {
       `I’d start you at stage ${stage}: ${title}.`,
     reasons: {
       ipo: 'IPO 101 first, since that’s what brought you here.',
-      new: 'We start with how prices move, then charts, one step at a time.',
+      new: 'We start with what a price is and what trading costs, then charts, one step at a time.',
       dabbled: 'You know the basics, so we go straight to reading charts.',
       risk_gap:
         'You trade already, but the recovery question tells me risk is where the money leaks. We fix that first.',
@@ -181,7 +181,7 @@ export const ONBOARDING = {
     go: 'Show me my path',
     change: 'Change an answer',
     saved: 'Saved',
-    savedLocal: 'Saved on this phone. Create an account to keep it everywhere.',
+    savedLocal: 'Saved on this device. Create an account to keep it everywhere.',
   },
 
   marketLabels: {

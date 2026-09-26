@@ -98,7 +98,8 @@ export const STAGES = [
     title: 'How markets work',
     outcome:
       'You can say what a price is, place every kind of order, and see where the fees hide.',
-    lessons: ['m0', 'm1', 'm2', 'm3', 'm4', 'f0', 'm5', 'm6'],
+    // Basics first: what a price is, what trading costs, then how to think about it.
+    lessons: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm0', 'f0'],
   },
   {
     key: 'charts',

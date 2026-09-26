@@ -81,7 +81,34 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026, Jev)
+## Where things stand (26 Sep 2026, basics and desktop)
+
+**Easier to start, and it feels right on a laptop.**
+
+- **Start from zero, one tap to lesson one.** "Start free" opens the Learn screen with "What a
+  price actually is" ready to play: no sign-up and no questions first. The starting chat is now
+  optional ("Already trading? Find my level"), and signing up stays one tap away.
+  Stage 1 opens with the basics (a price, the spread, orders, what you can trade, leverage, fees),
+  then noise and signal, then IPOs.
+- **The path, folded.** Only the stage you're in is open; the rest are one row each with their
+  progress, and any of them opens with a tap. On a laptop the Learn screen is two columns: what's
+  next on the left, the path on the right.
+- **Laptop layouts.** The lesson player has full-width bars with Continue on the right (Enter
+  continues), and short text steps sit in the middle of the screen. Lessons are grouped by stage
+  with the search and topics beside them; Me is two columns.
+- **A glossary** at `/glossary` (`content/glossary.ts`, checked): 81 trading and money words in
+  plain English, Ghana and Nigeria terms included (NGX, GSE, CSCS, SEC, MPR, T-bills), each
+  linked to the lesson that teaches it. In the nav, the footer, the Lessons tab and on the landing.
+- **The landing, simpler:** hero, how it works, the path, money lessons built on Ghana and Nigeria,
+  the glossary, and the closing call. The leverage demo, the Dangote section and "what you'll
+  never see" are gone; the dated IPO news stays in the announcement bar.
+- **Copy:** no claims about signals anywhere, and no device-specific wording ("this device", not
+  "this phone").
+- **Checks:** `pnpm shots` now also checks 1024 and 1440 px for sideways scrolling and saves
+  desktop screenshots; `pnpm check` checks the glossary.
+
+### Earlier: Jev
+
 
 **Jev, made robust, and put to work.** Every yes/no or one-of decision now goes through one
 `decide()` (`lib/decisions/gate.ts`), so each gate gets the same protection:

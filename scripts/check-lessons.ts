@@ -141,6 +141,12 @@ import {
 } from '../lib/engines/strategy.ts';
 import { LESSON_DEFS, WIDGET_NAMES } from '../content/lessons/index.ts';
 import { LESSONS, STAGES } from '../content/curriculum.ts';
+import {
+  GLOSSARY,
+  GLOSSARY_PAGE,
+  searchGlossary,
+  termSlug,
+} from '../content/glossary.ts';
 
 let passed = 0;
 const failures: string[] = [];
@@ -1370,6 +1376,33 @@ check(
           ok((beat.look?.length ?? 0) > 10, `${id}: no look-for`);
           ok(beat.followUp?.endsWith('?'), `${id}: no follow-up question`);
         }
+  },
+);
+
+check(
+  'the glossary: unique words, short definitions, real lessons, no numbers',
+  () => {
+    const slugs = GLOSSARY.map((t) => termSlug(t.term));
+    equal(new Set(slugs).size, slugs.length, 'two words share an anchor');
+    for (const t of GLOSSARY) {
+      ok(t.definition.length <= 240, `${t.term}: too long`);
+      ok(t.definition.endsWith('.'), `${t.term}: not a sentence`);
+      // Numbers belong in lessons, worked out by engines (rule 1). The
+      // scale names of indicators ("0 to 100") and R-multiples are words.
+      ok(
+        !/\d/.test(t.definition.replace(/0 to 100|2R|−1R/g, '')),
+        `${t.term}: a number in a definition`,
+      );
+      for (const id of t.lessons ?? []) {
+        const entry = LESSONS.find((lesson) => lesson.id === id);
+        ok(entry?.status === 'live' && entry.playAt, `${t.term}: ${id}`);
+      }
+    }
+    for (const name of GLOSSARY_PAGE.teaser.featured)
+      ok(GLOSSARY.some((t) => t.term === name), `featured ${name}`);
+    equal(searchGlossary('CBN')[0]?.term, 'Central Bank of Nigeria');
+    equal(searchGlossary('t-bill')[0]?.term, 'Treasury bill');
+    ok(searchGlossary('').length === GLOSSARY.length);
   },
 );
 

@@ -375,7 +375,7 @@ export function placement(profile: Profile): Placement {
     reasons.push('recover');
   } else if (profile.goal === 'ipo') {
     stage = 0;
-    lessons = ['f0', 'm0', 'm2'];
+    lessons = ['f0', 'm1', 'm2'];
     reasons.push('ipo');
   } else if (profile.experience === 'active') {
     if (knowsRecovery) {
@@ -393,7 +393,7 @@ export function placement(profile: Profile): Placement {
     reasons.push('dabbled');
   } else {
     stage = 0;
-    lessons = ['m0', 'm5', 'c2'];
+    lessons = ['m1', 'm2', 'm3'];
     reasons.push('new');
   }
 

@@ -85,7 +85,7 @@ export function SiteNav() {
               {COPY.signIn}
             </Link>
             <Link
-              href="/sign-up"
+              href="/desk"
               className="hidden min-h-12 items-center rounded-md bg-gold px-4 type-small font-semibold text-ink transition-[filter] hover:brightness-110 sm:inline-flex"
             >
               {COPY.start}
@@ -181,7 +181,7 @@ export function SiteNav() {
               {COPY.menuNote}
             </p>
             <Link
-              href="/sign-up"
+              href="/desk"
               onClick={() => setOpen(false)}
               className="flex min-h-12 items-center justify-center rounded-md bg-gold px-5 type-body font-semibold text-ink"
             >

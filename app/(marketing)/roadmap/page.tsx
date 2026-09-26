@@ -22,11 +22,8 @@ export default function RoadmapPage() {
           <AskBox />
         </div>
       </PageHero>
-      <Section
-        kicker={LANDING.curriculum.kicker}
-        title={LANDING.curriculum.title}
-        lead={LANDING.curriculum.lead}
-      >
+      {/* The hero already says what the path is: straight into the stages. */}
+      <Section kicker={ROADMAP_PAGE.stages}>
         <div className="max-w-[860px]">
           <Curriculum />
         </div>

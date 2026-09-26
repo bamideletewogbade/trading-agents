@@ -115,7 +115,7 @@ export default function MindsetPage() {
           <h2 className="type-display text-fg">{MINDSET.cta.title}</h2>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Link
-              href="/sign-up"
+              href="/desk"
               className="inline-flex min-h-12 items-center justify-center rounded-md bg-gold px-6 type-body font-semibold text-ink"
             >
               {MINDSET.cta.primary}

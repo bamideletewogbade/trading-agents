@@ -1,5 +1,5 @@
 /**
- * Words for the signed-in side on a phone: the tab bar, the habit chips,
+ * Words for the signed-in side: the tab bar, the habit chips,
  * the lessons library and the Me screen. Short and plain on purpose.
  * Numbers arrive already worked out (lib/progress/habit.ts).
  */
@@ -38,6 +38,9 @@ export const LIBRARY = {
   done: 'Done',
   soon: 'Soon',
   minutes: (n: number) => `${n} min`,
+  stage: (n: number) => `Stage ${n}`,
+  progress: (done: number, total: number) => `${done} of ${total} done`,
+  glossary: 'Stuck on a word? The glossary',
 };
 
 export const ME = {
@@ -67,14 +70,13 @@ export const ME = {
     none: 'When a lesson asks what you think, your answer is saved here.',
     where: (n: number) =>
       n > 10
-        ? `The latest 10 of ${n}. Kept on this phone only.`
-        : 'Kept on this phone only.',
+        ? `The latest 10 of ${n}. Kept on this device only.`
+        : 'Kept on this device only.',
   },
   settings: {
     title: 'Settings',
     buzz: 'Buzz on answers',
-    buzzHelp:
-      'A short vibration when you answer. Phones that can’t buzz ignore it.',
+    buzzHelp: 'A short vibration when you answer, where your device can.',
     on: 'On',
     off: 'Off',
     palette: 'Up and down colours',
@@ -82,11 +84,11 @@ export const ME = {
     blueOrange: 'Blue–orange',
     paletteHelp:
       'Blue–orange is easier to tell apart if red and green look alike to you. Arrows and words stay either way.',
-    redo: 'Redo the starting chat',
+    redo: 'Find my level: 7 quick questions',
   },
   account: {
     title: 'Account',
-    guest: 'You’re learning as a guest. Your progress is saved on this phone.',
+    guest: 'You’re learning as a guest. Your progress is saved on this device.',
     create: 'Create a free account to keep it everywhere',
   },
   honest:

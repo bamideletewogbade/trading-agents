@@ -17,7 +17,7 @@ export const REFLECT = {
   saveAgain: 'Save again',
   saving: 'Saving…',
   privacy:
-    'Saved on this phone only. To choose a reply, an automated reader checks it once; we don’t keep a copy.',
+    'Saved on this device only. To choose a reply, an automated reader checks it once; we don’t keep a copy.',
   reply: {
     concrete: 'That’s specific enough to act on. Saved to your notes.',
     vague:
@@ -26,7 +26,7 @@ export const REFLECT = {
     short: 'Say a bit more, in your own words. A sentence is plenty.',
     off_topic:
       'Saved. That reads like a different question, though. Have another go at this one?',
-    tip: 'We don’t give trade calls, here or anywhere. What we can do is help you judge one yourself. Saved to your notes.',
+    tip: 'Lessons won’t tell you what to buy. They teach you to judge a call yourself, whoever makes it. Saved to your notes.',
     kept: 'Saved to your notes.',
     crisis: '',
   } satisfies Record<ReflectVerdict, string>,
@@ -61,5 +61,5 @@ export const SUPPORT = {
 export const ASK_REPLY = {
   thinking: 'Looking…',
   either: 'Did you mean one of these?',
-  tip: 'We don’t give trade calls or tips. Anyone selling them is usually earning from you, not the market. These show why, and how to judge a call yourself:',
+  tip: 'Lessons won’t tell you what to buy. These teach you to judge a call yourself, whoever makes it:',
 } as const;

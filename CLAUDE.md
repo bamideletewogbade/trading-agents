@@ -62,7 +62,7 @@ in Phase 5.
 pnpm dev               # http://localhost:5177
 pnpm check             # core, engine and intelligence checks, no network. Must pass before any push
 pnpm typecheck && pnpm lint
-pnpm shots             # with pnpm dev running: every screen at 360/375/390 px, fails on sideways scroll
+pnpm shots             # with pnpm dev running: every screen at 360/375/390/1024/1440 px, fails on sideways scroll
 pnpm walk:onboarding   # with pnpm dev running: chats through onboarding to the desk
 pnpm walk:lessons      # with pnpm dev running: plays all 47 lessons of stages 1–6 to the finish
 pnpm db:generate       # after changing db/schema.ts: write the next migration (commit it)
@@ -132,6 +132,13 @@ npx oxfmt <files>      # format what you touched
 - Anything a learner types passes the safety rules (`lib/decisions/safety.ts`): crisis phrases
   show the support card (`components/coach/SupportCard.tsx`) and a hedged crisis answer does too.
   Add phrases people really type, with a check each way in `scripts/check-decisions.ts`.
+- A new visitor starts at lesson one: "Start free" goes to `/desk`, which shows the first lesson
+  and offers the starting chat as optional. Don't put anything between "Start free" and a lesson.
+- Words shown to people say "device", never "phone": people use any screen. Laptop layouts
+  (`lg:`) are designed, not stretched: two columns where there's room, full-width bars in the
+  lesson player.
+- The glossary is data (`content/glossary.ts`): plain words, no numbers, each term linked to live
+  lessons; `scripts/check-lessons.ts` checks it.
 - Onboarding questions are data. A new question means: a step, its reader and a Jev option set
   in `lib/onboarding/flow.ts`, its words and chips in `content/onboarding.ts`, and checks in
   `scripts/check-onboarding.ts` using real phrases people type. The chat screen doesn't change.

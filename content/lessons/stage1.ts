@@ -82,8 +82,8 @@ export const STAGE_1: Record<string, LessonDef> = {
       {
         kind: 'say',
         tag: 'why',
-        title: 'Why this comes first',
-        body: 'Every lesson after this one gives you a new tool. Without this habit, a new tool is just a new way to react to noise.',
+        title: 'Why this matters from here',
+        body: 'From the next stage on, every lesson gives you a new tool. Without this habit, a new tool is just a new way to react to noise.',
       },
     ],
   },

@@ -17,19 +17,20 @@ export const ROADMAP_PAGE = {
     lead: 'Seven stages, in order: how markets work, reading charts, risk, technical analysis, fundamental analysis, strategies, then proving it. Already trading? Pick any lesson on its own.',
   },
   ask: 'Or just ask',
+  stages: 'Seven stages, in order',
 };
 
 export const COMMUNITY_PAGE = {
   meta: {
-    title: 'The Floor: a trading community that shares reasoning, not signals',
+    title: 'The Floor: a trading community that shows its reasoning',
     description:
-      'Share your chart, thesis and stop before the market moves, and learn from wins and losses alike. No signals, no account managers, no profit screenshots.',
+      'Share your chart, thesis and stop before the market moves, and learn from wins and losses alike. No account managers, no profit screenshots.',
   },
   hero: {
     kicker: 'Community · Coming soon',
     titleLead: 'Trade ideas in the open.',
-    titleGold: 'Reasoning, not signals.',
-    lead: 'Signal groups sell you the what. The Floor is where people share the why: the chart, the thesis, the stop, and what happened next. Everyone learns from the wins and the losses.',
+    titleGold: 'Show your reasoning.',
+    lead: 'The Floor is where people share the why behind a trade: the chart, the thesis, the stop, and what happened next. Everyone learns from the wins and the losses.',
   },
   features: {
     kicker: 'What it will have',
@@ -120,7 +121,7 @@ export const PRICING_PAGE = {
         'Single lessons to try each week',
       ],
       cta: 'Start free',
-      href: '/sign-up',
+      href: '/desk',
     },
     {
       name: 'Pass',
@@ -135,7 +136,7 @@ export const PRICING_PAGE = {
         'Nothing renews without asking you first',
       ],
       cta: 'Start free, upgrade later',
-      href: '/sign-up',
+      href: '/desk',
       featured: true,
     },
     {
@@ -162,8 +163,8 @@ export const PRICING_PAGE = {
     kicker: 'Questions',
     items: [
       [
-        'Why no signals?',
-        'Because signals make you dependent on someone else’s judgement, and the day they’re wrong you won’t know why. We teach the judgement.',
+        'I know nothing about trading. Can I start?',
+        'Yes. The first lesson starts with what a price is. Every lesson takes a few minutes and uses pretend money.',
       ],
       [
         'Can I lose money on Sika Lab?',
