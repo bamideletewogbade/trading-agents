@@ -177,3 +177,22 @@ export function positionSize(
   const riskCents = Math.floor((account * riskBp) / BP_PER_WHOLE);
   return Math.floor(riskCents / (entry - stop));
 }
+
+/**
+ * `amount` growing `rateBp` a period for `periods`, rounded to the minor
+ * unit each period, as a statement or a bank would. For showing what a
+ * promised monthly return really claims.
+ */
+export function compound(
+  amount: number,
+  rateBp: number,
+  periods: number,
+): number {
+  let value = amount;
+  for (let i = 0; i < periods; i += 1) {
+    value += mulDiv(value, rateBp, BP_PER_WHOLE);
+    if (!Number.isSafeInteger(value))
+      throw new RiskError('That grows past what can be counted exactly.');
+  }
+  return value;
+}

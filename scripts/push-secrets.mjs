@@ -20,7 +20,13 @@
 import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
-const ALLOW = ['DATABASE_URL', 'OPENROUTER_API_KEY', 'OPENROUTER_HAS_CREDIT'];
+const ALLOW = [
+  'DATABASE_URL',
+  'OPENROUTER_API_KEY',
+  'OPENROUTER_HAS_CREDIT',
+  'CLERK_PUBLISHABLE_KEY',
+  'CLERK_SECRET_KEY',
+];
 
 function devVars() {
   try {

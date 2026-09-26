@@ -40,27 +40,27 @@ outdoors in strong sun.
 
 ### Surfaces and ink
 
-| Token | Hex | Use | Contrast |
-| --- | --- | --- | --- |
-| `ink` | `#0A0C10` | Page background | — |
-| `panel` | `#12161C` | Cards, sheets, chart surface | — |
-| `raised` | `#1A1F27` | Inputs, pressed states, nested panels | — |
-| `line` | `#262D38` | Decorative hairlines and gridlines only | — |
-| `edge` | `#65707F` | Borders that identify a control (inputs, secondary buttons) | 3.6:1 on panel, 3.3:1 on raised |
-| `fg` | `#E9EDF2` | Primary text | 15.4:1 on panel |
-| `fg-2` | `#AEB6C2` | Secondary text | 8.9:1 on panel |
-| `muted` | `#848D9C` | The lowest grey allowed for words people must read | 5.4:1 on panel, 4.9:1 on raised |
+| Token    | Hex       | Use                                                         | Contrast                        |
+| -------- | --------- | ----------------------------------------------------------- | ------------------------------- |
+| `ink`    | `#0A0C10` | Page background                                             | —                               |
+| `panel`  | `#12161C` | Cards, sheets, chart surface                                | —                               |
+| `raised` | `#1A1F27` | Inputs, pressed states, nested panels                       | —                               |
+| `line`   | `#262D38` | Decorative hairlines and gridlines only                     | —                               |
+| `edge`   | `#65707F` | Borders that identify a control (inputs, secondary buttons) | 3.6:1 on panel, 3.3:1 on raised |
+| `fg`     | `#E9EDF2` | Primary text                                                | 15.4:1 on panel                 |
+| `fg-2`   | `#AEB6C2` | Secondary text                                              | 8.9:1 on panel                  |
+| `muted`  | `#848D9C` | The lowest grey allowed for words people must read          | 5.4:1 on panel, 4.9:1 on raised |
 
 ### Gold, and the states
 
-| Token | Hex | Use | Contrast |
-| --- | --- | --- | --- |
-| `gold` | `#EBAE3F` | Primary action, focus ring, the learner's choice, educational highlight | 9.2:1 on panel; `ink` on gold 9.9:1 |
-| `gold-soft` | gold at 12% | Background of a highlighted row or chosen chip | text on it 12.8:1 |
-| `gain` | `#2BC4A0` | Gain text and icons, always with ▲ and a word | 8.2:1 on panel |
-| `loss` | `#F2735F` | Loss text and icons, always with ▼ and a word | 6.4:1 on panel |
-| `info` | `#6AA2F0` | Neutral information, the `SIMULATION` badge | 7.0:1 on panel |
-| caution | `gold` + ⚠ | Warnings share gold on purpose: gold already means "look here" | — |
+| Token       | Hex         | Use                                                                     | Contrast                            |
+| ----------- | ----------- | ----------------------------------------------------------------------- | ----------------------------------- |
+| `gold`      | `#EBAE3F`   | Primary action, focus ring, the learner's choice, educational highlight | 9.2:1 on panel; `ink` on gold 9.9:1 |
+| `gold-soft` | gold at 12% | Background of a highlighted row or chosen chip                          | text on it 12.8:1                   |
+| `gain`      | `#2BC4A0`   | Gain text and icons, always with ▲ and a word                           | 8.2:1 on panel                      |
+| `loss`      | `#F2735F`   | Loss text and icons, always with ▼ and a word                           | 6.4:1 on panel                      |
+| `info`      | `#6AA2F0`   | Neutral information, the `SIMULATION` badge                             | 7.0:1 on panel                      |
+| caution     | `gold` + ⚠  | Warnings share gold on purpose: gold already means "look here"          | —                                   |
 
 The gold is deliberately not Binance's (`#F0B90B`, `#FCD535`): warmer, a little amber, closer to
 cowrie and kente gold than to a crypto logo.
@@ -69,15 +69,15 @@ cowrie and kente gold than to a crypto logo.
 
 Checked with the data-viz palette validator against the `panel` surface, dark mode:
 
-| Slot | Role | Hex |
-| --- | --- | --- |
-| 1 | **You**: the learner's own run | `#C98500` |
-| 2 | **What if**: the other timeline | `#3987E5` |
-| 3 | A third series | `#199E70` |
-| 4 | | `#9085E9` |
-| 5 | | `#E66767` |
-| 6 | | `#008300` |
-| 7 | | `#D55181` |
+| Slot | Role                            | Hex       |
+| ---- | ------------------------------- | --------- |
+| 1    | **You**: the learner's own run  | `#C98500` |
+| 2    | **What if**: the other timeline | `#3987E5` |
+| 3    | A third series                  | `#199E70` |
+| 4    |                                 | `#9085E9` |
+| 5    |                                 | `#E66767` |
+| 6    |                                 | `#008300` |
+| 7    |                                 | `#D55181` |
 
 - This order passes every gate for lines and bars: worst neighbouring pair ΔE 8.6 for colour-blind
   readers (target ≥ 8), 20.9 for everyone else (floor ≥ 15), all ≥ 3:1 on the surface.
@@ -107,15 +107,15 @@ natively, because a fallback glyph from another font looks broken beside a price
 and naira), **ɛ ɔ** (Twi), **ọ ẹ ṣ** (Yoruba), **▲ ▼** (gain and loss markers), and tabular
 figures (numbers that count without jitter).
 
-| Family | Missing |
-| --- | --- |
-| **Inter** | **nothing** |
-| Plus Jakarta Sans | ɛ ɔ |
-| Space Grotesk, Archivo | ɛ ɔ, ▲ ▼ |
-| IBM Plex Sans | ɛ ɔ, ṣ, ▲ ▼ |
-| Onest | ₵ ₦, ▲ ▼ |
-| Geist | ₵ ₦, ɛ ɔ, ṣ |
-| Manrope, Schibsted Grotesk, Hanken Grotesk | ₵ ₦, ɛ ɔ, ṣ, ▲ ▼ |
+| Family                                                          | Missing              |
+| --------------------------------------------------------------- | -------------------- |
+| **Inter**                                                       | **nothing**          |
+| Plus Jakarta Sans                                               | ɛ ɔ                  |
+| Space Grotesk, Archivo                                          | ɛ ɔ, ▲ ▼             |
+| IBM Plex Sans                                                   | ɛ ɔ, ṣ, ▲ ▼          |
+| Onest                                                           | ₵ ₦, ▲ ▼             |
+| Geist                                                           | ₵ ₦, ɛ ɔ, ṣ          |
+| Manrope, Schibsted Grotesk, Hanken Grotesk                      | ₵ ₦, ɛ ɔ, ṣ, ▲ ▼     |
 | Sora, DM Sans, Figtree, Rubik, Instrument Sans, Red Hat Display | ₵ ₦, ɛ ɔ, ọ ẹ ṣ, ▲ ▼ |
 
 Inter was the only one with all of it. It's common, so the character comes from scale, gold and
@@ -132,16 +132,16 @@ draws.
 Features: `tnum` on every number that changes or aligns; `cv05` (the lowercase l with a tail) so
 `l`, `1` and `I` never blur in an amount or a code.
 
-| Style | Size / line | Weight | Tracking | Use |
-| --- | --- | --- | --- | --- |
-| `hero` | 44 / 48 | 650 | −0.02em | The number that changed |
-| `display` | 32 / 38 | 650 | −0.015em | Stat values, page openers |
-| `title` | 22 / 28 | 600 | −0.01em | Screen titles |
-| `heading` | 18 / 24 | 600 | 0 | Card titles |
-| `body` | 16 / 24 | 400 | 0 | Everything people read. Never smaller on a phone (it also stops iOS zooming on focus) |
-| `small` | 14 / 20 | 400 | 0 | Secondary lines |
-| `label` | 12 / 16 | 600 | +0.06em, capitals | Badges, section labels, tab labels |
-| `tick` | 11 / 14 | 500 | 0 | Chart axis ticks only |
+| Style     | Size / line | Weight | Tracking          | Use                                                                                   |
+| --------- | ----------- | ------ | ----------------- | ------------------------------------------------------------------------------------- |
+| `hero`    | 44 / 48     | 650    | −0.02em           | The number that changed                                                               |
+| `display` | 32 / 38     | 650    | −0.015em          | Stat values, page openers                                                             |
+| `title`   | 22 / 28     | 600    | −0.01em           | Screen titles                                                                         |
+| `heading` | 18 / 24     | 600    | 0                 | Card titles                                                                           |
+| `body`    | 16 / 24     | 400    | 0                 | Everything people read. Never smaller on a phone (it also stops iOS zooming on focus) |
+| `small`   | 14 / 20     | 400    | 0                 | Secondary lines                                                                       |
+| `label`   | 12 / 16     | 600    | +0.06em, capitals | Badges, section labels, tab labels                                                    |
+| `tick`    | 11 / 14     | 500    | 0                 | Chart axis ticks only                                                                 |
 
 Sizes are in rem, so text scales with the phone's setting up to 200% without clipping.
 
@@ -156,22 +156,22 @@ Sizes are in rem, so text scales with the phone's setting up to 200% without cli
 
 ## 6. Components
 
-| Component | Rules |
-| --- | --- |
-| **Primary button** | `gold` fill, `ink` text, 48 px tall, full width in the thumb zone on phones. One per screen |
-| **Secondary button** | `raised` fill, `fg`, 1 px `edge` border |
-| **Quiet button** | Text only in `fg-2`; for "Skip", "Not now" |
-| **Pressed / focus / disabled** | Pressed: 98% scale, one step darker. Focus: 2 px `gold` ring, 2 px offset. Disabled: 40% opacity plus a line saying why |
-| **Card** | `panel`, radius 8, 1 px `line`, padding 16, title in `label` style |
-| **Stat** | Label (`label`, `muted`), value (`display`, tabular), delta row (▲/▼, signed amount, the word) |
-| **Money chip** | The draggable GH₵100 unit. `raised`, radius 4, 44 px min; chosen: `gold` border on `gold-soft` |
-| **Slider** | 4 px track, 28 px visible thumb, 48 px hit area, the value above the thumb in large tabular figures while dragging, − and + steppers beside it, arrow keys work |
-| **Segmented choice** | For fixed options like 5× · 10× · 20× · 50×. Chosen segment: `gold-soft` fill, `gold` border, bold |
-| **Bottom nav** | Five tabs, icon **and** label always. Active: `gold` icon, `fg` label, 2 px gold bar on top. 64 px + the phone's safe area |
-| **Top bar** | Title left, one action right. No hamburger menus |
-| **Bottom sheet** | Secondary tasks and explanations. Drag handle, close button, radius 16 top |
-| **Truth badge** | See §7. Required on every experience |
-| **Experience frame** | Title and truth badge on top, the experience in the middle, actions at the bottom in thumb reach, and a "Read this as text" toggle that shows the engine's plain-language summary |
+| Component                      | Rules                                                                                                                                                                             |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primary button**             | `gold` fill, `ink` text, 48 px tall, full width in the thumb zone on phones. One per screen                                                                                       |
+| **Secondary button**           | `raised` fill, `fg`, 1 px `edge` border                                                                                                                                           |
+| **Quiet button**               | Text only in `fg-2`; for "Skip", "Not now"                                                                                                                                        |
+| **Pressed / focus / disabled** | Pressed: 98% scale, one step darker. Focus: 2 px `gold` ring, 2 px offset. Disabled: 40% opacity plus a line saying why                                                           |
+| **Card**                       | `panel`, radius 8, 1 px `line`, padding 16, title in `label` style                                                                                                                |
+| **Stat**                       | Label (`label`, `muted`), value (`display`, tabular), delta row (▲/▼, signed amount, the word)                                                                                    |
+| **Money chip**                 | The draggable GH₵100 unit. `raised`, radius 4, 44 px min; chosen: `gold` border on `gold-soft`                                                                                    |
+| **Slider**                     | 4 px track, 28 px visible thumb, 48 px hit area, the value above the thumb in large tabular figures while dragging, − and + steppers beside it, arrow keys work                   |
+| **Segmented choice**           | For fixed options like 5× · 10× · 20× · 50×. Chosen segment: `gold-soft` fill, `gold` border, bold                                                                                |
+| **Bottom nav**                 | Five tabs, icon **and** label always. Active: `gold` icon, `fg` label, 2 px gold bar on top. 64 px + the phone's safe area                                                        |
+| **Top bar**                    | Title left, one action right. No hamburger menus                                                                                                                                  |
+| **Bottom sheet**               | Secondary tasks and explanations. Drag handle, close button, radius 16 top                                                                                                        |
+| **Truth badge**                | See §7. Required on every experience                                                                                                                                              |
+| **Experience frame**           | Title and truth badge on top, the experience in the middle, actions at the bottom in thumb reach, and a "Read this as text" toggle that shows the engine's plain-language summary |
 
 **Icons:** line icons drawn inline as SVG on a 24 px grid, 1.75 px strokes, round joins. No icon
 font, no library download. The tab set: a house (Home), an open book (Learn), a **dumbbell**
@@ -181,24 +181,24 @@ font, no library download. The tab set: a house (Home), an open book (Learn), a 
 
 Every experience declares what it is, and the badge says so in words first:
 
-| Badge | Text | Icon | Border | Colour |
-| --- | --- | --- | --- | --- |
-| Simulation | `SIMULATION` | loop arrow | solid | `info` |
-| Hypothetical | `HYPOTHETICAL` | ≈ | **dashed** | `fg-2` |
-| Historical data | `HISTORICAL DATA · source · date` | clock | solid, double weight | `fg` |
-| Educational only | `EDUCATIONAL ONLY` | open book | solid | `gold` |
-| AI-generated | `AI` | small "AI" letters, never a robot | dotted | `fg-2` |
+| Badge            | Text                              | Icon                              | Border               | Colour |
+| ---------------- | --------------------------------- | --------------------------------- | -------------------- | ------ |
+| Simulation       | `SIMULATION`                      | loop arrow                        | solid                | `info` |
+| Hypothetical     | `HYPOTHETICAL`                    | ≈                                 | **dashed**           | `fg-2` |
+| Historical data  | `HISTORICAL DATA · source · date` | clock                             | solid, double weight | `fg`   |
+| Educational only | `EDUCATIONAL ONLY`                | open book                         | solid                | `gold` |
+| AI-generated     | `AI`                              | small "AI" letters, never a robot | dotted               | `fg-2` |
 
 Text, icon, border style, then colour: a badge still reads in greyscale and in forced-colours
 mode.
 
 ## 8. Motion
 
-| Token | Duration | Use |
-| --- | --- | --- |
-| `fast` | 120 ms | Press feedback |
-| `base` | 220 ms | Tabs, chips, toggles |
-| `slow` | 420 ms | Sheets, page changes |
+| Token   | Duration | Use                                                         |
+| ------- | -------- | ----------------------------------------------------------- |
+| `fast`  | 120 ms   | Press feedback                                              |
+| `base`  | 220 ms   | Tabs, chips, toggles                                        |
+| `slow`  | 420 ms   | Sheets, page changes                                        |
 | `story` | 0.6–20 s | Consequence sequences (a month plays out); always skippable |
 
 Easing: out `cubic-bezier(0.16, 1, 0.3, 1)` for things arriving; in-out `cubic-bezier(0.65, 0,
@@ -236,11 +236,11 @@ data. No 3D in navigation, menus, dashboards or definitions (spec §17).
 
 The phone is canonical: design at 375 px, check at 360 and 390. No horizontal scrolling, ever.
 
-| Width | Layout |
-| --- | --- |
-| < 480 | One column, bottom nav |
-| 480–1023 | The same column, centred, at most 480 px wide |
-| ≥ 1024 | Nav becomes a left rail; a Lab and the coach can sit side by side; content at most 1120 px |
+| Width    | Layout                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------ |
+| < 480    | One column, bottom nav                                                                     |
+| 480–1023 | The same column, centred, at most 480 px wide                                              |
+| ≥ 1024   | Nav becomes a left rail; a Lab and the coach can sit side by side; content at most 1120 px |
 
 ## 12. Words
 
@@ -266,3 +266,25 @@ Look at `/design` and the five tabs on a phone, then say yes or change:
 3. The five tabs, their icons and labels (Home · Learn · Practice · Progress · Coach).
 4. The truth badges.
 5. The motion rules.
+
+---
+
+## Addendum, 26 Sep 2026: the marketing site's voice
+
+The marketing pages (`app/(marketing)`) add a terminal-meets-game layer on top of the rules above.
+These are deliberate, narrow exceptions:
+
+- **Mono for labels and figures.** JetBrains Mono (`font-mono`) for kickers, tickers, stats and
+  anything that reads like a terminal. Inter stays the reading face.
+- **One gold sheen per headline** (`text-gold-sheen`): the phrase that matters, e.g. "Practise it
+  here first." It falls back to solid gold where clipping isn't supported.
+- **One glow**, behind the hero's primary button only (`animate-glow`). It never appears inside a
+  lesson.
+- **The 3D noise field** is the hero's picture of the product: grey candles flicker as noise and
+  a gold line draws itself through them as the signal. It's lazy, skipped for reduced motion,
+  Save-Data and low memory, and replaced by the same picture in flat SVG.
+- **Motion that marks change:** page-in, scroll reveals, the menu's staggered links, chat bubbles
+  arriving, card flips in the noise-or-signal game. All of it collapses under reduced motion.
+
+Inside lessons, the original rules hold unchanged: no gradients, no glows, gold only for "you" or
+"look here".

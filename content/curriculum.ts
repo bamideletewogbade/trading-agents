@@ -45,8 +45,14 @@ export type Lesson = {
   status: LessonStatus;
   /** Lesson ids this one assumes. A hint for single-lesson learners, not a gate. */
   needs?: string[];
-  /** Where on the landing page it can be played today. */
+  /** Where it can be played today: a page, or a page and an anchor. */
   playAt?: string;
+  /**
+   * Words people use when they're looking for this lesson but don't know
+   * its name ("dangote", "overbought"). The open-ended "what do you want to
+   * understand?" box matches on these as well as the title.
+   */
+  keywords?: string[];
 };
 
 export const TOPICS: Record<Topic, { label: string; blurb: string }> = {
@@ -92,7 +98,7 @@ export const STAGES = [
     title: 'How markets work',
     outcome:
       'You can say what a price is, place every kind of order, and see where the fees hide.',
-    lessons: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6'],
+    lessons: ['m0', 'm1', 'm2', 'm3', 'm4', 'f0', 'm5', 'm6'],
   },
   {
     key: 'charts',
@@ -141,6 +147,55 @@ export const STAGES = [
 export const LESSONS: Lesson[] = [
   // How markets work
   {
+    id: 'm0',
+    title: 'Noise and signal: how traders think',
+    topic: 'mind',
+    level: 'starter',
+    minutes: 5,
+    truth: 'simulation',
+    status: 'live',
+    playAt: '/mindset',
+    keywords: [
+      'mindset',
+      'noise',
+      'signal',
+      'hype',
+      'psychology',
+      'beginner',
+      'start',
+      'get rich',
+      'extra income',
+      'side hustle',
+    ],
+    practice:
+      'Slide a filter over a jumpy price until the real direction shows, then sort headlines into noise and signal.',
+  },
+  {
+    id: 'f0',
+    title: 'How an IPO works: the Dangote offer',
+    topic: 'fundamental',
+    level: 'starter',
+    minutes: 8,
+    truth: 'educational',
+    status: 'live',
+    playAt: '/ipo',
+    keywords: [
+      'ipo',
+      'dangote',
+      'refinery',
+      'offer',
+      'allotment',
+      'listing',
+      'shares',
+      'subscribe',
+      'prospectus',
+      'ngx',
+      'public offer',
+    ],
+    practice:
+      'Put a budget into an application, see what oversubscription does to it, and size the company up at the offer price.',
+  },
+  {
     id: 'm1',
     title: 'What a price actually is',
     topic: 'markets',
@@ -153,6 +208,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'm2',
+    keywords: ['spread', 'bid', 'ask', 'fees'],
     title: 'Bid, ask and the spread',
     topic: 'markets',
     level: 'starter',
@@ -164,6 +220,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'm3',
+    keywords: ['order', 'limit', 'stop order', 'market order', 'buy', 'sell'],
     title: 'Market, limit and stop orders',
     topic: 'markets',
     level: 'starter',
@@ -176,6 +233,17 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'm4',
+    keywords: [
+      'forex',
+      'fx',
+      'stocks',
+      'crypto',
+      'bitcoin',
+      'cocoa',
+      'gold',
+      'oil',
+      'commodities',
+    ],
     title: 'Forex, stocks, crypto, commodities',
     topic: 'markets',
     level: 'starter',
@@ -187,18 +255,34 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'm5',
+    keywords: [
+      'leverage',
+      'margin',
+      'liquidation',
+      'liquidated',
+      'lot size',
+      'forex',
+    ],
     title: 'Leverage and margin',
     topic: 'markets',
     level: 'starter',
     minutes: 5,
     truth: 'simulation',
     status: 'live',
-    playAt: '#risk-lab',
+    playAt: '/#risk-lab',
     practice:
       'You have $100. Choose your leverage, predict the damage of a 3% fall, then watch the market do it.',
   },
   {
     id: 'm6',
+    keywords: [
+      'broker',
+      'signals',
+      'account manager',
+      'scam',
+      'telegram',
+      'whatsapp group',
+    ],
     title: 'Who makes money from you',
     topic: 'markets',
     level: 'starter',
@@ -223,18 +307,20 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'c2',
+    keywords: ['candle', 'candlestick', 'wick', 'open', 'close', 'chart'],
     title: 'Anatomy of a candle',
     topic: 'charts',
     level: 'starter',
     minutes: 4,
     truth: 'simulation',
     status: 'live',
-    playAt: '#demo',
+    playAt: '/#demo',
     practice:
       'Step through a chart candle by candle: open, high, low, close, and who won each one.',
   },
   {
     id: 'c3',
+    keywords: ['timeframe', 'daily', 'hourly', 'chart'],
     title: 'Timeframes',
     topic: 'charts',
     level: 'starter',
@@ -247,6 +333,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'c4',
+    keywords: ['trend', 'uptrend', 'downtrend', 'higher highs', 'chart'],
     title: 'Trends: higher highs, higher lows',
     topic: 'charts',
     level: 'starter',
@@ -259,13 +346,21 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'c5',
+    keywords: [
+      'support',
+      'resistance',
+      'level',
+      'chart',
+      'read the market',
+      'read a chart',
+    ],
     title: 'Support and resistance',
     topic: 'charts',
     level: 'starter',
     minutes: 6,
     truth: 'simulation',
     status: 'live',
-    playAt: '#demo',
+    playAt: '/#demo',
     needs: ['c2'],
     practice:
       'Find where buyers keep stepping in. Then see what happens when price comes back.',
@@ -284,6 +379,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'c7',
+    keywords: ['volume', 'breakout'],
     title: 'Volume: who showed up',
     topic: 'charts',
     level: 'core',
@@ -298,19 +394,21 @@ export const LESSONS: Lesson[] = [
   // Risk first
   {
     id: 'r1',
+    keywords: ['stop loss', 'stop', 'stopped out', 'sl', 'risk'],
     title: 'Stop losses: where am I wrong?',
     topic: 'risk',
     level: 'starter',
     minutes: 6,
     truth: 'simulation',
     status: 'live',
-    playAt: '#demo',
+    playAt: '/#demo',
     needs: ['c5'],
     practice:
       'Set your stop before you buy, then replay the same trade with a tight stop, a stop with room, and none.',
   },
   {
     id: 'r2',
+    keywords: ['position size', 'lot size', 'how much to buy', '1%', 'risk'],
     title: 'Position size and the 1% rule',
     topic: 'risk',
     level: 'starter',
@@ -323,6 +421,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'r3',
+    keywords: ['risk reward', 'r multiple', 'win rate'],
     title: 'Risk-reward and R-multiples',
     topic: 'risk',
     level: 'core',
@@ -335,6 +434,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'r4',
+    keywords: ['drawdown', 'lost money', 'blew my account', 'recover'],
     title: 'Drawdown and the climb back',
     topic: 'risk',
     level: 'starter',
@@ -358,6 +458,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'r6',
+    keywords: ['expectancy', 'edge', 'win rate'],
     title: 'Expectancy',
     topic: 'risk',
     level: 'core',
@@ -384,6 +485,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 't2',
+    keywords: ['moving average', 'sma', 'ema', 'crossover', 'indicator'],
     title: 'Moving averages',
     topic: 'technical',
     level: 'core',
@@ -396,6 +498,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 't3',
+    keywords: ['rsi', 'overbought', 'oversold', 'momentum', 'indicator'],
     title: 'RSI and momentum',
     topic: 'technical',
     level: 'core',
@@ -408,6 +511,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 't4',
+    keywords: ['macd', 'indicator'],
     title: 'MACD',
     topic: 'technical',
     level: 'core',
@@ -420,6 +524,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 't5',
+    keywords: ['bollinger', 'atr', 'volatility', 'indicator'],
     title: 'Volatility: Bollinger Bands and ATR',
     topic: 'technical',
     level: 'core',
@@ -432,6 +537,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 't6',
+    keywords: ['candlestick pattern', 'engulfing', 'pin bar', 'doji', 'hammer'],
     title: 'Candlestick patterns, honestly',
     topic: 'technical',
     level: 'core',
@@ -444,6 +550,13 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 't7',
+    keywords: [
+      'head and shoulders',
+      'double top',
+      'flag',
+      'triangle',
+      'pattern',
+    ],
     title: 'Chart patterns',
     topic: 'technical',
     level: 'core',
@@ -456,6 +569,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 't8',
+    keywords: ['fibonacci', 'fib', 'retracement'],
     title: 'Fibonacci, with a sceptic',
     topic: 'technical',
     level: 'advanced',
@@ -494,6 +608,7 @@ export const LESSONS: Lesson[] = [
   // Fundamental analysis
   {
     id: 'f1',
+    keywords: ['news', 'fundamentals', 'what moves prices'],
     title: 'What moves prices',
     topic: 'fundamental',
     level: 'starter',
@@ -505,6 +620,14 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'f2',
+    keywords: [
+      'interest rate',
+      'central bank',
+      'cbn',
+      'bank of ghana',
+      'mpr',
+      'policy rate',
+    ],
     title: 'Central banks and interest rates',
     topic: 'fundamental',
     level: 'core',
@@ -517,6 +640,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'f3',
+    keywords: ['inflation', 'naira', 'cedi', 'devaluation', 'currency'],
     title: 'Inflation and your currency',
     topic: 'fundamental',
     level: 'core',
@@ -529,6 +653,13 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'f4',
+    keywords: [
+      'income statement',
+      'earnings',
+      'profit',
+      'revenue',
+      'financial statements',
+    ],
     title: 'Reading an income statement',
     topic: 'fundamental',
     level: 'core',
@@ -540,6 +671,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'f5',
+    keywords: ['valuation', 'p/e', 'pe ratio', 'dividend', 'cheap stock'],
     title: 'Valuation: cheap or just bad?',
     topic: 'fundamental',
     level: 'core',
@@ -564,6 +696,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'f7',
+    keywords: ['cocoa', 'oil', 'gold', 'commodities', 'naira', 'cedi'],
     title: 'Commodities and African currencies',
     topic: 'fundamental',
     level: 'core',
@@ -601,6 +734,7 @@ export const LESSONS: Lesson[] = [
   // Strategies
   {
     id: 's1',
+    keywords: ['trend following', 'strategy'],
     title: 'Trend following',
     topic: 'strategies',
     level: 'core',
@@ -613,6 +747,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 's2',
+    keywords: ['range trading', 'mean reversion', 'strategy'],
     title: 'Range trading',
     topic: 'strategies',
     level: 'core',
@@ -625,6 +760,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 's3',
+    keywords: ['breakout', 'strategy'],
     title: 'Breakouts',
     topic: 'strategies',
     level: 'core',
@@ -661,6 +797,13 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 's6',
+    keywords: [
+      'investing',
+      'long term',
+      'dca',
+      'dollar cost averaging',
+      'retirement',
+    ],
     title: 'Investing is not trading',
     topic: 'strategies',
     level: 'starter',
@@ -672,6 +815,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 's7',
+    keywords: ['backtest', 'strategy', 'system', 'rules'],
     title: 'Build your own strategy',
     topic: 'strategies',
     level: 'advanced',
@@ -686,6 +830,7 @@ export const LESSONS: Lesson[] = [
   // Prove it
   {
     id: 'p1',
+    keywords: ['trading plan', 'plan'],
     title: 'Your trading plan',
     topic: 'mind',
     level: 'core',
@@ -698,6 +843,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'p2',
+    keywords: ['journal', 'trading journal'],
     title: 'The trading journal',
     topic: 'mind',
     level: 'starter',
@@ -709,6 +855,14 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: 'p3',
+    keywords: [
+      'fomo',
+      'revenge trading',
+      'overtrading',
+      'psychology',
+      'emotions',
+      'discipline',
+    ],
     title: 'FOMO, revenge and overtrading',
     topic: 'mind',
     level: 'core',

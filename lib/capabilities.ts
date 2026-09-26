@@ -9,6 +9,8 @@
  *   saved.
  * - No OpenRouter credit: no Jev and no generated coach turns. The coach
  *   speaks only authored lines; the simulations do not notice.
+ * - No Clerk keys: no accounts. Sign-in pages say so, and onboarding and
+ *   lessons work as a guest, remembered on the device.
  * - No Paystack: Pro is shown as coming soon.
  * - No WhatsApp Cloud API: "Continue on WhatsApp" becomes a plain wa.me link,
  *   or disappears while there is no number (`lib/brand.ts`).
@@ -23,6 +25,8 @@ import { WHATSAPP_DIGITS } from './brand';
 
 export type Capabilities = {
   database: boolean;
+  /** Accounts through Clerk. Without it, everyone learns as a guest on their device. */
+  auth: boolean;
   /** Jev, through OpenRouter's Decisions API. */
   jev: boolean;
   /** Generated coach turns and voice, through OpenRouter chat and audio. */
@@ -43,6 +47,7 @@ export function capabilities(): Capabilities {
     set('OPENROUTER_API_KEY') && process.env.OPENROUTER_HAS_CREDIT === 'true';
   return {
     database: set('DATABASE_URL'),
+    auth: set('CLERK_PUBLISHABLE_KEY') && set('CLERK_SECRET_KEY'),
     jev: credit,
     coach: credit,
     payments: set('PAYSTACK_SECRET_KEY'),

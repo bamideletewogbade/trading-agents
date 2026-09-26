@@ -9,7 +9,7 @@ the how.
 > investing education**: reading charts, technical and fundamental analysis, and strategies.
 > It's organised as a curated roadmap plus single lessons for people who already trade. The
 > **landing page (`app/page.tsx`) is now the brief**, and `content/curriculum.ts` is the scope:
-> 50 lessons in 7 stages, each one something you do. Research, including the GitHub search and
+> 52 lessons in 7 stages, each one something you do. Research, including the GitHub search and
 > the build-vs-fork call, is in `docs/research/competitors.md`. The rules in CLAUDE.md stand
 > unchanged: no signals, engines calculate, the AI explains, and nothing moves real money. The
 > Payday month below stays reachable at `/home` as an earlier prototype. The next build is the

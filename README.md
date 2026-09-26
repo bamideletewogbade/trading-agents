@@ -9,8 +9,9 @@ signals.
 _Sika_ is Twi for money. It's a working name, set in `lib/brand.ts`.
 
 - **The brief since the 26 Sep reset:** the landing page (`app/page.tsx`) and the curriculum
-  (`content/curriculum.ts`: 50 lessons, 7 stages)
+  (`content/curriculum.ts`: 52 lessons, 7 stages)
 - **Who else does this, and the GitHub build-vs-fork call:** `docs/research/competitors.md`
+- **How it makes money, the community, and an honest review:** `docs/strategy/monetization-and-community.md`
 - **Original why and what:** `docs/product-spec.md`
 - **How and in what order:** `docs/implementation-plan.md`
 - **How it looks:** `docs/design-brief.md`, drawn at `/design`
@@ -33,6 +34,8 @@ none set, the whole Payday month still plays; nothing is saved and the coach spe
 lines.
 
 - **Database:** `DATABASE_URL` to a Neon project, or to any local Postgres, then `pnpm db:migrate`.
+- **Accounts:** `CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from a Clerk application. Without
+  them, sign-in pages say accounts are coming and everyone learns as a guest on their device.
 - **AI:** `OPENROUTER_API_KEY`, and `OPENROUTER_HAS_CREDIT=true` once the account has prepaid
   credit. Then `pnpm probe:openrouter` should show one Jev decision and one coach turn.
 
@@ -51,6 +54,8 @@ Secrets, type **Secret**):
 - `DATABASE_URL`: the Neon pooled connection string. Until it's set, the site works and saves
   nothing (`/api/runs` answers 204). Run `pnpm db:migrate` against it once.
 - `OPENROUTER_API_KEY`, and `OPENROUTER_HAS_CREDIT=true` once the account has prepaid credit.
+- `CLERK_PUBLISHABLE_KEY` (a plain variable is fine, it's public) and `CLERK_SECRET_KEY`
+  (Secret). In Clerk, add the site's URL to the allowed origins.
 
 Other ways to deploy the same Worker, if Workers Builds is ever disconnected:
 
@@ -80,7 +85,29 @@ Five layers; each talks only to the one below (plan §3).
 Stack: vinext (the Next.js API on Vite) on Cloudflare Workers, React 19, Tailwind 4, zod. Neon +
 Drizzle, OpenRouter, Paystack and the WhatsApp Cloud API arrive in the phases that need them.
 
-## Where things stand (26 Sep 2026)
+## Where things stand (26 Sep 2026, evening)
+
+**The site, accounts and onboarding.**
+
+- **Marketing pages:** `/` (3D noise-vs-signal hero, an open-ended "what do you want to
+  understand?" box, the chart lesson, Risk Lab), `/roadmap`, `/mindset`, `/ipo` (the Dangote
+  offer, explained with a calculator), `/community` (the Floor, with a founding-circle list) and
+  `/pricing`. There's a responsive nav with a full-screen phone menu, and an announcement bar that
+  follows the IPO's own dates.
+- **Accounts:** `/sign-in` and `/sign-up` through Clerk, in our colours, with a guest mode when
+  keys are absent.
+- **Onboarding:** `/onboarding` is a chat with Sika, the coach. Answers can be typed in plain
+  words or tapped, and are read by `lib/onboarding/flow.ts`, with Jev as the fallback reader.
+  Onboarding places you on the roadmap. `/desk` shows where you start and your first three
+  lessons. The server stores the profile and recomputes the placement itself.
+- **New engines, all checked:**
+  - `lib/engines/ipo.ts`: applications, allotment, listing moves, company value, P/E;
+  - `lib/engines/noise.ts`: moving averages and direction changes;
+  - `compound()` in `lib/engines/risk.ts`.
+- **Checks:** `pnpm check` runs 80 of them. `pnpm walk:onboarding` chats through onboarding to
+  the desk in a browser; CI runs it against Postgres and checks the profile was saved.
+
+### Earlier the same day
 
 **Reset.** The first build looked like a budgeting app. The product is now trading and
 investing education, and the landing page is the brief. Two lessons are playable on it, each

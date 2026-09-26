@@ -14,16 +14,89 @@ export const LANDING = {
   },
 
   hero: {
-    eyebrow: 'Trading and investing, taught by doing',
-    title: 'Learn to read the market. Practise before it costs you.',
-    lead: 'Charts, technical and fundamental analysis, and real strategies, in lessons you play rather than read. Simulated and historical markets, a coach that asks before it tells, and never a signal.',
-    primary: 'Read your first chart',
-    secondary: 'See the roadmap',
-    promises: [
-      'No signals',
-      'No real money',
-      'Follow the path or take one lesson',
+    eyebrow: 'For Nigeria and Ghana · Trading and investing, taught by doing',
+    titleLead: 'Trading is a skill.',
+    titleGold: 'Practise it here first.',
+    lead: 'Learn to read charts, weigh the news and manage risk in bite-size lessons you play, not videos you watch. It\u2019s extra income built on skill, not luck. No signals, no \u201caccount managers\u201d, no get-rich-quick.',
+    primary: 'Start free',
+    secondary: 'Try a lesson first',
+    promises: ['No signals', 'No real money', 'One lesson or the whole path'],
+  },
+
+  ask: {
+    label: 'What do you want to understand?',
+    placeholders: [
+      'how the Dangote IPO works',
+      'what RSI actually means',
+      'why I keep getting stopped out',
+      'how to read a chart',
+      'is forex leverage dangerous?',
+      'what moves the naira',
     ],
+    go: 'Find it',
+    hint: 'Ask in your own words. We\u2019ll find the lessons that teach it.',
+    none: 'Nothing on that yet. Try \u201ccharts\u201d, \u201crisk\u201d, \u201cIPO\u201d or \u201cRSI\u201d. Or start the roadmap from the top.',
+    results: (count: number) => (count === 1 ? '1 lesson' : `${count} lessons`),
+    play: 'Play it now',
+    open: 'See it on the roadmap',
+  },
+
+  personas: {
+    kicker: 'Who this is for',
+    title: 'You don\u2019t need a finance degree. You need practice.',
+    items: [
+      {
+        who: 'Curious about the Dangote IPO',
+        need: 'You want to know what you\u2019re buying, what \u201callotment\u201d means, and what happens on listing day.',
+        give: 'IPO 101, with the real offer as the example',
+        href: '/ipo',
+      },
+      {
+        who: 'Want extra income, the honest way',
+        need: 'You\u2019ve seen the screenshots. You want the skill behind them, without betting your salary to learn it.',
+        give: 'The roadmap, from your first chart',
+        href: '/roadmap',
+      },
+      {
+        who: 'Already in a signals group',
+        need: 'You copy entries but don\u2019t know why they work, or why they stop working.',
+        give: 'Single lessons: TA, FA, risk, one at a time',
+        href: '/roadmap',
+      },
+      {
+        who: 'Lost money before',
+        need: 'A blown account, a scheme that vanished, a stop that kept getting hit. You want to understand what happened.',
+        give: 'Risk first: stops, sizing and leverage',
+        href: '/#risk-lab',
+      },
+    ],
+  },
+
+  ipoTeaser: {
+    kicker: 'Everyone is talking about it',
+    title: 'The Dangote IPO has a whole country asking how shares work.',
+    lead: 'Good. That\u2019s the right question. Our IPO lesson uses the real offer to teach what an application buys, what oversubscription does to it, and how to size up a company. We don\u2019t tell you whether to buy.',
+    facts: {
+      price: 'Offer price',
+      minimum: 'Minimum',
+      window: 'Offer window',
+      size: 'Company at offer price',
+    },
+    cta: 'Take IPO 101',
+  },
+
+  noiseTeaser: {
+    kicker: 'The trader\u2019s mindset',
+    title: 'Most of what you see is noise. Learn to find the signal.',
+    lead: 'A WhatsApp broadcast screaming \u201c10× by Friday\u201d is noise. A central bank raising rates is signal. Traders who last know the difference, and they know most days nothing important happened at all.',
+    cta: 'Play noise vs signal',
+  },
+
+  community: {
+    kicker: 'Coming: the Floor',
+    title: 'A community that shares reasoning, not signals.',
+    lead: 'Post your chart, your thesis and your stop before the market moves, and let everyone see how it played out. Reputation comes from how well you think, not from profit screenshots.',
+    cta: 'Join the founding circle',
   },
 
   demo: {
@@ -330,6 +403,7 @@ export const LANDING = {
   pricing: {
     kicker: 'How it’s paid for',
     title: 'Free to start. Pay by MoMo when it’s earned it.',
+    cta: 'See pricing',
     tiers: [
       [
         'Free',
@@ -349,15 +423,15 @@ export const LANDING = {
 
   build: {
     kicker: 'Where we are',
-    title: 'What’s built, and what comes next',
+    title: 'What’s built, and what’s next',
     items: [
       [
         'Now',
-        'Two lessons playable on this page: support and stops, and leverage.',
+        'Four lessons you can play today: support and stops, leverage, IPO 101, and noise vs signal. Accounts, and an onboarding chat that finds your starting point.',
       ],
       [
         'Next',
-        'The lesson player: full charts, the first two stages of the roadmap, and progress saved.',
+        'The lesson player: full charts, stages 1 to 3 of the roadmap, and progress saved to your account.',
       ],
       [
         'Then',
@@ -367,13 +441,18 @@ export const LANDING = {
         'After',
         'Market replays on historical data, fundamental analysis, and the daily chart on WhatsApp.',
       ],
-      ['Later', 'Passes by MoMo, partner access, the 30-day paper challenge.'],
+      ['Later', 'Passes by MoMo, the Floor, mentor cohorts, partner access.'],
     ],
   },
-
   closing: {
     title: 'Your first chart takes three minutes.',
-    cta: 'Read your first chart',
+    lead: 'No card, no video, no course to sign up for. Just a chart, a decision, and what happened.',
+    cta: 'Start free',
+    secondary: 'Try a lesson first',
+  },
+  roadmapStrip: {
+    cta: 'See every lesson',
+    single: 'Already trade? Every lesson also stands alone.',
   },
 
   footer: {

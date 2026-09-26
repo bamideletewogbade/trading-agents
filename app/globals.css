@@ -269,3 +269,140 @@
     animation-play-state: paused;
   }
 }
+
+/* ── Motion for the marketing pages ─────────────────────────────────────
+   Every animation here says something happened: a page arrived, a menu
+   opened, a section came into view. The reduced-motion rule above cuts all
+   of them to their end state. */
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-page-in {
+  animation: page-in 420ms var(--ease-out) both;
+}
+
+@keyframes menu-item {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-menu-item {
+  animation: menu-item 360ms var(--ease-out) both;
+}
+
+/* Scroll reveals (components/motion/Reveal.tsx). */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 600ms var(--ease-out),
+    transform 600ms var(--ease-out);
+}
+html.js [data-reveal][data-shown] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A slow gold breath behind the one thing to press. */
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+@utility animate-glow {
+  animation: glow 3.2s ease-in-out infinite;
+}
+
+/* Cards that flip in 3D (the noise-or-signal game). */
+@utility preserve-3d {
+  transform-style: preserve-3d;
+}
+@utility backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+@utility perspective-1000 {
+  perspective: 1000px;
+}
+
+/* The typing dots while the coach "thinks". */
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+@utility animate-typing {
+  animation: typing 1.1s ease-in-out infinite;
+}
+
+/* A chat message arriving. */
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-bubble-in {
+  animation: bubble-in 320ms var(--ease-out) both;
+}
+
+/* Gold text for the one phrase in a headline that matters. Solid colour in
+   forced-colours mode and for anyone whose browser can't clip. */
+@utility text-gold-sheen {
+  color: var(--color-gold);
+  @supports (background-clip: text) {
+    background-image: linear-gradient(
+      100deg,
+      var(--color-gold) 20%,
+      #f6d48d 45%,
+      var(--color-gold) 70%
+    );
+    background-size: 220% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: sheen 6s linear infinite;
+  }
+}
+@keyframes sheen {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
+}

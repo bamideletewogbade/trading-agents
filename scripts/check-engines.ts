@@ -48,7 +48,24 @@ import {
   positionSize,
   recoveryBp,
   runLeverage,
+  compound,
 } from '../lib/engines/risk.ts';
+import {
+  afterListing,
+  allotment,
+  application,
+  companyValue,
+  offerStatus,
+  peHundredths,
+  trillionsHundredths,
+} from '../lib/engines/ipo.ts';
+import {
+  NOISE_LAB,
+  movingAverage,
+  noisyPrices,
+  turns,
+} from '../lib/engines/noise.ts';
+import { DANGOTE } from '../content/ipo.ts';
 
 let passed = 0;
 const failures: string[] = [];
@@ -588,6 +605,123 @@ check('recovery, doubling and position size', () => {
   ok(positionSize(100_000, 100, 4_025, 3_910) * (4_025 - 3_910) <= 1_000);
   throws(() => positionSize(100_000, 100, 4_000, 4_000));
 });
+
+check('compounding, rounded each period', () => {
+  equal(compound(20_000_000, 300, 1), 20_600_000);
+  equal(compound(10_000, 10_000, 3), 80_000);
+  // 1.3^12 × 20,000,000 = 465,961,702.4; rounding each month loses under a kobo a month.
+  equal(compound(20_000_000, 3_000, 12), 465_961_701);
+  equal(compound(5, 0, 12), 5);
+});
+
+/* ── IPO maths (curriculum f0, with the Dangote offer as the example) ─── */
+
+const OFFER = DANGOTE.offer;
+
+check(
+  'an application buys whole lots, at least the minimum, and the change balances',
+  () => {
+    deepStrictEqual(application(OFFER, 525_000), {
+      shares: 10,
+      cost: 525_000,
+      change: 0,
+    });
+    deepStrictEqual(application(OFFER, 524_999), {
+      shares: 0,
+      cost: 0,
+      change: 524_999,
+    });
+    deepStrictEqual(application(OFFER, 1_000_000), {
+      shares: 10,
+      cost: 525_000,
+      change: 475_000,
+    });
+    for (let budget = 0; budget < 50_000_000; budget += 123_457) {
+      const result = application(OFFER, budget);
+      equal(result.cost + result.change, budget);
+      equal(result.shares % OFFER.lot, 0);
+      ok(result.shares === 0 || result.shares >= OFFER.minimum);
+      ok(result.change >= 0);
+    }
+  },
+);
+
+check(
+  'an allotment never gives more than applied for, and refunds the rest to the kobo',
+  () => {
+    for (const applied of [10, 20, 100, 990, 12_340]) {
+      for (let allotBp = 0; allotBp <= 10_000; allotBp += 250) {
+        const result = allotment(OFFER, applied, allotBp);
+        ok(result.allotted <= applied);
+        equal(result.allotted % OFFER.lot, 0);
+        equal(
+          result.allotted * OFFER.price + result.refund,
+          applied * OFFER.price,
+        );
+      }
+    }
+    throws(() => allotment(OFFER, 10, 10_001));
+  },
+);
+
+check('a listing move changes the value by exactly the move', () => {
+  deepStrictEqual(afterListing(OFFER, 100, 0), { value: 5_250_000, change: 0 });
+  deepStrictEqual(afterListing(OFFER, 100, 1_000), {
+    value: 5_775_000,
+    change: 525_000,
+  });
+  deepStrictEqual(afterListing(OFFER, 100, -2_000), {
+    value: 4_200_000,
+    change: -1_050_000,
+  });
+});
+
+check(
+  'the company at the offer price lands on what NGX published, within rounding',
+  () => {
+    const value = companyValue(OFFER);
+    const hundredths = trillionsHundredths(value);
+    ok(
+      Math.abs(hundredths - DANGOTE.publishedValueHundredths) <= 5,
+      `${hundredths}`,
+    );
+    const pe = peHundredths(value, DANGOTE.halfYearProfit * 2);
+    ok(pe > 1_200 && pe < 1_350, `P/E ${pe}`);
+    throws(() => peHundredths(value, 0));
+  },
+);
+
+check('the offer knows whether it is upcoming, open or closed', () => {
+  equal(offerStatus(OFFER, '2026-09-13'), 'upcoming');
+  equal(offerStatus(OFFER, '2026-09-14'), 'open');
+  equal(offerStatus(OFFER, '2026-10-13'), 'open');
+  equal(offerStatus(OFFER, '2026-10-14'), 'closed');
+});
+
+/* ── Noise and signal (curriculum m0) ──────────────────────────────────── */
+
+check('noisy prices are seeded and the average is the plain average', () => {
+  deepStrictEqual(noisyPrices(NOISE_LAB, 'a'), noisyPrices(NOISE_LAB, 'a'));
+  const prices = noisyPrices(NOISE_LAB, 'a');
+  equal(prices.length, NOISE_LAB.steps);
+  const average = movingAverage(prices, 10);
+  equal(average[8], null);
+  const window = prices.slice(11, 21);
+  equal(average[20], Math.floor(window.reduce((a, b) => a + b, 0) / 10));
+  throws(() => movingAverage(prices, 0));
+});
+
+check(
+  'a longer average changes its mind less than the price does, on every seed',
+  () => {
+    for (let n = 0; n < 300; n += 1) {
+      const prices = noisyPrices(NOISE_LAB, `n-${n}`);
+      ok(turns(movingAverage(prices, 20)) < turns(prices), `n-${n}`);
+    }
+    equal(turns([1, 2, 3, 2, 1, 2]), 2);
+    equal(turns([null, 1, 1, 1]), 0);
+  },
+);
 
 /* ── Report ────────────────────────────────────────────────────────────── */
 

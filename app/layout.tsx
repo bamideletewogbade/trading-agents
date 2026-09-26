@@ -30,11 +30,13 @@ export const viewport = {
 };
 
 /*
- * Applies the device's gain-and-loss colour choice before first paint, so a
+ * Marks that JavaScript runs (`html.js`: scroll reveals only hide content
+ * when something will show it again), and applies the device's
+ * gain-and-loss colour choice before first paint, so a
  * learner who needs blue–orange never sees a flash of red and green. Must stay
  * in step with PALETTE_KEY in components/shell/PaletteSetting.tsx.
  */
-const PALETTE_SCRIPT = `try{if(localStorage.getItem('sika:palette')==='blue-orange')document.documentElement.dataset.palette='blue-orange'}catch(e){}`;
+const PALETTE_SCRIPT = `document.documentElement.classList.add('js');try{if(localStorage.getItem('sika:palette')==='blue-orange')document.documentElement.dataset.palette='blue-orange'}catch(e){}`;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

@@ -240,7 +240,7 @@ single lessons for people who already trade and want one thing.
 | **Replay simulators** (cTrader, TraderSync, ReplayTrader) | Rewind a real day and trade it candle by candle                                                                                                                                                                             | Sealed historical replays for our Prove-it stage                                                                       | No teaching layer, and a brokerage upsell                           |
 | **Telegram and WhatsApp "academies"** (West Africa)       | Signals, screenshots of profits, paid mentorship                                                                                                                                                                            | Nothing. They are the problem: Ghana arrested 41 people in an illegal-forex crackdown, and Nigeria's SEC moved on CBEX | Everything                                                          |
 
-**Our curriculum** (`content/curriculum.ts`) has 50 lessons in 7 stages: How markets work, Read
+**Our curriculum** (`content/curriculum.ts`) has 52 lessons in 7 stages: How markets work, Read
 a chart, **Risk first**, Technical analysis, Fundamental analysis, Strategies, and Prove it (plan,
 journal, replays, a 30-day paper challenge graded on process). Every lesson has a _practice_
 line, the thing you do. Every lesson also stands alone, with "builds on" hints instead of locks,

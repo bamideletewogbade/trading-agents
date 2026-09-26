@@ -8,6 +8,12 @@
 # then `pnpm db:migrate` to create the tables.
 DATABASE_URL=
 
+# Clerk (accounts). Both, or neither: without them everyone learns as a
+# guest and the sign-in pages say accounts are coming. The publishable key is
+# public by design (pk_test_… / pk_live_…); the secret key is not.
+CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
 # OpenRouter: Jev (Decisions API) and the coach (Phase 2).
 # Set OPENROUTER_HAS_CREDIT=true only once the account has prepaid credit:
 # the Decisions API answers 402 on a trial balance.

@@ -93,3 +93,27 @@ export const learningEvents = pgTable(
     index('learning_events_type_idx').on(table.type, table.createdAt),
   ],
 );
+
+/**
+ * What onboarding learned about someone, and where it placed them. One row
+ * per learner. `clerk_user_id` joins a device's learner to an account, so
+ * signing in on a second phone finds the same profile.
+ *
+ * `placement` is what the server's copy of lib/onboarding/flow.ts computed
+ * from `profile`, never what a browser sent. The profile is small on
+ * purpose: a first name and answers to seven questions. No email, no phone.
+ */
+export const learnerProfiles = pgTable('learner_profiles', {
+  learnerId: uuid('learner_id')
+    .primaryKey()
+    .references(() => learners.id),
+  clerkUserId: text('clerk_user_id').unique(),
+  profile: jsonb('profile').notNull(),
+  placement: jsonb('placement').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
