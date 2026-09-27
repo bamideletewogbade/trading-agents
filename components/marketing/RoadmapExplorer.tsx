@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { COURSES_PAGE as C } from '@/content/pages';
 import { STAGES, lesson, type Lesson } from '@/content/curriculum';
 import { syncCompleted, useCompleted } from '@/lib/client/progress';
+import { LessonRow, type RowState } from '@/components/learn/LessonRow';
 
 /**
  * The roadmap on one screen: seven stages to pick from, and the picked
@@ -13,57 +14,16 @@ import { syncCompleted, useCompleted } from '@/lib/client/progress';
  * stage's lessons show at a time, so the page never becomes a long scroll.
  *
  * The stages are tabs (arrow keys move between them), drawn from the one
- * curriculum list (content/curriculum.ts).
+ * curriculum list (content/curriculum.ts). Each lesson row folds open to
+ * say what you'll do in it (components/learn/LessonRow.tsx); the button at
+ * the foot plays the next one in one tap.
  */
 
-type State = 'done' | 'live' | 'soon';
+type State = RowState;
 
 function stateOf(item: Lesson, completed: readonly string[]): State {
   if (completed.includes(item.id)) return 'done';
   return item.status === 'live' && item.playAt ? 'live' : 'soon';
-}
-
-function Row({ item, state }: { item: Lesson; state: State }) {
-  const icon = (
-    <span
-      aria-hidden
-      className={`coin grid size-9 shrink-0 place-items-center text-sm font-bold ${state === 'done' ? 'text-ink [--face:var(--color-gold)] [--rim:var(--color-gold-deep)]' : state === 'live' ? 'text-fg-2' : 'text-muted opacity-60'}`}
-    >
-      {state === 'done' ? '✓' : state === 'live' ? '▶' : '·'}
-    </span>
-  );
-  const words = (
-    <span className="min-w-0 flex-1">
-      <span className="block type-small font-semibold text-fg">
-        {item.title}
-      </span>
-      <span className="block font-mono type-tick text-muted">
-        {C.minutes(item.minutes)} · {C.truth[item.truth]}
-        {state === 'soon' ? ` · ${C.soon}` : ''}
-      </span>
-    </span>
-  );
-  return (
-    <li>
-      {state === 'soon' ? (
-        <div className="flex min-h-14 items-center gap-3 px-3 py-2">
-          {icon}
-          {words}
-        </div>
-      ) : (
-        <Link
-          href={item.playAt!}
-          className="flex min-h-14 items-center gap-3 px-3 py-2 hover:bg-raised"
-        >
-          {icon}
-          {words}
-          <span aria-hidden className="text-fg-2">
-            →
-          </span>
-        </Link>
-      )}
-    </li>
-  );
 }
 
 export function RoadmapExplorer() {
@@ -183,7 +143,13 @@ export function RoadmapExplorer() {
         </div>
         <ul className="divide-y divide-line">
           {items.map((item) => (
-            <Row key={item.id} item={item} state={stateOf(item, completed)} />
+            <LessonRow
+              key={item.id}
+              item={item}
+              state={stateOf(item, completed)}
+              meta={`${C.minutes(item.minutes)} · ${C.truth[item.truth]}${stateOf(item, completed) === 'soon' ? ` · ${C.soon}` : ''}`}
+              words={C.row}
+            />
           ))}
         </ul>
         <div className="border-t border-line p-4">

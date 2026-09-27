@@ -18,7 +18,8 @@ import { askFallback, askRule, type AskVerdict } from '@/lib/decisions/ask';
  * the keyword search). Only when those find nothing does it ask the server,
  * where Jev picks from the live lessons; if that's slow or down, the
  * weakest keyword matches still show. Crisis phrases get the support card;
- * requests for tips get the lessons on who profits from them.
+ * requests for tips get the lessons on who profits from them, and a way
+ * to today's signals, which come with their reasons and record.
  *
  * The placeholder cycles through real questions people ask, so an empty box
  * still shows what it's for.
@@ -168,6 +169,14 @@ export function AskBox({ compact = false }: { compact?: boolean }) {
                   </li>
                 ))}
               </ul>
+              {answer.kind === 'tip' ? (
+                <Link
+                  href="/signals"
+                  className="mt-3 inline-flex min-h-11 items-center type-small font-semibold text-gold underline underline-offset-4"
+                >
+                  {ASK_REPLY.signals} →
+                </Link>
+              ) : null}
             </>
           )}
         </div>

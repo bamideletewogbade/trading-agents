@@ -10,51 +10,22 @@ import {
   type Topic,
 } from '@/content/curriculum';
 import { LIBRARY } from '@/content/member';
+import { nextLesson, stageOf } from '@/lib/curriculum/next';
 import { searchLessons } from '@/lib/curriculum/search';
 import { useCompleted } from '@/lib/client/progress';
+import { LessonRow, type RowState } from '@/components/learn/LessonRow';
 
 /**
  * Every lesson on its own, for people who already trade and want one
  * thing: search in their own words, or filter by topic. With no filter the
- * lessons sit under their stages, in roadmap order, so the library reads
- * as the same path the Learn tab walks. On a laptop the search and topics
- * stay beside the list.
+ * lessons sit under their courses, in order, each course folded except the
+ * one you're in, so the page stays short. Every lesson row folds open to
+ * say what you'll do in it. On a laptop the search and topics stay beside
+ * the list.
  */
-function Row({ item, done }: { item: Lesson; done: boolean }) {
-  const live = item.status === 'live' && item.playAt;
-  const body = (
-    <>
-      <span
-        aria-hidden
-        className={`coin grid size-10 shrink-0 place-items-center text-sm font-bold ${done ? 'text-ink [--face:var(--color-gold)] [--rim:var(--color-gold-deep)]' : live ? 'text-fg-2' : 'text-muted opacity-60'}`}
-      >
-        {done ? '✓' : live ? '▶' : '·'}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block type-small font-semibold text-fg">
-          {item.title}
-        </span>
-        <span className="block font-mono type-tick text-muted">
-          {TOPICS[item.topic].label} · {LIBRARY.minutes(item.minutes)}
-          {done ? ` · ${LIBRARY.done}` : live ? '' : ` · ${LIBRARY.soon}`}
-        </span>
-      </span>
-    </>
-  );
-  return (
-    <li>
-      {live ? (
-        <Link
-          href={item.playAt!}
-          className="flex min-h-16 items-center gap-3 px-3 py-3 hover:bg-raised active:bg-raised"
-        >
-          {body}
-        </Link>
-      ) : (
-        <div className="flex min-h-16 items-center gap-3 px-3 py-3">{body}</div>
-      )}
-    </li>
-  );
+function stateOf(item: Lesson, completed: readonly string[]): RowState {
+  if (completed.includes(item.id)) return 'done';
+  return item.status === 'live' && item.playAt ? 'live' : 'soon';
 }
 
 function List({
@@ -66,9 +37,18 @@ function List({
 }) {
   return (
     <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-panel">
-      {items.map((item) => (
-        <Row key={item.id} item={item} done={completed.includes(item.id)} />
-      ))}
+      {items.map((item) => {
+        const state = stateOf(item, completed);
+        return (
+          <LessonRow
+            key={item.id}
+            item={item}
+            state={state}
+            meta={`${TOPICS[item.topic].label} · ${LIBRARY.minutes(item.minutes)}${state === 'done' ? ` · ${LIBRARY.done}` : state === 'soon' ? ` · ${LIBRARY.soon}` : ''}`}
+            words={LIBRARY.row}
+          />
+        );
+      })}
     </ul>
   );
 }
@@ -77,6 +57,12 @@ export function Library() {
   const completed = useCompleted();
   const [topic, setTopic] = useState<Topic | 'all'>('all');
   const [query, setQuery] = useState('');
+  // Courses opened or folded by hand; the rest follow the default, which
+  // opens only the course holding the next lesson.
+  const [folded, setFolded] = useState<Record<string, boolean>>({});
+  const here = stageOf(nextLesson(completed, null));
+  const isOpen = (key: string, s: number) =>
+    folded[key] === undefined ? s === here : !folded[key];
   const matches = query.trim()
     ? searchLessons(query, 12).map((m) => m.lesson)
     : null;
@@ -134,26 +120,50 @@ export function Library() {
             <List items={filtered} completed={completed} />
           )
         ) : (
-          <ol className="space-y-6">
+          <ol className="space-y-3">
             {STAGES.map((stage, s) => {
               const items = stage.lessons.map((id) => lesson(id));
               const finished = items.filter((item) =>
                 completed.includes(item.id),
               ).length;
+              const open = isOpen(stage.key, s);
               return (
                 <li key={stage.key}>
-                  <div className="mb-2 flex items-baseline justify-between gap-2">
-                    <h2 className="type-heading text-fg">
-                      <span className="mr-2 font-mono type-tick text-gold uppercase">
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    aria-controls={`course-${stage.key}`}
+                    aria-label={`${LIBRARY.stage(s + 1)}: ${stage.title}, ${LIBRARY.progress(finished, items.length)}`}
+                    onClick={() =>
+                      setFolded((f) => ({ ...f, [stage.key]: open }))
+                    }
+                    className={`flex min-h-14 w-full items-center justify-between gap-3 rounded-lg border px-4 py-2 text-left ${s === here ? 'border-gold bg-gold-soft' : 'border-line bg-panel hover:border-edge'}`}
+                  >
+                    <span className="min-w-0">
+                      <span className="block font-mono type-tick text-gold uppercase">
                         {LIBRARY.stage(s + 1)}
                       </span>
-                      {stage.title}
-                    </h2>
-                    <span className="shrink-0 font-mono type-tick text-muted num">
-                      {LIBRARY.progress(finished, items.length)}
+                      <span className="block type-heading text-fg">
+                        {stage.title}
+                      </span>
                     </span>
-                  </div>
-                  <List items={items} completed={completed} />
+                    <span className="flex shrink-0 items-center gap-2">
+                      <span className="font-mono type-tick text-muted num">
+                        {LIBRARY.progress(finished, items.length)}
+                      </span>
+                      <span
+                        aria-hidden
+                        className={`text-fg-2 transition-transform ${open ? 'rotate-180' : ''}`}
+                      >
+                        ▾
+                      </span>
+                    </span>
+                  </button>
+                  {open ? (
+                    <div id={`course-${stage.key}`} className="mt-2">
+                      <List items={items} completed={completed} />
+                    </div>
+                  ) : null}
                 </li>
               );
             })}

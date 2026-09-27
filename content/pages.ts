@@ -33,6 +33,7 @@ export const COURSES_PAGE = {
   start: (title: string) => `Start: ${title}`,
   next: (title: string) => `Next: ${title}`,
   again: 'Play this course again',
+  row: { play: 'Play it', again: 'Play again', soon: 'Coming soon' },
   coming: 'This course is being built. The lessons above are coming soon.',
 };
 
@@ -388,9 +389,9 @@ export const PRICING_PAGE = {
       items: [
         'All seven courses and every single lesson',
         'Signals on every market, with their full records',
-        'The AI coach, which remembers your habits',
-        'Market replays on historical data',
-        'A certificate at the end of each course',
+        'The AI coach, which remembers your habits (soon)',
+        'Market replays on historical data (soon)',
+        'A certificate at the end of each course (soon)',
         'Monthly or yearly, by MoMo, card or bank transfer',
         'Nothing renews without asking you first',
       ],

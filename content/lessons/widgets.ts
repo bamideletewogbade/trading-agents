@@ -48,7 +48,7 @@ export const PLAYER = {
   loading: 'Loading…',
   notFound: {
     title: 'That lesson isn’t ready yet',
-    body: 'It’s on the path, and it’s coming. Here are the ones you can play now.',
+    body: 'It’s in the courses, and it’s coming. Here are the ones you can play now.',
     cta: 'See all lessons',
   },
 };

@@ -94,6 +94,7 @@ export const LIBRARY = {
   stage: (n: number) => `Course ${n}`,
   progress: (done: number, total: number) => `${done} of ${total} done`,
   glossary: 'Stuck on a word? The glossary',
+  row: { play: 'Play it', again: 'Play again', soon: 'Coming soon' },
 };
 
 export const ME = {

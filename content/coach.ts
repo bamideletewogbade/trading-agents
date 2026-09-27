@@ -26,7 +26,7 @@ export const REFLECT = {
     short: 'Say a bit more, in your own words. A sentence is plenty.',
     off_topic:
       'Saved. That reads like a different question, though. Have another go at this one?',
-    tip: 'Lessons won’t tell you what to buy. They teach you to judge a call yourself, whoever makes it. Saved to your notes.',
+    tip: 'Lessons won’t tell you what to buy. They teach you to judge a call yourself, whoever makes it; Signals shows what our rules see, with the reasons and the record. Saved to your notes.',
     kept: 'Saved to your notes.',
     crisis: '',
   } satisfies Record<ReflectVerdict, string>,
@@ -62,4 +62,6 @@ export const ASK_REPLY = {
   thinking: 'Looking…',
   either: 'Did you mean one of these?',
   tip: 'Lessons won’t tell you what to buy. These teach you to judge a call yourself, whoever makes it:',
+  signals:
+    'Want calls with their reasons and their record? See today’s signals',
 } as const;
