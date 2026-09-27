@@ -184,6 +184,14 @@ export const FEATURES_PAGE = {
       cta: 'How signals work',
     },
     {
+      icon: 'paper',
+      name: 'Paper account',
+      title: 'Real prices, pretend money',
+      body: 'Take a signal or your own idea with $10,000 of pretend money. Fills at the live bid and ask; your stop and target are watched for you.',
+      href: '/paper',
+      cta: 'Open the paper account',
+    },
+    {
       icon: 'journal',
       name: 'Journal',
       title: 'Every trade, measured in R',
@@ -310,7 +318,7 @@ export const COMMUNITY_PAGE = {
     thesis: ['Thesis', 'Higher lows'],
     stop: ['Stop', 'Under the lows'],
     risk: ['Risk', '1% of account'],
-    note: 'An illustration of a future feature. Not a real post or a real asset.',
+    note: 'Example',
   },
   owners: {
     kicker: 'For community owners',
@@ -345,7 +353,7 @@ export const COMMUNITY_PAGE = {
     cta: 'Talk to us',
     done: 'Thanks. We’ll be in touch about your community.',
     fallback: 'Create an account so we can reach you',
-    note: 'In development with our first communities. Early partners shape it with us.',
+    note: 'Now welcoming our first communities. Early partners help shape it.',
   },
   join: {
     title: 'Be one of the first 500 on the Floor',
@@ -375,7 +383,7 @@ export const PRICING_PAGE = {
       blurb: 'Start here, stay as long as you like.',
       items: [
         'The first course, and a free lesson each week',
-        'Tools and the trading journal',
+        'Tools, the trading journal and the paper account',
         'Today’s signals, with their reasons',
         'The glossary and the IPO guide',
       ],
@@ -384,7 +392,7 @@ export const PRICING_PAGE = {
     },
     {
       name: 'Pass',
-      price: 'Price set in the pilot',
+      price: 'Price coming soon',
       blurb: 'Every course, every signal and a coach.',
       items: [
         'All seven courses and every single lesson',

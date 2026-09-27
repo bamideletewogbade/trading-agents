@@ -213,13 +213,13 @@ export function Path() {
 
         {saved?.where === 'device' ? (
           <p className="mt-4 rounded-md border border-dashed border-edge p-3 type-small text-fg-2">
-            {DESK.device}{' '}
             <Link
               href="/sign-up"
               className="font-semibold text-gold underline underline-offset-4"
             >
               {DESK.account}
-            </Link>
+            </Link>{' '}
+            {DESK.accountWhy}
           </p>
         ) : null}
       </aside>

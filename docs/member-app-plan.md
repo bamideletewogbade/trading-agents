@@ -340,6 +340,19 @@ are included in the Pass, not sold alone, until legal advice says otherwise.
 
 ---
 
+## 9a. Status (27 Sep 2026)
+
+- **Phase A is done:** the desk, the side nav, signals v1, the journal and the tools.
+- **From Phase C, done:**
+  - Account sync: the `accounts` table links a sign-in to one learner, and a device's guest
+    history moves into the account on sign-in.
+  - The journal and the paper account are append-only logs that sync by id.
+  - The paper account itself: server fills at the live bid and ask, sizing from risk, and
+    stops and targets watched on hourly bars, each exit written once.
+- **Still to do in Phase C:** the permanent `signals` table and its public record page.
+- **Before sync reaches production,** migration `0003` (the `accounts` table) must be applied
+  with `pnpm db:migrate`. Until then, the routes fall back to the older rule.
+
 ## 10. Decisions for you
 
 1. **Markets first.**

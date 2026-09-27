@@ -33,8 +33,9 @@ export const DESK = {
   done: 'Done',
   soon: 'Soon',
   here: 'Start',
-  device: 'Your progress is saved on this device.',
-  account: 'Create a free account to keep it everywhere',
+  account: 'Create a free account',
+  accountWhy:
+    'Keep your courses, journal and paper account wherever you sign in.',
   streak: 'Streak',
   level: 'Level',
   today: 'Today',
@@ -54,6 +55,16 @@ export const DESK = {
     won: 'Won',
     average: 'Average',
     openTrades: (n: number) => (n === 1 ? '1 trade open' : `${n} trades open`),
+  },
+  paper: {
+    title: 'Paper account',
+    empty:
+      'Trade real prices with $10,000 of pretend money. Every trade gets a stop, and the journal measures it.',
+    cta: 'Start paper trading',
+    open: 'Open it',
+    value: 'Value',
+    returned: 'Return',
+    positions: 'Open',
   },
   tools: {
     title: 'Tools',

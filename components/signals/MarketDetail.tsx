@@ -5,7 +5,7 @@ import { SIGNALS as C, factText } from '@/content/signals';
 import { lesson } from '@/content/curriculum';
 import { formatBp } from '@/lib/core/money';
 import { formatR } from '@/lib/engines/trades';
-import { formatPrice } from '@/lib/markets/catalog';
+import { formatPrice, marketById } from '@/lib/markets/catalog';
 import type { Detail, PlayedView } from '@/lib/markets/view';
 import { useMarket } from '@/lib/client/signals';
 import {
@@ -229,6 +229,16 @@ function Ready({ detail }: { detail: Detail }) {
         source: 'signal',
       }).toString()
     : '';
+  const paperQuery = call
+    ? new URLSearchParams({
+        market: market.id,
+        side: call.side,
+        stop: price(call.stop),
+        target: price(call.target),
+        setup: call.setup,
+        signal: '1',
+      }).toString()
+    : '';
   const newestFirst = [...detail.history].reverse();
 
   return (
@@ -405,15 +415,23 @@ function Ready({ detail }: { detail: Detail }) {
                   <Levels summary={detail} />
                 </div>
                 <div className="mt-4 grid gap-2">
+                  {marketById(market.id)?.paper ? (
+                    <Link
+                      href={`/paper?${paperQuery}`}
+                      className="btn-3d flex min-h-12 items-center justify-center rounded-md bg-gold px-4 type-body font-bold text-ink"
+                    >
+                      {C.actions.paperTrade}
+                    </Link>
+                  ) : null}
                   <Link
                     href={`/journal?${query}`}
-                    className="btn-3d flex min-h-12 items-center justify-center rounded-md bg-gold px-4 type-body font-bold text-ink"
+                    className="flex min-h-12 items-center justify-center rounded-md border border-edge bg-raised px-4 type-body font-semibold text-fg"
                   >
                     {C.actions.log}
                   </Link>
                   <Link
                     href={`/tools?${query}`}
-                    className="flex min-h-12 items-center justify-center rounded-md border border-edge bg-raised px-4 type-body font-semibold text-fg"
+                    className="flex min-h-11 items-center justify-center rounded-md px-4 type-small font-semibold text-fg-2 underline underline-offset-4 hover:text-fg"
                   >
                     {C.actions.size}
                   </Link>

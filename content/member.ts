@@ -41,7 +41,7 @@ export const NAV = {
       items: [
         { href: '/journal', label: 'Journal', icon: 'journal' },
         { href: '/tools', label: 'Tools', icon: 'tools' },
-        { href: null, label: 'Paper account', icon: 'paper' },
+        { href: '/paper', label: 'Paper account', icon: 'paper' },
       ],
     },
     {
@@ -122,10 +122,7 @@ export const ME = {
   notes: {
     title: 'Your notes',
     none: 'When a lesson asks what you think, your answer is saved here.',
-    where: (n: number) =>
-      n > 10
-        ? `The latest 10 of ${n}. Kept on this device only.`
-        : 'Kept on this device only.',
+    where: (n: number) => (n > 10 ? `The latest 10 of ${n}.` : ''),
   },
   settings: {
     title: 'Settings',
@@ -142,8 +139,8 @@ export const ME = {
   },
   account: {
     title: 'Account',
-    guest: 'You’re learning as a guest. Your progress is saved on this device.',
-    create: 'Create a free account to keep it everywhere',
+    guest: 'Keep your courses, journal and paper account wherever you sign in.',
+    create: 'Create a free account',
   },
   honest:
     'XP counts learning, never money. Missing a day only resets your streak. Nothing else.',

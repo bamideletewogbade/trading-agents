@@ -251,13 +251,6 @@ export function LessonPlayer({
               <p className="type-tick text-fg-2">{PLAYER.done.badge}</p>
             </div>
           ) : null}
-          <p className="mt-3 font-mono type-tick text-muted">
-            {finished.saved === 'saving'
-              ? '…'
-              : finished.saved === 'server'
-                ? `✓ ${PLAYER.done.saved}`
-                : `✓ ${PLAYER.done.savedLocal}`}
-          </p>
         </div>
         <div className="mt-4 rounded-xl border border-line bg-panel p-5">
           <p className="font-mono type-label text-muted">

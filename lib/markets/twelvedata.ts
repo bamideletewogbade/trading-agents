@@ -13,8 +13,26 @@
 
 import { MarketDataError, toUnits, type TimedBar } from './kraken.ts';
 
-export function twelveDataUrl(symbol: string, key: string): string {
-  return `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(symbol)}&interval=1day&outputsize=720&timezone=UTC&apikey=${encodeURIComponent(key)}`;
+export function twelveDataUrl(
+  symbol: string,
+  key: string,
+  interval: '1day' | '1h' = '1day',
+): string {
+  return `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(symbol)}&interval=${interval}&outputsize=720&timezone=UTC&apikey=${encodeURIComponent(key)}`;
+}
+
+export function twelveDataPriceUrl(symbol: string, key: string): string {
+  return `https://api.twelvedata.com/price?symbol=${encodeURIComponent(symbol)}&apikey=${encodeURIComponent(key)}`;
+}
+
+/** `{ price: "1.13912" }`, as an integer price. */
+export function parseTwelveDataPrice(body: unknown, decimals: number): number {
+  const price = (body ?? {}) as { price?: unknown; message?: unknown };
+  if (typeof price.price !== 'string' && typeof price.price !== 'number')
+    throw new MarketDataError(
+      `Twelve Data said: ${typeof price.message === 'string' ? price.message : 'no price'}`,
+    );
+  return toUnits(String(price.price), decimals);
 }
 
 const DAY_SECONDS = 86_400;
@@ -30,6 +48,7 @@ export function parseTwelveData(
   body: unknown,
   decimals: number,
   nowSeconds: number,
+  barSeconds = DAY_SECONDS,
 ): TimedBar[] {
   if (!body || typeof body !== 'object')
     throw new MarketDataError('Twelve Data sent something that is not JSON.');
@@ -50,10 +69,17 @@ export function parseTwelveData(
       string,
       unknown
     >;
-    const time = Date.parse(`${text(datetime).slice(0, 10)}T00:00:00Z`) / 1000;
+    // "2026-09-26" for a day, "2026-09-26 14:00:00" for an hour; both UTC.
+    const stamp = text(datetime);
+    const time =
+      Date.parse(
+        stamp.length > 10
+          ? `${stamp.replace(' ', 'T')}Z`
+          : `${stamp}T00:00:00Z`,
+      ) / 1000;
     if (!Number.isSafeInteger(time))
       throw new MarketDataError('Twelve Data sent a bar without a date.');
-    if (time + DAY_SECONDS > nowSeconds) continue;
+    if (time + barSeconds > nowSeconds) continue;
     bars.push({
       time,
       open: toUnits(text(open), decimals),

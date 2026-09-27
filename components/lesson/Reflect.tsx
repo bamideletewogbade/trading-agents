@@ -133,7 +133,6 @@ export function Reflect({
               : REFLECT.saveAgain}
         </button>
       ) : null}
-      <p className="type-tick text-muted">{REFLECT.privacy}</p>
     </div>
   );
 }

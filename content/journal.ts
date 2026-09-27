@@ -10,7 +10,20 @@ import type {
   TradeSource,
 } from '@/lib/engines/journal';
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 /** A trade's date on this device's calendar: "26 Sep". */
 export function tradeDay(ms: number): string {
@@ -23,7 +36,6 @@ export const JOURNAL = {
   kicker: 'Trade',
   title: 'Journal',
   lead: 'Every trade, measured in R: what you risked, what you made, and why you took it. Paper trades count.',
-  device: 'Kept on this device.',
   add: 'Log a trade',
   empty:
     'No trades yet. Log one from a signal or your own idea. After ten, the journal starts to tell you things.',
@@ -80,6 +92,8 @@ export const JOURNAL = {
     save: 'Close trade',
   },
   remove: 'Delete',
+  paperTag: 'Paper',
+  paperOpen: 'In paper account',
   confirmRemove: 'Delete this trade for good?',
   planned: (r: string) => `aims for ${r}`,
   problems: {

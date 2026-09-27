@@ -266,3 +266,29 @@ export function withExit(
     ? next
     : null;
 }
+
+/**
+ * The journal as an append-only log, so two devices merge by keeping every
+ * event (lib/sync/log.ts): saving a trade (again, after an edit or a close)
+ * and removing one. The latest event for a trade wins.
+ */
+export type JournalEvent =
+  | { kind: 'saved'; id: string; at: number; trade: JournalTrade }
+  | { kind: 'removed'; id: string; at: number; trade: string };
+
+/** The trades a log adds up to, newest first. */
+export function journalFrom(events: readonly JournalEvent[]): JournalTrade[] {
+  const latest = new Map<string, JournalEvent>();
+  for (const e of [...events].sort(
+    (a, b) => a.at - b.at || a.id.localeCompare(b.id),
+  )) {
+    latest.set(e.kind === 'saved' ? e.trade.id : e.trade, e);
+  }
+  return [...latest.values()]
+    .flatMap((e) => (e.kind === 'saved' ? [e.trade] : []))
+    .sort(
+      (a, b) =>
+        (b.closedAt ?? b.openedAt) - (a.closedAt ?? a.openedAt) ||
+        a.id.localeCompare(b.id),
+    );
+}

@@ -21,8 +21,10 @@ import {
   type JournalTrade,
   type TradeSource,
 } from '@/lib/engines/journal';
+import { paperJournal } from '@/lib/engines/paper';
 import { formatR } from '@/lib/engines/trades';
 import { formatPrice } from '@/lib/markets/catalog';
+import { usePaper } from '@/lib/client/paper';
 import {
   newTradeId,
   removeTrade,
@@ -261,7 +263,14 @@ function TradeForm({
   );
 }
 
-function TradeRow({ trade }: { trade: JournalTrade }) {
+function TradeRow({
+  trade,
+  paper = false,
+}: {
+  trade: JournalTrade;
+  /** From the paper account: closed there, not here, and not deleted. */
+  paper?: boolean;
+}) {
   const [closing, setClosing] = useState(false);
   const [exit, setExit] = useState('');
   const [bad, setBad] = useState(false);
@@ -285,6 +294,11 @@ function TradeRow({ trade }: { trade: JournalTrade }) {
               {trade.market}
             </span>
             <SideTag side={trade.side} />
+            {paper ? (
+              <span className="rounded-sm border border-info px-1 font-mono text-[0.625rem] leading-4 text-info uppercase">
+                {C.paperTag}
+              </span>
+            ) : null}
             <span className="type-tick text-fg-2">
               {C.setups[trade.setup]} · {C.feelings[trade.feeling]}
             </span>
@@ -308,6 +322,13 @@ function TradeRow({ trade }: { trade: JournalTrade }) {
             >
               {formatR(r)}
             </p>
+          ) : paper ? (
+            <Link
+              href="/paper"
+              className="inline-flex min-h-10 items-center rounded-md border border-edge bg-raised px-3 type-tick font-semibold text-fg"
+            >
+              {C.paperOpen}
+            </Link>
           ) : (
             <button
               type="button"
@@ -317,15 +338,17 @@ function TradeRow({ trade }: { trade: JournalTrade }) {
               {C.close.action}
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => {
-              if (window.confirm(C.confirmRemove)) removeTrade(trade.id);
-            }}
-            className="mt-1 inline-flex min-h-9 items-center type-tick text-muted underline underline-offset-2 hover:text-fg"
-          >
-            {C.remove}
-          </button>
+          {paper ? null : (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(C.confirmRemove)) removeTrade(trade.id);
+              }}
+              className="mt-1 inline-flex min-h-9 items-center type-tick text-muted underline underline-offset-2 hover:text-fg"
+            >
+              {C.remove}
+            </button>
+          )}
         </div>
       </div>
       {closing && r === null ? (
@@ -414,9 +437,16 @@ export function Journal({ start }: { start: JournalStart }) {
       window.history.replaceState(null, '', '/journal');
     }
   };
-  const stats = journalStats(trades);
-  const open = trades.filter((t) => t.exit === null);
-  const closed = trades.filter((t) => t.exit !== null);
+  // Paper trades join the journal, so its numbers cover everything you took.
+  const paper = usePaper();
+  const fromPaper = paper.state === 'ready' ? paperJournal(paper.account) : [];
+  const paperIds = new Set(fromPaper.map((t) => t.id));
+  const everything = [...trades, ...fromPaper].sort(
+    (a, b) => (b.closedAt ?? b.openedAt) - (a.closedAt ?? a.openedAt),
+  );
+  const stats = journalStats(everything);
+  const open = everything.filter((t) => t.exit === null);
+  const closed = everything.filter((t) => t.exit !== null);
   const leakLesson = lesson(C.leak.lesson);
 
   return (
@@ -425,9 +455,7 @@ export function Journal({ start }: { start: JournalStart }) {
         <div>
           <p className="font-mono type-label text-gold">{C.kicker}</p>
           <h1 className="mt-1 type-display text-fg">{C.title}</h1>
-          <p className="mt-2 max-w-[60ch] type-body text-fg-2">
-            {C.lead} <span className="text-muted">{C.device}</span>
-          </p>
+          <p className="mt-2 max-w-[60ch] type-body text-fg-2">{C.lead}</p>
         </div>
         {!adding ? (
           <button
@@ -442,13 +470,13 @@ export function Journal({ start }: { start: JournalStart }) {
 
       {adding ? <TradeForm start={prefill} onDone={done} /> : null}
 
-      {!trades.length && !adding ? (
+      {!everything.length && !adding ? (
         <p className="mt-6 rounded-xl border border-dashed border-edge p-5 type-body text-fg-2">
           {C.empty}
         </p>
       ) : null}
 
-      {trades.length ? (
+      {everything.length ? (
         <div className="mt-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)] lg:items-start lg:gap-6">
           <div className="min-w-0 space-y-4">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -475,7 +503,11 @@ export function Journal({ start }: { start: JournalStart }) {
                 </h2>
                 <ul className="divide-y divide-line">
                   {open.map((trade) => (
-                    <TradeRow key={trade.id} trade={trade} />
+                    <TradeRow
+                      key={trade.id}
+                      trade={trade}
+                      paper={paperIds.has(trade.id)}
+                    />
                   ))}
                 </ul>
               </section>
@@ -495,7 +527,11 @@ export function Journal({ start }: { start: JournalStart }) {
                 </h2>
                 <ul className="divide-y divide-line">
                   {closed.map((trade) => (
-                    <TradeRow key={trade.id} trade={trade} />
+                    <TradeRow
+                      key={trade.id}
+                      trade={trade}
+                      paper={paperIds.has(trade.id)}
+                    />
                   ))}
                 </ul>
               </section>

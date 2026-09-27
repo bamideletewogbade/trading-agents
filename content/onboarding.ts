@@ -181,7 +181,6 @@ export const ONBOARDING = {
     go: 'Show me my path',
     change: 'Change an answer',
     saved: 'Saved',
-    savedLocal: 'Saved on this device. Create an account to keep it everywhere.',
   },
 
   marketLabels: {

@@ -74,3 +74,37 @@ export function parseKraken(body: unknown, decimals: number): TimedBar[] {
   }
   return bars;
 }
+
+export function krakenTickerUrl(pair: string): string {
+  return `https://api.kraken.com/0/public/Ticker?pair=${encodeURIComponent(pair)}`;
+}
+
+/**
+ * Kraken's ticker, `{ result: { XXBTZUSD: { a: [ask, …], b: [bid, …], c:
+ * [last, …] } } }`, as integer prices. The bid is below the ask, or it's
+ * not a quote.
+ */
+export function parseKrakenTicker(
+  body: unknown,
+  decimals: number,
+): { bid: number; ask: number; last: number } {
+  const { error, result } = (body ?? {}) as {
+    error?: unknown;
+    result?: unknown;
+  };
+  if (Array.isArray(error) && error.length)
+    throw new MarketDataError(`Kraken said: ${String(error[0])}`);
+  const entry =
+    result && typeof result === 'object' ? Object.values(result)[0] : null;
+  const pick = (key: 'a' | 'b' | 'c') => {
+    const field = (entry as Record<string, unknown> | null)?.[key];
+    const first = Array.isArray(field) ? field[0] : null;
+    return typeof first === 'string' ? toUnits(first, decimals) : null;
+  };
+  const ask = pick('a');
+  const bid = pick('b');
+  const last = pick('c');
+  if (!ask || !bid || !last || bid > ask)
+    throw new MarketDataError('Kraken sent no usable quote.');
+  return { bid, ask, last };
+}

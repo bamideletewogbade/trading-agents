@@ -16,8 +16,6 @@ export const REFLECT = {
   save: 'Save my answer',
   saveAgain: 'Save again',
   saving: 'Saving…',
-  privacy:
-    'Saved on this device only. To choose a reply, an automated reader checks it once; we don’t keep a copy.',
   reply: {
     concrete: 'That’s specific enough to act on. Saved to your notes.',
     vague:

@@ -204,3 +204,18 @@ export const LEVERAGE_FROM_TENTHS = 10;
  * investments pay, and where the promise check says so.
  */
 export const TOO_GOOD_MONTHLY_BP = 300;
+
+/**
+ * A typed price at a market's decimals: "84,025.55" at 1 decimal is
+ * 840256 (rounded half up past the market's precision). Null when it isn't
+ * a price.
+ */
+export function priceAt(text: string, decimals: number): number | null {
+  const match = /^(\d+)(?:\.(\d+))?$/.exec(text.trim().replace(/,/g, ''));
+  if (!match) return null;
+  const fraction = match[2] ?? '';
+  const kept = fraction.slice(0, decimals).padEnd(decimals, '0');
+  let units = Number(match[1]) * pow10(decimals) + Number(kept || '0');
+  if (fraction.length > decimals && Number(fraction[decimals]) >= 5) units += 1;
+  return Number.isSafeInteger(units) && units > 0 ? units : null;
+}

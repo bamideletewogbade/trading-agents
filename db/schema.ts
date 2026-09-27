@@ -154,3 +154,21 @@ export const decisions = pgTable(
     index('decisions_learner_idx').on(table.learnerId, table.createdAt),
   ],
 );
+
+/**
+ * Which learner an account is (docs/member-app-plan.md, account sync). A
+ * device starts as an anonymous learner (a cookie); the first time someone
+ * signs in, the account is linked to a learner, and from then on every
+ * device signed in to that account reads and writes the same one. What a
+ * device did as a guest before signing in moves to the account's learner
+ * (lib/learning/account.ts), so nothing learned is left behind.
+ */
+export const accounts = pgTable('accounts', {
+  clerkUserId: text('clerk_user_id').primaryKey(),
+  learnerId: uuid('learner_id')
+    .notNull()
+    .references(() => learners.id),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});

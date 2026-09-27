@@ -70,7 +70,7 @@ pnpm typecheck && pnpm lint
 pnpm shots             # with pnpm dev running: every screen at 360/375/390/1024/1440 px, fails on sideways scroll
 pnpm walk:onboarding   # with pnpm dev running: chats through onboarding to the desk
 pnpm walk:lessons      # with pnpm dev running: plays all 47 lessons of stages 1–6 to the finish
-pnpm walk:trade        # with pnpm dev running: a signal into the journal, trades logged and closed, tools
+pnpm walk:trade        # with pnpm dev running: journal, tools, and a paper trade placed and closed
 pnpm db:generate       # after changing db/schema.ts: write the next migration (commit it)
 pnpm db:migrate        # apply migrations to DATABASE_URL (env or .dev.vars), over HTTPS for Neon
 pnpm probe:openrouter  # one live Jev call and one coach turn; costs well under a cent
@@ -92,7 +92,7 @@ npx oxfmt <files>      # format what you touched
     "course" wherever people read it.
   - `app/(member)/`: Clerk loads only here. Inside it, `(tabs)/` is the signed-in app: the desk
     (`/desk`, the dashboard), the path (`/learn`), `/lessons`, `/practice`, `/learn/glossary`,
-    `/signals`, `/journal`, `/tools` and `/me`, with a side nav on a laptop and a bottom bar plus
+    `/signals`, `/paper`, `/journal`, `/tools` and `/me`, with a side nav on a laptop and a bottom bar plus
     Menu on a phone (`components/member/AppNav.tsx`, items in `NAV` in `content/member.ts`; a
     module not built yet shows as "Soon", never a dead link). `(focus)/` is sign-in, sign-up and
     the onboarding chat, and `lesson/[id]` and `practice/round` run full screen.
@@ -154,8 +154,27 @@ npx oxfmt <files>      # format what you touched
   changes when later bars arrive. The words for every fact live in `content/signals.ts`. When
   data is down, the screen says so; signals are never drawn from made-up prices.
 - The journal (`lib/engines/journal.ts`) and the tools (`lib/engines/tools.ts`) are engines like
-  any other; the journal is kept on the device (`lib/client/journal.ts`) until accounts sync it.
-- Words shown to people say "device", never "phone": people use any screen. Laptop layouts
+  any other.
+- **Accounts and sync.** A signed-in person is one learner on every device: the `accounts` table
+  links a Clerk user to a learner, and every route asks `learnerOf(db, request)`
+  (`lib/learning/account.ts`), never the cookie alone. It falls back to the older rule if the
+  table isn't migrated yet, and a sync pull moves a device's guest history into the account.
+  The journal and the paper account are **append-only event logs** with unique ids
+  (`lib/sync/log.ts`): the device keeps one (`lib/client/sync.ts`), the server keeps one in
+  `learning_events` (`lib/sync/store.ts`, `/api/sync`), and syncing keeps every event either
+  side has. Nothing is updated in place. `lib/sync/schemas.ts` is the only shape the server
+  accepts from a device.
+- **The paper account** (`lib/engines/paper.ts`, `/api/paper`, `/paper`): the server is the
+  price source and the referee. It fills at the live ask or bid, sizes from risk against its
+  own replay of the account, and works out stop and target exits from bars that opened after
+  the fill (stop first, gaps fill worse), writing each exit once. A recorded close always wins.
+  No leverage; shorts are cash-secured. Closed paper trades appear in the journal. Every paper
+  call carries the device's log, so a deployment without a database still works on the
+  device. `scripts/check-paper.ts` checks all of it.
+- Words shown to people say "device", never "phone": people use any screen. Screens carry
+  product and marketing words only: no lines about where things are saved, which server or
+  provider answered, or how the system works inside. Truth badges, errors that ask for an
+  action, and the legal disclaimer stay. Laptop layouts
   (`lg:`) are designed, not stretched: two columns where there's room, full-width bars in the
   lesson player.
 - The glossary is data (`content/glossary.ts`): plain words, no numbers, each term linked to live

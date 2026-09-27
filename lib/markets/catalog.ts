@@ -35,6 +35,14 @@ export type Market = {
   costBp: number;
   /** Bars in a trading week: crypto never closes, FX rests at weekends. */
   weekBars: number;
+  /**
+   * The paper account's fee each way, in bp, on top of the real bid and
+   * ask: an exchange's fee for crypto and gold, nothing for FX (brokers
+   * charge through the spread).
+   */
+  feeBp: number;
+  /** Priced in dollars, so the paper account (in dollars) can hold it. */
+  paper: boolean;
 };
 
 export const MARKETS: readonly Market[] = [
@@ -48,6 +56,8 @@ export const MARKETS: readonly Market[] = [
     decimals: 1,
     costBp: 20,
     weekBars: 7,
+    feeBp: 10,
+    paper: true,
   },
   {
     id: 'eth',
@@ -59,6 +69,8 @@ export const MARKETS: readonly Market[] = [
     decimals: 2,
     costBp: 20,
     weekBars: 7,
+    feeBp: 10,
+    paper: true,
   },
   {
     id: 'sol',
@@ -70,6 +82,8 @@ export const MARKETS: readonly Market[] = [
     decimals: 2,
     costBp: 20,
     weekBars: 7,
+    feeBp: 10,
+    paper: true,
   },
   {
     id: 'xrp',
@@ -81,6 +95,8 @@ export const MARKETS: readonly Market[] = [
     decimals: 5,
     costBp: 20,
     weekBars: 7,
+    feeBp: 10,
+    paper: true,
   },
   {
     id: 'gold',
@@ -92,6 +108,8 @@ export const MARKETS: readonly Market[] = [
     decimals: 2,
     costBp: 10,
     weekBars: 7,
+    feeBp: 10,
+    paper: true,
   },
   {
     id: 'eurusd',
@@ -103,6 +121,8 @@ export const MARKETS: readonly Market[] = [
     decimals: 5,
     costBp: 2,
     weekBars: 5,
+    feeBp: 0,
+    paper: true,
   },
   {
     id: 'gbpusd',
@@ -114,6 +134,8 @@ export const MARKETS: readonly Market[] = [
     decimals: 5,
     costBp: 3,
     weekBars: 5,
+    feeBp: 0,
+    paper: true,
   },
   {
     id: 'usdjpy',
@@ -125,6 +147,8 @@ export const MARKETS: readonly Market[] = [
     decimals: 3,
     costBp: 2,
     weekBars: 5,
+    feeBp: 0,
+    paper: false,
   },
 ];
 
@@ -134,6 +158,8 @@ export function marketById(id: string): Market | undefined {
 
 /** Daily bars: one decision a day, on the close. */
 export const BAR_MINUTES = 1440;
+/** Hourly bars watch the paper account's stops and targets. */
+export const WATCH_MINUTES = 60;
 
 function group(whole: string): string {
   return whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');

@@ -1,25 +1,27 @@
 import { getDb } from '@/db';
 import { json, readJson, route } from '@/lib/api';
 import { capabilities } from '@/lib/capabilities';
+import { learnerOf } from '@/lib/learning/account';
 import {
   isTestTraffic,
   learnerCookie,
-  learnerFrom,
   recordEvent,
 } from '@/lib/learning/store';
 
 /**
- * Something the learner did (lib/client/progress.ts). Answers 204 and stores
- * nothing when there's no database: the learning works either way, only our
- * measurement of it needs one.
+ * Something the learner did (lib/client/progress.ts), kept under the
+ * account's learner when signed in, so every device sees it
+ * (lib/learning/account.ts). Answers 204 and stores nothing when there's no
+ * database: the learning works either way, only our record of it needs one.
  */
 export const POST = route(async (request) => {
   if (!capabilities().database || isTestTraffic(request))
     return new Response(null, { status: 204 });
-  const learner = learnerFrom(request);
+  const db = await getDb();
+  const who = await learnerOf(db, request);
   await recordEvent(
-    await getDb(),
-    learner.id,
+    db,
+    who.id,
     await readJson(request, 8 * 1024),
     request.headers.get('cf-ipcountry'),
   );
@@ -27,8 +29,8 @@ export const POST = route(async (request) => {
   return json(
     { ok: true },
     201,
-    learner.fresh
-      ? { 'Set-Cookie': learnerCookie(learner.id, secure) }
+    who.device.fresh
+      ? { 'Set-Cookie': learnerCookie(who.device.id, secure) }
       : undefined,
   );
 });

@@ -19,6 +19,8 @@ import { useHabit } from '@/lib/client/progress';
 import { usePractice } from '@/lib/client/practice';
 import { useJournal } from '@/lib/client/journal';
 import { useSignals } from '@/lib/client/signals';
+import { usePaper } from '@/lib/client/paper';
+import { formatMoney } from '@/lib/core/money';
 import { Change, SideTag } from '@/components/signals/parts';
 import { FlameIcon } from '@/components/ui/icons';
 
@@ -174,6 +176,59 @@ function SignalsCard({ className }: { className: string }) {
             })}
           </ul>
         </>
+      )}
+    </Card>
+  );
+}
+
+function PaperCard({ className }: { className: string }) {
+  const paper = usePaper();
+  const account = paper.state === 'ready' ? paper.account : null;
+  const used = account && (account.open.length || account.closed.length);
+  return (
+    <Card
+      title={DESK.paper.title}
+      action={used ? { href: '/paper', label: DESK.paper.open } : undefined}
+      className={className}
+    >
+      {used && account ? (
+        <dl className="grid grid-cols-3 gap-2">
+          {(
+            [
+              [
+                DESK.paper.value,
+                formatMoney({ minor: account.equityMinor, currency: 'USD' }),
+              ],
+              [
+                DESK.paper.returned,
+                formatBp(account.returnBp, { signed: true }),
+              ],
+              [DESK.paper.positions, String(account.open.length)],
+            ] as const
+          ).map(([label, value]) => (
+            <div
+              key={label}
+              className="rounded-md border border-line bg-ink/40 p-2"
+            >
+              <dt className="font-mono type-tick text-muted uppercase">
+                {label}
+              </dt>
+              <dd className="mt-0.5 truncate font-mono type-small font-semibold text-fg num">
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <div className="flex items-center justify-between gap-3">
+          <p className="type-small text-fg-2">{DESK.paper.empty}</p>
+          <Link
+            href="/paper"
+            className="inline-flex min-h-10 shrink-0 items-center rounded-md border border-edge bg-raised px-3 type-small font-semibold text-fg"
+          >
+            {DESK.paper.cta}
+          </Link>
+        </div>
       )}
     </Card>
   );
@@ -441,19 +496,20 @@ export function Dashboard() {
 
           {saved?.where === 'device' ? (
             <p className="order-10 rounded-md border border-dashed border-edge p-3 type-small text-fg-2 xl:order-none">
-              {DESK.device}{' '}
               <Link
                 href="/sign-up"
                 className="font-semibold text-gold underline underline-offset-4"
               >
                 {DESK.account}
-              </Link>
+              </Link>{' '}
+              {DESK.accountWhy}
             </p>
           ) : null}
         </div>
 
         <div className="contents xl:flex xl:flex-col xl:gap-4">
           <SignalsCard className="order-4 xl:order-none" />
+          <PaperCard className="order-5 xl:order-none" />
           <JournalCard className="order-6 xl:order-none" />
           <Card
             title={DESK.tools.title}

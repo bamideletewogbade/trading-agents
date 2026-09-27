@@ -41,8 +41,6 @@ export const PLAYER = {
     next: 'Next lesson',
     path: 'Back to your path',
     again: 'Play it again',
-    saved: 'Progress saved',
-    savedLocal: 'Progress saved on this device',
   },
   xpLabel: (xp: number) => `${xp} XP this lesson`,
   loading: 'Loading…',

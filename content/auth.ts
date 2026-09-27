@@ -19,7 +19,7 @@ export const AUTH = {
   },
   guest: {
     title: 'Accounts are switching on soon',
-    body: 'You can do everything as a guest in the meantime. Your answers and progress stay on this device.',
+    body: 'You can do everything as a guest in the meantime.',
     cta: 'Continue as a guest',
     back: 'Back to the site',
   },

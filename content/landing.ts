@@ -136,8 +136,8 @@ export const LANDING = {
     lead: 'Open your desk and see your next lesson, today’s signals and how your own trades are going.',
     modules: [
       'Courses',
-      'Practice',
       'Signals',
+      'Paper account',
       'Journal',
       'Tools',
       'Your desk',

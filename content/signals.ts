@@ -153,9 +153,11 @@ export const SIGNALS = {
     always: ['r1', 'r2'],
   },
   actions: {
+    paperTrade: 'Paper-trade it',
     size: 'Size this trade',
     log: 'Log it in my journal',
-    paper: 'Paper-trade it first: log it, then see how it plays out.',
+    paper:
+      'Paper-trade it first: pretend money, real prices, and the stop and target watched for you.',
   },
   chart: {
     fast: `${R.fast}-day average`,

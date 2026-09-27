@@ -1,15 +1,13 @@
 import { sql } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { json, route } from '@/lib/api';
-import { signedInUser } from '@/lib/auth/server';
 import { capabilities } from '@/lib/capabilities';
-import { learnerFrom } from '@/lib/learning/store';
-import { learnerForAccount } from '@/lib/learning/profile';
+import { learnerOf } from '@/lib/learning/account';
 
 /**
  * Finished lessons, derived from the event log (never stored as a column,
  * plan §3): every `lesson_completed` event for this device's learner, or
- * the account's learner when signed in, with when it happened and the
+ * the account's learner when signed in (lib/learning/account.ts), with when it happened and the
  * first-try score, plus the practice log (questions missed, practice
  * answers). The phone works out XP, streaks, badges and what to practise
  * from these (lib/progress/habit.ts, lib/progress/review.ts).
@@ -17,13 +15,8 @@ import { learnerForAccount } from '@/lib/learning/profile';
 export const GET = route(async (request) => {
   if (!capabilities().database)
     return json({ completed: [], log: [], practice: [] });
-  const device = learnerFrom(request);
   const db = await getDb();
-  const learnerId = await learnerForAccount(
-    db,
-    await signedInUser(request),
-    device.id,
-  );
+  const learnerId = (await learnerOf(db, request)).id;
   const result = await db.execute(
     sql`select skill, created_at, data from learning_events
          where learner_id = ${learnerId} and type = 'lesson_completed' and skill is not null

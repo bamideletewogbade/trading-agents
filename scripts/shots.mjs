@@ -36,6 +36,7 @@ const PAGES = [
   ['signals', '/signals'],
   ['market', '/signals/btc'],
   ['journal', '/journal'],
+  ['paper', '/paper'],
   ['tools', '/tools'],
   ['member-glossary', '/learn/glossary'],
   ['lessons', '/lessons'],
