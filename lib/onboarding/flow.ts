@@ -48,7 +48,7 @@ export const MARKETS = [
 export type Market = (typeof MARKETS)[number];
 export const SCAM_READS = ['trusting', 'wary', 'sharp'] as const;
 export type ScamRead = (typeof SCAM_READS)[number];
-export const MINUTES = [5, 15, 30] as const;
+export const MINUTES = [5, 15, 30, 60] as const;
 export type Minutes = (typeof MINUTES)[number];
 
 export type Profile = {
@@ -111,7 +111,7 @@ export function readGoal(raw: string): Understood<Goal> {
   if (
     has(
       text,
-      /income|extra|side|hustle|\bearn|salary|make money|more money|financial freedom/,
+      /income|extra|side|hustle|\bearn|salary|make money|more money|financial freedom|invest|sav(e|ing)|grow my|wealth|retire|passive|money work/,
     )
   )
     return sure('income');
@@ -130,7 +130,7 @@ export function readExperience(raw: string): Understood<Experience> {
   if (
     has(
       text,
-      /every ?day|daily|weekly|\d+\s*(years?|yrs?|months?)|full[- ]?time|regularly|active(ly)?|for years|a lot/,
+      /every ?(day|week|month)|daily|weekly|monthly|\d+\s*(years?|yrs?|months?)|full[- ]?time|regularly|active(ly)?|for years|a lot/,
     )
   )
     return sure('active');
@@ -148,13 +148,25 @@ export function readExperience(raw: string): Understood<Experience> {
     )
   )
     return sure('none');
+  if (
+    has(text, /\bi (trade|invest)\b|i'?m a trader|\bi do\b.*\b(trade|invest)/)
+  )
+    return sure('active');
+  // A plain yes: they have, without saying how much. That's at least a try.
+  if (
+    has(
+      text,
+      /^\s*(yes|yeah|yep|yup|ya|sure|i have|i did|i've|ive|done that)\b/,
+    )
+  )
+    return sure('dabbled');
   return UNSURE;
 }
 
 const MARKET_PATTERNS: [Market, RegExp][] = [
   [
     'local',
-    /\bngx\b|\bnse\b|\bgse\b|nigerian (stock|share)|ghana(ian)? (stock|share)|local (stock|share)|dangote|\bmtn\b/,
+    /\bngx\b|\bnse\b|\bgse\b|nigerian (stock|share)|ghana(ian)? (stock|share)|local (stock|share)|dangote|\bmtn\b|t-?bills?|treasur|\bbonds?\b|mutual fund|money market/,
   ],
   [
     'us',
@@ -241,13 +253,96 @@ export function readScam(raw: string): Understood<ScamRead> {
   return UNSURE;
 }
 
+const NUMBER_WORD: Record<string, number> = {
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  ten: 10,
+  fifteen: 15,
+  twenty: 20,
+  thirty: 30,
+  forty: 40,
+  'forty-five': 45,
+  fifty: 50,
+  sixty: 60,
+  ninety: 90,
+};
+
+/** Number words as digits: "maybe ten" reads as "maybe 10". */
+function withDigits(text: string): string {
+  let out = ` ${text} `;
+  for (const [word, value] of Object.entries(NUMBER_WORD))
+    out = out.replace(new RegExp(`\\b${word}\\b`, 'g'), ` ${value} `);
+  return out;
+}
+
+/**
+ * How many minutes a phrase names, the way people type it: "2hrs", "1.5 h",
+ * "90 mins", "1h30", "half an hour", "an hour and a half", "1-2 hours"
+ * (the lower end: people are generous with future time). Null when it names
+ * no amount.
+ */
+export function minutesIn(raw: string): number | null {
+  let text = ` ${raw.toLowerCase().replace(/[’`]/g, "'")} `;
+  text = text
+    .replace(
+      /\b(an?|one) hours? and (a )?half\b|\bhour and (a )?half\b/g,
+      ' 90 min ',
+    )
+    .replace(/\bhalf (an? )?hour\b/g, ' 30 min ')
+    .replace(/\b(a )?quarter (of an? )?hour\b/g, ' 15 min ')
+    .replace(/\b(an?) (hr|hour)\b/g, ' 1 hour ');
+  text = withDigits(text);
+  const clock =
+    /(\d+(?:\.\d+)?)\s*h(?:ours?|rs?)?\s*(?:and\s*)?(\d+)\s*m(?:in(?:ute)?s?)?\b/.exec(
+      text,
+    ) ?? /(\d+)\s*h(?:ours?|rs?)?\s*(\d{2})\b/.exec(text);
+  if (clock) return Math.round(Number(clock[1]) * 60 + Number(clock[2]));
+  const amount =
+    /(\d+(?:\.\d+)?)(?:\s*(?:-|–|to|or)\s*\d+(?:\.\d+)?)?\s*(h|hr|hrs|hour|hours|m|min|mins|minute|minutes)\b/.exec(
+      text,
+    );
+  if (amount) {
+    const value = Number(amount[1]);
+    return Math.round(amount[2]!.startsWith('h') ? value * 60 : value);
+  }
+  return null;
+}
+
+/** An amount of time to the nearest option: a little, a lesson, half an hour, an hour or more. */
+export function minutesBucket(minutes: number): Minutes {
+  if (minutes <= 10) return 5;
+  if (minutes <= 22) return 15;
+  if (minutes <= 45) return 30;
+  return 60;
+}
+
 export function readMinutes(raw: string): Understood<Minutes> {
   const text = raw.toLowerCase();
-  if (has(text, /\b(30|45|60|thirty|forty|an hour|hour|hours|plenty|lots?)\b/))
-    return sure(30);
-  if (has(text, /\b(15|20|fifteen|twenty|quarter)\b/)) return sure(15);
-  if (has(text, /\b(5|10|five|ten|little|busy|few min|small)\b/))
+  const stated = minutesIn(raw);
+  if (stated !== null) return sure(minutesBucket(stated));
+  if (
+    has(
+      text,
+      /\b(hours|all day|whole day|full[- ]?time|plenty|lots? of time|a lot)\b/,
+    )
+  )
+    return sure(60);
+  if (
+    has(
+      text,
+      /\b(little|busy|few min|small|not much|no time|barely|quick|weekends?)\b|small small/,
+    )
+  )
     return sure(5);
+  // A bare number: "maybe 20" means minutes. Under 5 it could be hours; ask.
+  const bare = /\b(\d{1,3})\b/.exec(withDigits(text));
+  if (bare) {
+    const value = Number(bare[1]);
+    if (value >= 5 && value <= 240) return sure(minutesBucket(value));
+  }
   return UNSURE;
 }
 
@@ -286,8 +381,13 @@ export function answer(profile: Profile, step: Step, value: unknown): Profile {
       return { ...profile, recoveryAnswerBp: value as number | null };
     case 'scam':
       return { ...profile, scam: value as ScamRead };
-    case 'time':
-      return { ...profile, minutes: value as Minutes };
+    case 'time': {
+      // Jev answers with the option's key as text; the chips with a number.
+      const minutes = Number(value);
+      return (MINUTES as readonly number[]).includes(minutes)
+        ? { ...profile, minutes: minutes as Minutes }
+        : profile;
+    }
   }
 }
 
@@ -341,6 +441,12 @@ export const JEV_OPTIONS: Partial<Record<Step, Record<string, string>>> = {
     trusting: 'They find the offer attractive or would consider joining',
     wary: 'They would want proof or to check before trusting it',
     sharp: 'They recognise it as a scam',
+  },
+  time: {
+    '5': 'A few minutes a day, ten at most, or only now and then',
+    '15': 'About fifteen to twenty minutes a day',
+    '30': 'About half an hour a day',
+    '60': 'An hour or more a day',
   },
 };
 

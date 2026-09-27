@@ -182,6 +182,9 @@ npx oxfmt <files>      # format what you touched
 - Onboarding questions are data. A new question means: a step, its reader and a Jev option set
   in `lib/onboarding/flow.ts`, its words and chips in `content/onboarding.ts`, and checks in
   `scripts/check-onboarding.ts` using real phrases people type. The chat screen doesn't change.
+  Chips are shortcuts, never the only way in: a typed answer is read (then Jev, when it's on),
+  an unclear one gets a clarify line with typed examples (the checks prove each example is
+  understood), and a second miss skips the question. Nothing ever says "tap one".
 - Motion lives in `app/globals.css` (page-in, reveals, menu, chat bubbles, card flips, and the
   game layer: `btn-3d` buttons that sink when pressed, `coin`s, beat slides, pop and shake on
   answers, "+XP" floats, the finish coin's 3D spin, candles drawing in), and every animation

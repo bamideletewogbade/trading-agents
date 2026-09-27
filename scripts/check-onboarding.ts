@@ -10,8 +10,10 @@
  */
 
 import { deepStrictEqual, equal, ok } from 'node:assert/strict';
+import { ONBOARDING } from '../content/onboarding.ts';
 import {
   JEV_OPTIONS,
+  MINUTES,
   STEPS,
   answer,
   answeredCount,
@@ -25,6 +27,7 @@ import {
   readRecovery,
   readScam,
   recoveryRight,
+  understand,
   type Profile,
 } from '../lib/onboarding/flow.ts';
 import { searchLessons } from '../lib/curriculum/search.ts';
@@ -68,6 +71,8 @@ check('why they came', () => {
   );
   equal(value(readGoal('I need extra income, salary no dey reach')), 'income');
   equal(value(readGoal('just curious honestly')), 'curious');
+  equal(value(readGoal('I want to grow my savings')), 'income');
+  equal(value(readGoal('invest for retirement')), 'income');
   equal(value(readGoal('hmm')), 'unsure');
 });
 
@@ -78,7 +83,11 @@ check('what they have done before', () => {
   equal(value(readExperience('a little bit of stocks on bamboo')), 'dabbled');
   equal(value(readExperience('I trade forex daily')), 'active');
   equal(value(readExperience('for 3 years now')), 'active');
-  equal(value(readExperience('yes')), 'unsure');
+  // A plain yes means they have, at least a little.
+  equal(value(readExperience('yes')), 'dabbled');
+  equal(value(readExperience('yeah I have')), 'dabbled');
+  equal(value(readExperience('I trade crypto')), 'active');
+  equal(value(readExperience('hmm')), 'unsure');
 });
 
 check('which markets', () => {
@@ -92,6 +101,7 @@ check('which markets', () => {
   ]);
   deepStrictEqual(value(readMarkets('US stocks like Tesla')), ['us']);
   deepStrictEqual(value(readMarkets('not sure yet')), []);
+  deepStrictEqual(value(readMarkets('T-bills and bonds')), ['local']);
   equal((value(readMarkets('all of them')) as unknown[]).length, 5);
   equal(value(readMarkets('whatever pays')), 'unsure');
 });
@@ -119,12 +129,74 @@ check('the doubling offer', () => {
   equal(value(readScam('sounds great')), 'trusting');
 });
 
-check('time per day', () => {
-  equal(value(readMinutes('5 minutes')), 5);
-  equal(value(readMinutes("I'm busy, maybe ten")), 5);
-  equal(value(readMinutes('20 mins')), 15);
-  equal(value(readMinutes('an hour on weekends')), 30);
-  equal(value(readMinutes('it depends')), 'unsure');
+check('time per day, the way people type it', () => {
+  // Every one of these was, or could be, typed into the chat.
+  const cases: [string, number | 'unsure'][] = [
+    ['about 2hrs', 60],
+    ['2 hours', 60],
+    ['2h', 60],
+    ['1hr', 60],
+    ['an hour', 60],
+    ['one hour', 60],
+    ['1.5 hours', 60],
+    ['an hour and a half', 60],
+    ['1h30', 60],
+    ['1-2 hours', 60],
+    ['90 minutes', 60],
+    ['hours', 60],
+    ['plenty', 60],
+    ['half an hour', 30],
+    ['30mins', 30],
+    ['45m', 30],
+    ['quarter of an hour', 15],
+    ['20 mins', 15],
+    ['like 20 min', 15],
+    ['maybe 20', 15],
+    ['5 minutes', 5],
+    ['10 minutes', 5],
+    ["I'm busy, maybe ten", 5],
+    ['not much time', 5],
+    ['small small', 5],
+    ['weekends only', 5],
+    ['it depends', 'unsure'],
+    ['2', 'unsure'],
+  ];
+  for (const [text, want] of cases)
+    equal(value(readMinutes(text)), want, `“${text}”`);
+});
+
+check(
+  'a typed answer is always invited: every clarify line gives examples, none says only “tap”',
+  () => {
+    for (const step of STEPS) {
+      const line = ONBOARDING.clarify[step];
+      ok(
+        !/^[^“]*\btap\b/i.test(line) || /“/.test(line),
+        `${step}: “${line}” asks for a tap only`,
+      );
+      if (step !== 'name')
+        ok(/“/.test(line), `${step}: “${line}” gives no example to type`);
+    }
+  },
+);
+
+check('every example Sika tells people to type is one she understands', () => {
+  for (const step of STEPS)
+    for (const [, example] of ONBOARDING.clarify[step].matchAll(/“([^”]+)”/g))
+      equal(understand(step, example!).kind, 'sure', `${step}: “${example}”`);
+});
+
+check('Jev’s time options are the minutes the chips offer', () => {
+  deepStrictEqual(
+    Object.keys(JEV_OPTIONS.time ?? {})
+      .map(Number)
+      .sort((a, b) => a - b),
+    [...MINUTES],
+  );
+  // Jev answers with the key as text; the profile keeps a number.
+  equal(answer({}, 'time', '60').minutes, 60);
+  equal(answer({}, 'time', 15).minutes, 15);
+  equal(answer({}, 'time', '7').minutes, undefined);
 });
 
 check('steps come in order and can be skipped', () => {

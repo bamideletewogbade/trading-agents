@@ -24,7 +24,8 @@ export type MeaningVerdict =
 
 export const MEANING_GATE: Gate<MeaningInput, MeaningVerdict> = {
   id: 'read.onboarding',
-  version: 1,
+  // 2: the time question joined (27 Sep 2026).
+  version: 2,
   state: ({ step, text }) => ({ question: step, answer: text }),
   questions: ({ step }) => ({
     meaning: {

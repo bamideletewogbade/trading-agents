@@ -27,6 +27,10 @@ import { saveProfile } from '@/lib/client/profile';
  * start. The reading of free text is lib/onboarding/flow.ts (and Jev, when
  * the patterns aren't sure). This component only runs the conversation.
  *
+ * Typing is always an answer. When the reading can't place one, Sika asks
+ * again with examples of what to type; after a second miss she moves on,
+ * and that question is skipped (placement works without it).
+ *
  * Every coach line arrives after a short "typing…" pause, so the chat reads
  * like a conversation rather than a form. Anyone who asked for less motion
  * gets the lines straight away.
@@ -81,13 +85,18 @@ export function Conversation() {
   const [profile, setProfile] = useState<Profile>({});
   const [step, setStep] = useState<Step | null>(null);
   const [typing, setTyping] = useState(false);
+  // Answers the reading couldn't place, per question. Two, and it moves on:
+  // nobody gets stuck asked the same thing forever.
+  const [misses, setMisses] = useState<Partial<Record<Step, number>>>({});
+  const [skipped, setSkipped] = useState<Step[]>([]);
   const [draft, setDraft] = useState('');
   const [saving, setSaving] = useState<'idle' | 'saving' | 'server' | 'device'>(
     'idle',
   );
   const timers = useRef<number[]>([]);
   const nextId = useRef(1);
-  const bottom = useRef<HTMLDivElement | null>(null);
+  const log = useRef<HTMLDivElement | null>(null);
+  const pinned = useRef(true);
   const started = useRef(false);
 
   const push = (message: Said) =>
@@ -117,6 +126,8 @@ export function Conversation() {
   function begin() {
     setMessages([]);
     setProfile({});
+    setMisses({});
+    setSkipped([]);
     setStep(null);
     setSaving('idle');
     say([...C.hello, question('name', {})], () => setStep('name'));
@@ -138,24 +149,70 @@ export function Conversation() {
     };
   }, []);
 
+  // Keep the newest line in view. The bottom moves when a line arrives and
+  // also when the chips row below appears or the keyboard opens, which
+  // shrinks the log without adding to it, so both sizes are watched. Only a
+  // scroll upward lets go: a learner rereading is left there until the next
+  // line. (Judging by distance alone lets go by mistake when a line and the
+  // chips land in the same frame.)
   useEffect(() => {
-    bottom.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    const box = log.current;
+    if (!box) return;
+    let last = box.scrollTop;
+    const toEnd = () => {
+      if (pinned.current) box.scrollTop = box.scrollHeight;
+    };
+    const onScroll = () => {
+      const gap = box.scrollHeight - box.scrollTop - box.clientHeight;
+      if (gap < 48) pinned.current = true;
+      else if (box.scrollTop < last) pinned.current = false;
+      last = box.scrollTop;
+    };
+    const watch = new ResizeObserver(toEnd);
+    watch.observe(box);
+    if (box.firstElementChild) watch.observe(box.firstElementChild);
+    box.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      watch.disconnect();
+      box.removeEventListener('scroll', onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    pinned.current = true;
+    const box = log.current;
+    if (box) box.scrollTop = box.scrollHeight;
   }, [messages, typing]);
+
+  /** Move on: to the next open question, or the summary. */
+  function advance(next: Profile, lines: string[], skip: Step[] = skipped) {
+    setStep(null);
+    const following = nextStep(next, skip);
+    if (following) {
+      say([...lines, question(following, next)], () => setStep(following));
+    } else {
+      say(lines, () => push({ from: 'summary', profile: next }));
+    }
+  }
 
   function accept(current: Step, value: unknown) {
     const next = answer(profile, current, value);
     setProfile(next);
-    setStep(null);
-    const following = nextStep(next);
-    if (following) {
-      say([...reaction(current, next), question(following, next)], () =>
-        setStep(following),
-      );
-    } else {
-      say(reaction(current, next), () =>
-        push({ from: 'summary', profile: next }),
-      );
+    advance(next, reaction(current, next));
+  }
+
+  /** The reading couldn't place an answer: ask again in other words, or, the second time, move on. */
+  function missed(current: Step) {
+    const count = (misses[current] ?? 0) + 1;
+    setMisses((all) => ({ ...all, [current]: count }));
+    if (count >= 2) {
+      const skip = [...skipped, current];
+      setSkipped(skip);
+      advance(profile, [C.skip], skip);
+      return;
     }
+    setStep(null);
+    say([C.clarify[current]], () => setStep(current));
   }
 
   async function reply(text: string) {
@@ -189,8 +246,7 @@ export function Conversation() {
       }
       setTyping(false);
     }
-    setStep(null);
-    say([C.clarify[current]], () => setStep(current));
+    missed(current);
   }
 
   function tap(value: unknown) {
@@ -206,7 +262,7 @@ export function Conversation() {
     timers.current.push(window.setTimeout(() => router.push('/desk'), 700));
   }
 
-  const answered = answeredCount(profile);
+  const answered = answeredCount(profile) + skipped.length;
   const chips = step
     ? (C.chips[step] as { label: string; value: unknown }[])
     : [];
@@ -231,6 +287,7 @@ export function Conversation() {
       </div>
 
       <div
+        ref={log}
         className="min-h-0 flex-1 overflow-y-auto px-4 py-6"
         aria-live="polite"
       >
@@ -290,7 +347,6 @@ export function Conversation() {
             </li>
           ) : null}
         </ul>
-        <div ref={bottom} />
       </div>
 
       <div className="border-t border-line bg-ink px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">

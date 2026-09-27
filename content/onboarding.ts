@@ -86,20 +86,29 @@ export const ONBOARDING = {
     time: [
       { label: '5 minutes', value: 5 },
       { label: '15 minutes', value: 15 },
-      { label: '30 minutes or more', value: 30 },
+      { label: '30 minutes', value: 30 },
+      { label: 'An hour or more', value: 60 },
     ] as Chip<Minutes>[],
   },
 
-  /** When the reading isn't sure: a narrower question, with the same chips. */
+  /**
+   * When the reading isn't sure: ask again in other words, with examples of
+   * what to type. Typing is always an answer; the chips are a shortcut,
+   * never the only way.
+   */
   clarify: {
-    name: 'Sorry, I didn’t catch that. Just your first name is perfect.',
-    goal: 'Got it. Which of these is closest?',
-    experience: 'Once or twice, or regularly?',
-    markets: 'Which of these, roughly? Pick one to start; we cover them all.',
-    recovery: 'Just a rough percentage is fine, or tap one.',
-    scam: 'Closest to which of these?',
-    time: 'Roughly how many minutes? Tap one.',
+    name: 'Sorry, I didn’t catch that. What’s your first name?',
+    goal: 'Tell me in a few words, like “extra income”, “I lost money” or “just curious”.',
+    experience: 'Say it your way, like “never”, “a few times” or “every week”.',
+    markets:
+      'Name any, like “crypto”, “gold” or “Nigerian stocks”. Not sure is fine too.',
+    recovery: 'A rough percentage is fine, like “60%”, or say you don’t know.',
+    scam: 'Say it your way, like “I’d join”, “I’d want proof” or “that’s a scam”.',
+    time: 'Roughly how long a day? Say it your way, like “15 minutes” or “about an hour”.',
   } satisfies Record<Step, string>,
+
+  /** After two answers the reading couldn't place: no loop, just move on. */
+  skip: 'No problem, let’s skip that one.',
 
   /** What Sika says after hearing each answer. */
   ack: {
@@ -140,6 +149,7 @@ export const ONBOARDING = {
       5: 'Five minutes a day is enough. Small and steady beats big and rare.',
       15: 'Fifteen minutes is a great rhythm: one lesson a day.',
       30: 'Plenty of room. We’ll keep it deep, not long.',
+      60: 'An hour a day is plenty. Lessons stay short, and the rest goes into practice and your paper account.',
     } satisfies Record<Minutes, string>,
   },
 
@@ -161,7 +171,10 @@ export const ONBOARDING = {
       labels.length
         ? `Most curious about: ${labels.join(', ')}`
         : 'Open to any market',
-    minutes: (minutes: number) => `About ${minutes} minutes a day`,
+    minutes: (minutes: number) =>
+      minutes >= 60
+        ? 'An hour or more a day'
+        : `About ${minutes} minutes a day`,
     start: (stage: number, title: string) =>
       `I’d start you at course ${stage}: ${title}.`,
     reasons: {
