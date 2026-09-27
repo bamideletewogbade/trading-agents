@@ -17,6 +17,14 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 
 const BASE = (process.argv[2] ?? 'http://localhost:5177').replace(/\/$/, '');
+// It places and closes paper trades, and the paper account and journal keep
+// every event, so it never runs against a live site.
+if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(BASE)) {
+  console.error(
+    'walk:trade writes paper trades; run it against a local server.',
+  );
+  process.exit(1);
+}
 const S = 'shots';
 mkdirSync(S, { recursive: true });
 const browser = await chromium.launch(

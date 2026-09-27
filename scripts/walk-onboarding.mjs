@@ -26,6 +26,10 @@ async function open() {
     hasTouch: true,
     reducedMotion: 'reduce',
   });
+  // Against any server but this one, say we're a check: it answers but
+  // stores nothing (isTestTraffic in lib/learning/store.ts).
+  if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(BASE))
+    await context.addCookies([{ name: 'sika_test', value: '1', url: BASE }]);
   page = await context.newPage();
   page.on('pageerror', (error) =>
     problems.push(`page error: ${error.message}`),

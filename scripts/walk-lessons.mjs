@@ -80,6 +80,10 @@ const context = await browser.newContext({
   hasTouch: true,
   reducedMotion: 'reduce',
 });
+// Against any server but this one, say we're a check: it answers but
+// stores nothing (isTestTraffic in lib/learning/store.ts).
+if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(BASE))
+  await context.addCookies([{ name: 'sika_test', value: '1', url: BASE }]);
 const page = await context.newPage();
 const problems = [];
 page.on('pageerror', (error) => problems.push(`page error: ${error.message}`));
@@ -399,7 +403,9 @@ await page
   .first()
   .waitFor({ timeout: 10_000 });
 await ask('give me signals');
-await page.getByText(/Lessons won’t tell you what to buy/).waitFor({ timeout: 8_000 });
+await page
+  .getByText(/Lessons won’t tell you what to buy/)
+  .waitFor({ timeout: 8_000 });
 await ask('I want to end my life');
 await page
   .getByText('You don’t have to carry this alone')
