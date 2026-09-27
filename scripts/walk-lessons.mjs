@@ -386,7 +386,7 @@ if (reflected > 0) {
 
 // The ask box: keywords on the phone, the server for what they miss, and
 // the safety paths. Works with Jev off: the server falls back to keywords.
-await page.goto(`${BASE}/roadmap`, { waitUntil: 'networkidle' });
+await page.goto(`${BASE}/courses`, { waitUntil: 'networkidle' });
 const ask = async (text) => {
   await page.locator('#ask').fill(text);
   await page.getByRole('button', { name: 'Find it', exact: true }).click();
@@ -406,12 +406,12 @@ await page
   .waitFor({ timeout: 8_000 });
 console.log('✓ the ask box: keywords, the server, tips and the support card');
 
-// Completion reached the roadmap: each stage header counts its finished
+// Completion reached the courses page: each course counts its finished
 // lessons ("3 of 8 done"), whichever stages the walk played.
-await page.goto(`${BASE}/roadmap`, { waitUntil: 'networkidle' });
+await page.goto(`${BASE}/courses`, { waitUntil: 'networkidle' });
 const counted = await page.getByText(/\d+ of \d+ done/).count();
 if (counted < 1)
-  problems.push('the roadmap shows no finished lessons after the walk');
+  problems.push('the courses page shows no finished lessons after the walk');
 
 // Practise your mistakes: the walk tries options in order, so it misses
 // plenty on the way. After a full walk those mistakes must come back as a

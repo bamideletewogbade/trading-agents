@@ -8,7 +8,7 @@ const COPY = MARKETING.footer;
 export function SiteFooter() {
   return (
     <footer className="border-t border-line bg-panel">
-      <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-12 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-12 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="space-y-3">
           <p className="flex items-center gap-2 type-heading text-fg">
             <Mark /> {BRAND.name}

@@ -35,7 +35,7 @@ export const PLAYER = {
     goal: (done: number, goal: number) =>
       `${Math.min(done, goal)} of ${goal} today`,
     goalMet: 'Daily goal met',
-    stage: (title: string) => `Stage finished: ${title}`,
+    stage: (title: string) => `Course finished: ${title}`,
     badge: 'New badge on your Me page',
     remember: 'Remember',
     next: 'Next lesson',

@@ -84,7 +84,12 @@ npx oxfmt <files>      # format what you touched
   Type uses the `type-*` utilities; numbers that change or align get `num`.
 - Route groups, each with its own layout:
   - `app/(marketing)/`: the public site (nav, announcement, footer). A new page is a folder here
-    plus a nav line in `content/marketing.ts`.
+    plus a nav line in `content/marketing.ts`. Pages carry the names people already use: Courses
+    (`/courses`), Signals (`/trading-signals`, which explains them; the signals themselves are in
+    the app at `/signals`), Features, Community (with a section for community owners), Pricing,
+    and Resources (Glossary, Trading psychology at `/psychology`, the IPO guide). Old paths
+    (`/roadmap`, `/mindset`) redirect in `next.config.ts`. Each curriculum stage is called a
+    "course" wherever people read it.
   - `app/(member)/`: Clerk loads only here. Inside it, `(tabs)/` is the signed-in app: the desk
     (`/desk`, the dashboard), the path (`/learn`), `/lessons`, `/practice`, `/learn/glossary`,
     `/signals`, `/journal`, `/tools` and `/me`, with a side nav on a laptop and a bottom bar plus

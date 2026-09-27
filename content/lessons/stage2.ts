@@ -360,7 +360,7 @@ export const STAGE_2: Record<string, LessonDef> = {
               label: 'It might hold or break, so plan for both',
               correct: true,
               feedback:
-                'Exactly. That’s what a stop loss is for, and it’s the next stage of the roadmap.',
+                'Exactly. That’s what a stop loss is for, and it’s the next course.',
             },
             {
               label: 'It must break this time',

@@ -57,7 +57,7 @@ try {
   await type('15 mins');
   await page.getByText('Here’s what I heard, Ama:').waitFor();
   const summary = await page.locator('main').innerText();
-  for (const expected of ['How an IPO works', 'stage 1', 'IPO 101 first'])
+  for (const expected of ['How an IPO works', 'course 1', 'IPO 101 first'])
     if (!summary.includes(expected))
       problems.push(`summary is missing “${expected}”`);
   await page.getByRole('button', { name: 'Show me my path' }).click();

@@ -22,12 +22,12 @@ export const DESK = {
   minutes: (n: number) => `${n} min`,
   allDone:
     'You’ve finished every lesson that’s out so far. New ones are on the way.',
-  stage: (n: number) => `Stage ${n}`,
-  stageOf: (n: number, total: number) => `Stage ${n} of ${total}`,
+  stage: (n: number) => `Course ${n}`,
+  stageOf: (n: number, total: number) => `Course ${n} of ${total}`,
   open: 'Show lessons',
   close: 'Hide lessons',
-  path: 'Your path',
-  openPath: 'Open the path',
+  path: 'Your courses',
+  openPath: 'All courses',
   yourStart: 'You start here',
   progress: (done: number, total: number) => `${done} of ${total}`,
   done: 'Done',
@@ -71,7 +71,7 @@ export const DESK = {
 } as const;
 
 export const PATH = {
-  meta: { title: 'Path' },
-  title: 'Your path',
-  lead: 'Seven stages, from how markets work to proving it. Every lesson also stands on its own.',
+  meta: { title: 'Courses' },
+  title: 'Your courses',
+  lead: 'Seven courses, from how markets work to proving it. Every lesson also stands on its own.',
 } as const;

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { LANDING } from '@/content/landing';
 import { STAGES, TOPICS, lesson } from '@/content/curriculum';
-import { GLOSSARY, GLOSSARY_PAGE } from '@/content/glossary';
+import { FEATURES_PAGE } from '@/content/pages';
 import { BRAND } from '@/lib/brand';
 import { ChartDemo } from '@/components/landing/ChartDemo';
 import { TruthBadge } from '@/components/shell/TruthBadge';
@@ -9,14 +9,16 @@ import { AskBox } from '@/components/marketing/AskBox';
 import { Section } from '@/components/marketing/Section';
 import { Reveal } from '@/components/motion/Reveal';
 import { NoiseField } from '@/components/three/NoiseField';
+import { SignalsPreview } from '@/components/marketing/SignalsPreview';
 
 /**
  * The landing page: the front door. Short on purpose, and phone first: say
- * what this is, let people play a real lesson straight away, show the path,
- * and say plainly what we will never do. Sections are plain server markup
- * around a few interactive islands (the chart lesson, the ask box, Risk
- * Lab, the 3D field). Every number is calculated here from an engine and
- * handed to the words formatted.
+ * what this is, let people play a real lesson straight away, show the desk
+ * (courses, signals, journal, tools), today's signals live, the courses and
+ * the lessons made for here. Sections are plain server markup around a few
+ * interactive islands (the chart lesson, the signals preview, the ask box,
+ * the 3D field). Every number is calculated from an engine and handed to
+ * the words formatted.
  */
 
 export const metadata = {
@@ -84,48 +86,68 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── How it works ─────────────────────────────────────────────── */}
+      {/* ── One desk ─────────────────────────────────────────────────── */}
       <Section
-        kicker={L.steps.kicker}
-        title={L.steps.title}
-        lead={L.steps.lead}
+        kicker={L.desk.kicker}
+        title={L.desk.title}
+        lead={L.desk.lead}
         tone="panel"
       >
-        <ol className="grid gap-3 sm:grid-cols-3">
-          {L.steps.items.map(([name, detail], i) => (
-            <Reveal
-              as="li"
-              key={name}
-              delay={i * 80}
-              className="flex gap-4 rounded-xl border border-line bg-panel p-4 sm:flex-col"
-            >
-              <span
-                aria-hidden
-                className="coin grid size-12 shrink-0 place-items-center font-mono type-heading font-bold text-ink [--face:var(--color-gold)] [--rim:var(--color-gold-deep)]"
-              >
-                {i + 1}
-              </span>
-              <span>
-                <span className="block type-heading text-fg">{name}</span>
-                <span className="mt-1 block type-small text-fg-2">
-                  {detail}
-                </span>
-              </span>
-            </Reveal>
-          ))}
-        </ol>
-        <p className="mt-5 max-w-[60ch] type-body text-fg">{L.steps.habit}</p>
+        <ul className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3">
+          {FEATURES_PAGE.modules
+            .filter((m) =>
+              (L.desk.modules as readonly string[]).includes(m.name),
+            )
+            .map((module, i) => (
+              <Reveal as="li" key={module.name} delay={i * 50}>
+                {/* On a phone, a compact tile that is all link; the detail shows from sm up. */}
+                <Link
+                  href={module.href}
+                  className="flex h-full flex-col rounded-xl border border-line bg-panel p-3 hover:border-edge sm:p-4"
+                >
+                  <span className="font-mono type-label text-gold">
+                    {module.name}
+                  </span>
+                  <span className="mt-1 type-small font-semibold text-fg sm:mt-2 sm:type-heading">
+                    {module.title}
+                  </span>
+                  <span className="mt-1 hidden flex-1 type-small text-fg-2 sm:block">
+                    {module.body}
+                  </span>
+                  <span className="mt-3 hidden items-center gap-1 self-start type-small font-semibold text-gold underline underline-offset-4 sm:inline-flex">
+                    {module.cta} <span aria-hidden>→</span>
+                  </span>
+                </Link>
+              </Reveal>
+            ))}
+        </ul>
         <Link
-          href={lesson(STAGES[0].lessons[0]).playAt ?? '/desk'}
-          className="mt-3 inline-flex min-h-11 items-center type-small font-semibold text-gold underline underline-offset-4"
+          href="/features"
+          className="mt-5 inline-flex min-h-11 items-center type-small font-semibold text-fg-2 underline underline-offset-4 hover:text-fg"
         >
-          {L.steps.mindset} →
+          {L.desk.all} →
         </Link>
       </Section>
 
-      {/* ── The path ─────────────────────────────────────────────────── */}
+      {/* ── Today's signals, live ─────────────────────────────────────── */}
       <Section
-        id="roadmap"
+        kicker={L.signals.kicker}
+        title={L.signals.title}
+        lead={L.signals.lead}
+      >
+        <SignalsPreview all={L.signals.all} />
+        <Link
+          href="/trading-signals"
+          className="mt-2 inline-flex min-h-11 items-center type-small font-semibold text-fg-2 underline underline-offset-4 hover:text-fg"
+        >
+          {L.signals.how} →
+        </Link>
+      </Section>
+
+      {/* ── The courses ──────────────────────────────────────────────── */}
+      <Section
+        id="courses"
+        tone="panel"
         kicker={L.curriculum.kicker}
         title={L.curriculum.title}
         lead={L.curriculum.lead}
@@ -165,7 +187,7 @@ export default function LandingPage() {
         </ol>
         <div className="mt-6 grid gap-5 lg:grid-cols-[auto_1fr] lg:items-end">
           <Link
-            href="/roadmap"
+            href="/courses"
             className="btn-3d inline-flex min-h-12 items-center justify-center rounded-lg bg-gold px-6 type-body font-bold text-ink"
           >
             {L.roadmapStrip.cta} →
@@ -184,9 +206,9 @@ export default function LandingPage() {
         kicker={L.local.kicker}
         title={L.local.title}
         lead={L.local.lead}
-        tone="panel"
       >
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Three on a phone, so the page stays short; all six from sm up. */}
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 max-sm:[&>li:nth-child(n+4)]:hidden">
           {L.local.lessons.map((id, i) => {
             const item = lesson(id);
             return (
@@ -218,35 +240,6 @@ export default function LandingPage() {
             );
           })}
         </ul>
-      </Section>
-
-      {/* ── Glossary ─────────────────────────────────────────────────── */}
-      <Section
-        kicker={GLOSSARY_PAGE.teaser.kicker}
-        title={GLOSSARY_PAGE.teaser.title}
-        lead={GLOSSARY_PAGE.teaser.lead}
-        split
-      >
-        <dl className="grid gap-2 sm:grid-cols-2">
-          {GLOSSARY_PAGE.teaser.featured.flatMap((name, i) =>
-            GLOSSARY.filter((t) => t.term === name).map((t) => (
-              <Reveal
-                key={t.term}
-                delay={i * 40}
-                className="rounded-xl border border-line bg-panel p-4"
-              >
-                <dt className="type-body font-semibold text-fg">{t.term}</dt>
-                <dd className="mt-1 type-small text-fg-2">{t.definition}</dd>
-              </Reveal>
-            )),
-          )}
-        </dl>
-        <Link
-          href="/glossary"
-          className="btn-3d mt-5 inline-flex min-h-12 items-center justify-center rounded-lg bg-gold px-6 type-body font-bold text-ink"
-        >
-          {GLOSSARY_PAGE.teaser.cta(GLOSSARY.length)} →
-        </Link>
       </Section>
 
       {/* ── Closing ──────────────────────────────────────────────────── */}

@@ -6,13 +6,17 @@
 
 export const LANDING = {
   hero: {
-    eyebrow: 'For Ghana and Nigeria · Learn by doing',
+    eyebrow: 'For Ghana and Nigeria · Courses, signals and tools',
     titleLead: 'Learn to trade.',
     titleGold: 'Practise before you risk real money.',
-    lead: 'Short lessons you play, starting from zero. Learn to read charts, understand the news and protect your money, with pretend money first. No get-rich-quick.',
+    lead: 'Courses you play, from zero. Signals that show their reasons and their record. A journal that measures every trade. Start with pretend money. No get-rich-quick.',
     primary: 'Start free',
     secondary: 'Try a lesson here',
-    promises: ['Start from zero', 'Short lessons', 'Pretend money'],
+    promises: [
+      'Start from zero',
+      'Signals with reasons',
+      'Pretend money first',
+    ],
   },
 
   ask: {
@@ -27,33 +31,10 @@ export const LANDING = {
     ],
     go: 'Find it',
     hint: 'Type it your own way. We\u2019ll find the lessons.',
-    none: 'Nothing on that yet. Try \u201ccharts\u201d, \u201crisk\u201d, \u201cIPO\u201d or \u201cRSI\u201d. Or start the roadmap from the top.',
+    none: 'Nothing on that yet. Try \u201ccharts\u201d, \u201crisk\u201d, \u201cIPO\u201d or \u201cRSI\u201d. Or start the first course.',
     results: (count: number) => (count === 1 ? '1 lesson' : `${count} lessons`),
     play: 'Play it now',
-    open: 'See it on the roadmap',
-  },
-
-  steps: {
-    kicker: 'How it works',
-    title: 'Play it. Don’t just read it.',
-    lead: 'Every lesson is a small market you control. You make a call, see what happens, then learn why.',
-    items: [
-      [
-        'Play',
-        'Drag the stop, move the average, set the interest rate. The market is in your hands.',
-      ],
-      [
-        'Make a call',
-        'Say what you think will happen before you see it. Getting it wrong here costs nothing.',
-      ],
-      [
-        'Learn why',
-        'See what happened and why. Then change one thing and try again.',
-      ],
-    ],
-    habit:
-      'Earn XP, keep a daily streak and watch your path fill up. A few minutes a day is enough.',
-    mindset: 'New to all this? Lesson one starts with what a price is',
+    open: 'See it in the courses',
   },
 
   demo: {
@@ -149,14 +130,37 @@ export const LANDING = {
     },
   },
 
+  desk: {
+    kicker: 'One desk',
+    title: 'Learn, read the market and track your trades in one place.',
+    lead: 'Open your desk and see your next lesson, today’s signals and how your own trades are going.',
+    modules: [
+      'Courses',
+      'Practice',
+      'Signals',
+      'Journal',
+      'Tools',
+      'Your desk',
+    ],
+    all: 'Every feature',
+  },
+
+  signals: {
+    kicker: 'Signals',
+    title: 'Signals that show their work.',
+    lead: 'Entry, stop and target, the reasons for and against, and how the same rules have done on that market, losses included.',
+    all: 'See every market',
+    how: 'How signals work',
+  },
+
   curriculum: {
-    kicker: 'The path',
-    title: 'One path from zero to trading with a plan.',
-    lead: 'Go in order, or pick any lesson on its own. Already trading? Jump straight to what you need, like RSI or reading a company’s accounts.',
+    kicker: 'Courses',
+    title: 'Seven courses, from zero to a plan.',
+    lead: 'Every lesson is a small market you control: make a call, see what happens, learn why. Go in order, or jump to what you need, like RSI or reading a company’s accounts.',
     lessonsCount: (n: number) => `${n} lessons`,
     status: {
       live: 'Play it now',
-      planned: 'On the roadmap',
+      planned: 'Coming soon',
     },
   },
 
@@ -204,12 +208,12 @@ export const LANDING = {
 
   closing: {
     title: 'Your first lesson takes a few minutes.',
-    lead: 'No card. No videos. Just a chart, a choice, and what happened.',
+    lead: 'No card. Start with a chart and a choice, then open your desk: courses, signals, a journal and tools.',
     cta: 'Start free',
     secondary: 'Try a lesson here',
   },
   roadmapStrip: {
-    cta: 'See every lesson',
+    cta: 'See every course',
     search: 'Or look for one topic',
   },
 

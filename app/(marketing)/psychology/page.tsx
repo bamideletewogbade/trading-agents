@@ -121,7 +121,7 @@ export default function MindsetPage() {
               {MINDSET.cta.primary}
             </Link>
             <Link
-              href="/roadmap"
+              href="/courses"
               className="inline-flex min-h-12 items-center justify-center rounded-md border border-edge bg-raised px-6 type-body font-semibold text-fg"
             >
               {MINDSET.cta.secondary}

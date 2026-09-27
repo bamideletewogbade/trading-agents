@@ -244,7 +244,7 @@ export default function IpoPage() {
             {C.deeper.body}
           </p>
           <Link
-            href="/roadmap"
+            href="/courses"
             className="mt-6 inline-flex min-h-12 items-center rounded-md bg-gold px-6 type-body font-semibold text-ink"
           >
             {C.deeper.cta} →

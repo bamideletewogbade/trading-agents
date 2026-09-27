@@ -2,19 +2,104 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MARKETING } from '@/content/marketing';
 import { BRAND } from '@/lib/brand';
 import { Mark } from './Mark';
 
 /**
- * The marketing nav. Links inline from 1024 px; below that a Menu button
- * opens a full-height sheet whose links arrive one after another. The sheet
- * closes on navigation and on Escape, locks the page behind it, and keeps
- * "Start free" in reach of the thumb.
+ * The marketing nav. Links inline from 1024 px, with the reading pages
+ * (glossary, psychology, the IPO guide) under Resources; below that a Menu
+ * button opens a full-height sheet whose links arrive one after another.
+ * The sheet closes on navigation and on Escape, locks the page behind it,
+ * and keeps "Start free" in reach of the thumb.
  */
 
 const COPY = MARKETING.nav;
+type Resource = (typeof COPY.resources.links)[number];
+
+function Badge({ link }: { link: Resource }) {
+  return 'badge' in link ? (
+    <span className="rounded-sm bg-gold px-1 font-mono text-[0.625rem] leading-4 font-bold text-ink uppercase">
+      {link.badge}
+    </span>
+  ) : null;
+}
+
+/** Resources, as a small panel under its button. Escape or a click outside closes it. */
+function ResourcesMenu({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const [openedAt, setOpenedAt] = useState(pathname);
+  const box = useRef<HTMLLIElement>(null);
+  if (open && openedAt !== pathname) setOpen(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    const onClick = (event: MouseEvent) => {
+      if (!box.current?.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClick);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClick);
+    };
+  }, [open]);
+
+  const here = (COPY.resources.links as readonly Resource[]).some(
+    (link) => pathname === link.href,
+  );
+  return (
+    <li ref={box} className="relative">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="resources-menu"
+        onClick={() => {
+          setOpenedAt(pathname);
+          setOpen((v) => !v);
+        }}
+        className={`relative inline-flex min-h-12 items-center gap-1 rounded-md px-3 type-small transition-colors ${here || open ? 'text-fg' : 'text-fg-2 hover:text-fg'}`}
+      >
+        {COPY.resources.label}
+        <span
+          aria-hidden
+          className={`text-[0.625rem] transition-transform ${open ? 'rotate-180' : ''}`}
+        >
+          ▾
+        </span>
+        {here ? (
+          <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-gold" />
+        ) : null}
+      </button>
+      {open ? (
+        <ul
+          id="resources-menu"
+          className="absolute top-full right-0 mt-2 w-72 rounded-xl border border-line bg-panel p-2 shadow-2xl animate-page-in"
+        >
+          {(COPY.resources.links as readonly Resource[]).map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                aria-current={pathname === link.href ? 'page' : undefined}
+                className="block rounded-lg px-3 py-2.5 hover:bg-raised"
+              >
+                <span className="flex items-center gap-2 type-small font-semibold text-fg">
+                  {link.label}
+                  <Badge link={link} />
+                </span>
+                <span className="block type-tick text-fg-2">{link.note}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </li>
+  );
+}
 
 export function SiteNav() {
   const pathname = usePathname();
@@ -63,17 +148,13 @@ export function SiteNav() {
                     className={`relative inline-flex min-h-12 items-center gap-1.5 rounded-md px-3 type-small transition-colors ${active(link.href) ? 'text-fg' : 'text-fg-2 hover:text-fg'}`}
                   >
                     {link.label}
-                    {'badge' in link && link.badge ? (
-                      <span className="rounded-sm bg-gold px-1 font-mono text-[0.625rem] leading-4 font-bold text-ink uppercase">
-                        {link.badge}
-                      </span>
-                    ) : null}
                     {active(link.href) ? (
                       <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-gold" />
                     ) : null}
                   </Link>
                 </li>
               ))}
+              <ResourcesMenu pathname={pathname} />
             </ul>
           </nav>
 
@@ -157,14 +238,7 @@ export function SiteNav() {
                     aria-current={active(link.href) ? 'page' : undefined}
                     className={`flex min-h-14 items-center justify-between rounded-md px-3 text-[1.625rem] leading-8 font-semibold tracking-[-0.01em] ${active(link.href) ? 'text-gold' : 'text-fg'}`}
                   >
-                    <span className="flex items-center gap-2">
-                      {link.label}
-                      {'badge' in link && link.badge ? (
-                        <span className="rounded-sm bg-gold px-1 font-mono text-[0.625rem] leading-4 font-bold text-ink uppercase">
-                          {link.badge}
-                        </span>
-                      ) : null}
-                    </span>
+                    {link.label}
                     <span aria-hidden className="font-mono text-fg-2">
                       →
                     </span>
@@ -172,10 +246,35 @@ export function SiteNav() {
                 </li>
               ))}
             </ul>
+            <p
+              className="mt-6 px-3 font-mono type-tick text-muted uppercase animate-menu-item"
+              style={{ animationDelay: '290ms' }}
+            >
+              {COPY.resources.label}
+            </p>
+            <ul className="mt-1 space-y-1">
+              {(COPY.resources.links as readonly Resource[]).map((link, i) => (
+                <li
+                  key={link.href}
+                  className="animate-menu-item"
+                  style={{ animationDelay: `${320 + i * 45}ms` }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={active(link.href) ? 'page' : undefined}
+                    className={`flex min-h-12 items-center gap-2 rounded-md px-3 type-body font-semibold ${active(link.href) ? 'text-gold' : 'text-fg-2'}`}
+                  >
+                    {link.label}
+                    <Badge link={link} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </nav>
           <div
             className="mt-auto space-y-3 pt-8 animate-menu-item"
-            style={{ animationDelay: '320ms' }}
+            style={{ animationDelay: '460ms' }}
           >
             <p className="font-mono type-tick text-muted uppercase">
               {COPY.menuNote}

@@ -1,18 +1,18 @@
-import { ROADMAP_PAGE } from '@/content/pages';
+import { COURSES_PAGE } from '@/content/pages';
 import { AskBox } from '@/components/marketing/AskBox';
 import { RoadmapExplorer } from '@/components/marketing/RoadmapExplorer';
 
 export const metadata = {
-  title: ROADMAP_PAGE.meta.title,
-  description: ROADMAP_PAGE.meta.description,
+  title: COURSES_PAGE.meta.title,
+  description: COURSES_PAGE.meta.description,
 };
 
 /**
- * The roadmap on one screen: a short header with the search beside it,
- * then the stage map (components/marketing/RoadmapExplorer.tsx). Every
- * stage is one tap away; nothing makes you scroll past the others.
+ * The courses on one screen: a short header with the search beside it,
+ * then the course map (components/marketing/RoadmapExplorer.tsx). Every
+ * course is one tap away; nothing makes you scroll past the others.
  */
-export default function RoadmapPage() {
+export default function CoursesPage() {
   return (
     <section className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
@@ -20,18 +20,18 @@ export default function RoadmapPage() {
         <div className="lg:flex lg:items-end lg:justify-between lg:gap-10">
           <div>
             <p className="font-mono type-label text-gold">
-              {ROADMAP_PAGE.hero.kicker}
+              {COURSES_PAGE.hero.kicker}
             </p>
             <h1 className="mt-2 max-w-[20ch] text-[2rem] leading-[2.375rem] font-[680] tracking-[-0.03em] text-balance text-fg sm:text-[2.75rem] sm:leading-[3.125rem]">
-              {ROADMAP_PAGE.hero.title}
+              {COURSES_PAGE.hero.title}
             </h1>
             <p className="mt-2 max-w-[56ch] type-body text-fg-2">
-              {ROADMAP_PAGE.hero.lead}
+              {COURSES_PAGE.hero.lead}
             </p>
           </div>
           <div className="mt-5 w-full lg:mt-0 lg:max-w-[420px]">
             <p className="mb-2 font-mono type-label text-fg-2">
-              {ROADMAP_PAGE.ask}
+              {COURSES_PAGE.ask}
             </p>
             <AskBox compact />
           </div>

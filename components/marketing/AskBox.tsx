@@ -160,7 +160,7 @@ export function AskBox({ compact = false }: { compact?: boolean }) {
                       {lesson.practice}
                     </p>
                     <Link
-                      href={lesson.playAt ?? '/roadmap'}
+                      href={lesson.playAt ?? '/courses'}
                       className={`mt-3 inline-flex min-h-11 items-center rounded-md px-4 type-small font-semibold ${lesson.playAt ? 'bg-gold text-ink' : 'border border-edge text-fg'}`}
                     >
                       {lesson.playAt ? COPY.play : COPY.open} →

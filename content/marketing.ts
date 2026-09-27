@@ -17,20 +17,41 @@ export const MARKETING = {
   skip: 'Skip to content',
   nav: {
     label: 'Main',
+    /** Names people already use for these things, not our own. */
     links: [
-      { href: '/roadmap', label: 'Roadmap' },
-      { href: '/glossary', label: 'Glossary' },
-      { href: '/mindset', label: 'Mindset' },
-      { href: '/ipo', label: 'IPO 101', badge: 'New' },
+      { href: '/courses', label: 'Courses' },
+      { href: '/trading-signals', label: 'Signals' },
+      { href: '/features', label: 'Features' },
       { href: '/community', label: 'Community' },
       { href: '/pricing', label: 'Pricing' },
     ],
+    resources: {
+      label: 'Resources',
+      links: [
+        {
+          href: '/glossary',
+          label: 'Glossary',
+          note: 'Trading words in plain English',
+        },
+        {
+          href: '/psychology',
+          label: 'Trading psychology',
+          note: 'Noise, signal and staying calm',
+        },
+        {
+          href: '/ipo',
+          label: 'IPO guide',
+          note: 'How an IPO works, with the Dangote offer',
+          badge: 'New',
+        },
+      ],
+    },
     signIn: 'Sign in',
     start: 'Start free',
-    desk: 'Continue learning',
+    desk: 'Open my desk',
     menu: 'Menu',
     close: 'Close menu',
-    menuNote: 'Start from zero. Pretend money. Real skill.',
+    menuNote: 'Courses, signals and tools. Start from zero.',
   },
 
   announcement: {
@@ -43,28 +64,37 @@ export const MARKETING = {
   },
 
   footer: {
-    tagline: 'Trading is a skill. Practise it here first.',
+    tagline:
+      'Learn to trade, with signals that show their work. Practise here first.',
     columns: [
       {
-        title: 'Learn',
+        title: 'Product',
         links: [
-          { href: '/roadmap', label: 'The roadmap' },
-          { href: '/mindset', label: 'Noise vs signal' },
-          { href: '/ipo', label: 'How IPOs work' },
-          { href: '/glossary', label: 'Glossary' },
+          { href: '/courses', label: 'Courses' },
+          { href: '/trading-signals', label: 'Signals' },
+          { href: '/features', label: 'Features' },
+          { href: '/pricing', label: 'Pricing' },
         ],
       },
       {
-        title: 'Sika Lab',
+        title: 'Resources',
         links: [
-          { href: '/community', label: 'Community' },
-          { href: '/pricing', label: 'Pricing' },
+          { href: '/glossary', label: 'Glossary' },
+          { href: '/psychology', label: 'Trading psychology' },
+          { href: '/ipo', label: 'IPO guide' },
+        ],
+      },
+      {
+        title: 'Community',
+        links: [
+          { href: '/community', label: 'The Floor' },
+          { href: '/community#owners', label: 'For community owners' },
           { href: '/desk', label: 'Start free' },
         ],
       },
     ],
     disclaimer:
-      'Educational only, not financial advice. Every price on this site is simulated or clearly marked as historical data. Nothing here moves real money.',
+      'Educational only, not financial advice. Every price is labelled: simulated, historical or live market data. Signals come from fixed rules, are the same for everyone, and keep every loss in their record. Nothing here moves real money.',
     made: 'Built for Ghana and Nigeria, then the rest of Africa.',
   },
 } as const;

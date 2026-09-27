@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { ROADMAP_PAGE as C } from '@/content/pages';
+import { COURSES_PAGE as C } from '@/content/pages';
 import { STAGES, lesson, type Lesson } from '@/content/curriculum';
 import { syncCompleted, useCompleted } from '@/lib/client/progress';
 

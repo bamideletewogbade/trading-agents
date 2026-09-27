@@ -1,17 +1,17 @@
 /**
- * The mindset page: what trading is and isn't, the noise-vs-signal game,
+ * Trading psychology (/psychology): what trading is and isn't, the noise-vs-signal game,
  * and the honest maths of "extra income". Numbers arrive formatted from the
  * page, which gets them from lib/engines.
  */
 
 export const MINDSET = {
   meta: {
-    title: 'Noise vs signal: the trader’s mindset',
+    title: 'Trading psychology: noise, signal and staying calm',
     description:
       'Trading is a skill, not a lottery ticket. Learn to tell noise from signal, why protecting the downside comes first, and what honest extra income looks like.',
   },
   hero: {
-    kicker: 'The trader’s mindset',
+    kicker: 'Trading psychology',
     titleLead: 'Most of what moves is',
     titleGold: 'noise.',
     lead: 'The market talks all day. WhatsApp talks louder. People who last in this learn to ignore almost all of it, and act on the little that matters. That’s a skill, and you can practise it.',
@@ -28,7 +28,7 @@ export const MINDSET = {
     turns: (price: number, filtered: number) =>
       `The price changed direction ${price} times. Your filtered line: ${filtered}.`,
     tradeoff:
-      'Longer is calmer, but slower to notice a real turn. Every filter trades noise for delay. That trade-off is what the Technical Analysis stage is about.',
+      'Longer is calmer, but slower to notice a real turn. Every filter trades noise for delay. That trade-off is what the Technical Analysis course is about.',
   },
 
   game: {
@@ -45,7 +45,7 @@ export const MINDSET = {
     done: (right: number, total: number) =>
       right === total
         ? `All ${total}. You already think like a trader. Now practise it on real charts.`
-        : `${right} of ${total}. The ones you missed are exactly what the roadmap trains.`,
+        : `${right} of ${total}. The ones you missed are exactly what the courses train.`,
     again: 'Play again',
     cards: [
       {
@@ -131,6 +131,6 @@ export const MINDSET = {
   cta: {
     title: 'Ready to practise?',
     primary: 'Start free',
-    secondary: 'See the roadmap',
+    secondary: 'See the courses',
   },
 } as const;

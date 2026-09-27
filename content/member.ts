@@ -23,7 +23,7 @@ export const NAV = {
     {
       title: 'Learn',
       items: [
-        { href: '/learn', label: 'Path', icon: 'path' },
+        { href: '/learn', label: 'Courses', icon: 'path' },
         { href: '/lessons', label: 'Lessons', icon: 'book' },
         { href: '/practice', label: 'Practice', icon: 'practice' },
         { href: '/learn/glossary', label: 'Glossary', icon: 'words' },
@@ -91,7 +91,7 @@ export const LIBRARY = {
   done: 'Done',
   soon: 'Soon',
   minutes: (n: number) => `${n} min`,
-  stage: (n: number) => `Stage ${n}`,
+  stage: (n: number) => `Course ${n}`,
   progress: (done: number, total: number) => `${done} of ${total} done`,
   glossary: 'Stuck on a word? The glossary',
 };

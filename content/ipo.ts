@@ -176,7 +176,7 @@ export const IPO_PAGE = {
     'Apply only through SEC-registered brokers, banks and platforms named in the prospectus. Never send money to an individual “agent”. Nobody can guarantee you an allotment or a listing-day price.',
   deeper: {
     title: 'Want to judge a company yourself?',
-    body: 'The Fundamental Analysis stage teaches income statements, valuation and what moves prices, with lessons you play.',
-    cta: 'See the roadmap',
+    body: 'The Fundamental Analysis course teaches income statements, valuation and what moves prices, with lessons you play.',
+    cta: 'See the courses',
   },
 } as const;

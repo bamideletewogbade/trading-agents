@@ -163,7 +163,7 @@ export const ONBOARDING = {
         : 'Open to any market',
     minutes: (minutes: number) => `About ${minutes} minutes a day`,
     start: (stage: number, title: string) =>
-      `I’d start you at stage ${stage}: ${title}.`,
+      `I’d start you at course ${stage}: ${title}.`,
     reasons: {
       ipo: 'IPO 101 first, since that’s what brought you here.',
       new: 'We start with what a price is and what trading costs, then charts, one step at a time.',

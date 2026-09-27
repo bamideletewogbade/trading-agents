@@ -100,7 +100,37 @@ export default function CommunityPage() {
           ))}
         </ul>
       </Section>
-      <Section kicker={C.rules.kicker} tone="panel">
+      <Section
+        id="owners"
+        kicker={C.owners.kicker}
+        title={C.owners.title}
+        lead={C.owners.lead}
+        tone="panel"
+      >
+        <ul className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {C.owners.items.map(([title, body], i) => (
+            <Reveal
+              as="li"
+              key={title}
+              delay={i * 50}
+              className="rounded-lg border border-line bg-panel p-5"
+            >
+              <p className="type-heading text-fg">{title}</p>
+              <p className="mt-2 type-small text-fg-2">{body}</p>
+            </Reveal>
+          ))}
+        </ul>
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+          <InterestButton
+            type="partner_interest"
+            label={C.owners.cta}
+            done={C.owners.done}
+            fallback={C.owners.fallback}
+          />
+          <p className="type-small text-muted">{C.owners.note}</p>
+        </div>
+      </Section>
+      <Section kicker={C.rules.kicker}>
         <ol className="grid gap-2 md:grid-cols-2">
           {C.rules.items.map((rule, i) => (
             <Reveal
@@ -117,7 +147,7 @@ export default function CommunityPage() {
           ))}
         </ol>
       </Section>
-      <Section kicker={C.safety.kicker}>
+      <Section kicker={C.safety.kicker} tone="panel">
         <ul className="grid gap-2 md:grid-cols-2">
           {C.safety.items.map((item) => (
             <li key={item} className="flex gap-3 type-body text-fg-2">
