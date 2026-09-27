@@ -651,6 +651,35 @@ await check('onboarding reads a sure option, and only a sure one', () => {
 });
 
 await check(
+  'onboarding: a crisis, by rule or from Jev, comes before the meaning',
+  () => {
+    const safe = { in_crisis: yes(0.05), wants_tip: yes(0.05) };
+    deepStrictEqual(
+      MEANING_GATE.rule!({
+        step: 'goal',
+        text: 'I lost everything, I want to die',
+      }),
+      { kind: 'crisis' },
+    );
+    equal(MEANING_GATE.rule!({ step: 'goal', text: 'I lost money' }), null);
+    deepStrictEqual(
+      MEANING_GATE.read(
+        { ...safe, in_crisis: yes(0.5), meaning: pick('income', 0.9) },
+        { step: 'goal', text: 'x' },
+      ),
+      { kind: 'crisis' },
+    );
+    deepStrictEqual(
+      MEANING_GATE.read(
+        { ...safe, meaning: pick('income', 0.9) },
+        { step: 'goal', text: 'x' },
+      ),
+      { kind: 'sure', value: 'income' },
+    );
+  },
+);
+
+await check(
   'a reflection through decide(): one call answers all four questions',
   async () => {
     const time = clock();

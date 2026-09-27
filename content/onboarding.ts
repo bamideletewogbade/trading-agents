@@ -41,7 +41,10 @@ export const ONBOARDING = {
 
   ask: {
     name: 'First, what should I call you?',
-    goal: (name: string) => `Nice to meet you, ${name}. What brought you here?`,
+    goal: (name: string) =>
+      name
+        ? `Nice to meet you, ${name}. What brought you here?`
+        : 'What brought you here?',
     experience:
       'Have you ever bought stocks, forex or crypto, with real money?',
     markets: 'Which markets are you most curious about?',
@@ -110,6 +113,19 @@ export const ONBOARDING = {
   /** After two answers the reading couldn't place: no loop, just move on. */
   skip: 'No problem, let’s skip that one.',
 
+  /** They'd rather not give a name: fine. */
+  noName: 'That’s fine, no name needed.',
+
+  /**
+   * Something they typed sounded like crisis (lib/decisions/safety.ts): the
+   * support card sits between these two lines, and the question waits.
+   */
+  care: {
+    before:
+      'That sounds really heavy, and I’m glad you said it. The questions can wait.',
+    after: 'Whenever you’re ready, we can carry on from here. There’s no rush.',
+  },
+
   /** What Sika says after hearing each answer. */
   ack: {
     goal: {
@@ -154,7 +170,8 @@ export const ONBOARDING = {
   },
 
   summary: {
-    lead: (name: string) => `Here’s what I heard, ${name}:`,
+    lead: (name: string) =>
+      name ? `Here’s what I heard, ${name}:` : 'Here’s what I heard:',
     goal: {
       ipo: 'You’re here because of the Dangote IPO',
       income: 'You want extra income, the honest way',

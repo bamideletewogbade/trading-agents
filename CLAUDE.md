@@ -184,7 +184,10 @@ npx oxfmt <files>      # format what you touched
   `scripts/check-onboarding.ts` using real phrases people type. The chat screen doesn't change.
   Chips are shortcuts, never the only way in: a typed answer is read (then Jev, when it's on),
   an unclear one gets a clarify line with typed examples (the checks prove each example is
-  understood), and a second miss skips the question. Nothing ever says "tap one".
+  understood), and a second miss skips the question. Nothing ever says "tap one". Every
+  step's reader is checked against a table of phrases people type (`TYPED` in the checks);
+  when the chat misreads someone, their words go there first. What's typed passes
+  `crisisRule` before any reading: the support card shows in the chat and the question waits.
 - Motion lives in `app/globals.css` (page-in, reveals, menu, chat bubbles, card flips, and the
   game layer: `btn-3d` buttons that sink when pressed, `coin`s, beat slides, pop and shake on
   answers, "+XP" floats, the finish coin's 3D spin, candles drawing in), and every animation

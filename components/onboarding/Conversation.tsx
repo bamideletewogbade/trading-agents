@@ -2,9 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
+import { SupportCard } from '@/components/coach/SupportCard';
 import { COACH, ONBOARDING, chipLabel } from '@/content/onboarding';
 import { STAGES, TOPICS, lesson } from '@/content/curriculum';
+import { markCare } from '@/lib/client/notes';
 import { formatBp } from '@/lib/core/money';
+import { crisisRule } from '@/lib/decisions/safety';
 import { recoveryBp } from '@/lib/engines/risk';
 import {
   JEV_OPTIONS,
@@ -31,6 +34,9 @@ import { saveProfile } from '@/lib/client/profile';
  * again with examples of what to type; after a second miss she moves on,
  * and that question is skipped (placement works without it).
  *
+ * Anything typed passes the crisis rules first (lib/decisions/safety.ts):
+ * a match shows the support card in the chat, and the question waits.
+ *
  * Every coach line arrives after a short "typing…" pause, so the chat reads
  * like a conversation rather than a form. Anyone who asked for less motion
  * gets the lines straight away.
@@ -38,7 +44,8 @@ import { saveProfile } from '@/lib/client/profile';
 
 type Said =
   | { from: 'coach' | 'me'; text: string }
-  | { from: 'summary'; profile: Profile };
+  | { from: 'summary'; profile: Profile }
+  | { from: 'support' };
 type Message = Said & { id: number };
 
 const C = ONBOARDING;
@@ -90,6 +97,9 @@ export function Conversation() {
   const [misses, setMisses] = useState<Partial<Record<Step, number>>>({});
   const [skipped, setSkipped] = useState<Step[]>([]);
   const [draft, setDraft] = useState('');
+  // After the support card, no suggestions until they write again: the card
+  // keeps the room, and nothing nudges them back into the questions.
+  const [calm, setCalm] = useState(false);
   const [saving, setSaving] = useState<'idle' | 'saving' | 'server' | 'device'>(
     'idle',
   );
@@ -128,6 +138,7 @@ export function Conversation() {
     setProfile({});
     setMisses({});
     setSkipped([]);
+    setCalm(false);
     setStep(null);
     setSaving('idle');
     say([...C.hello, question('name', {})], () => setStep('name'));
@@ -196,6 +207,13 @@ export function Conversation() {
   }
 
   function accept(current: Step, value: unknown) {
+    if (current === 'name' && value === '') {
+      // They'd rather not say: carry on without a name, and don't ask again.
+      const skip = [...skipped, current];
+      setSkipped(skip);
+      advance(profile, [C.noName], skip);
+      return;
+    }
     const next = answer(profile, current, value);
     setProfile(next);
     advance(next, reaction(current, next));
@@ -215,11 +233,24 @@ export function Conversation() {
     say([C.clarify[current]], () => setStep(current));
   }
 
+  /** Something typed sounded like crisis: the support card, then the same question waits, not counted as a miss. */
+  function care(current: Step) {
+    markCare();
+    setCalm(true);
+    setStep(null);
+    say([C.care.before], () => {
+      push({ from: 'support' });
+      say([C.care.after], () => setStep(current));
+    });
+  }
+
   async function reply(text: string) {
     if (!step) return;
     const current = step;
     push({ from: 'me', text });
     setDraft('');
+    setCalm(false);
+    if (crisisRule(text)) return care(current);
     const read = understand(current, text);
     if (read.kind === 'sure') return accept(current, read.value);
 
@@ -240,6 +271,10 @@ export function Conversation() {
         if (result.kind === 'sure') {
           setTyping(false);
           return accept(current, result.value);
+        }
+        if (result.kind === 'crisis') {
+          setTyping(false);
+          return care(current);
         }
       } catch {
         // Fall through to asking the learner.
@@ -263,9 +298,8 @@ export function Conversation() {
   }
 
   const answered = answeredCount(profile) + skipped.length;
-  const chips = step
-    ? (C.chips[step] as { label: string; value: unknown }[])
-    : [];
+  const chips =
+    step && !calm ? (C.chips[step] as { label: string; value: unknown }[]) : [];
 
   return (
     <div className="mx-auto flex h-[calc(100dvh-4rem)] max-w-[720px] flex-col">
@@ -293,7 +327,11 @@ export function Conversation() {
       >
         <ul className="space-y-3">
           {messages.map((message) =>
-            message.from === 'summary' ? (
+            message.from === 'support' ? (
+              <li key={message.id} className="animate-bubble-in">
+                <SupportCard />
+              </li>
+            ) : message.from === 'summary' ? (
               <li key={message.id} className="animate-bubble-in">
                 <Summary
                   profile={message.profile}

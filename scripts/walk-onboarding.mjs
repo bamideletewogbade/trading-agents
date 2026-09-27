@@ -17,21 +17,27 @@ const bundled = '/opt/pw-browsers/chromium';
 const browser = await chromium.launch(
   existsSync(bundled) ? { executablePath: bundled } : {},
 );
-const context = await browser.newContext({
-  viewport: { width: 375, height: 812 },
-  isMobile: true,
-  hasTouch: true,
-  reducedMotion: 'reduce',
-});
-const page = await context.newPage();
 const problems = [];
-page.on('pageerror', (error) => problems.push(`page error: ${error.message}`));
-page.on('console', (message) => {
-  if (message.type() === 'error') problems.push(`console: ${message.text()}`);
-});
+let page;
+async function open() {
+  const context = await browser.newContext({
+    viewport: { width: 375, height: 812 },
+    isMobile: true,
+    hasTouch: true,
+    reducedMotion: 'reduce',
+  });
+  page = await context.newPage();
+  page.on('pageerror', (error) =>
+    problems.push(`page error: ${error.message}`),
+  );
+  page.on('console', (message) => {
+    if (message.type() === 'error') problems.push(`console: ${message.text()}`);
+  });
+  await page.goto(`${BASE}/onboarding`, { waitUntil: 'networkidle' });
+}
 
-const input = page.locator('#answer');
 async function type(text) {
+  const input = page.locator('#answer');
   await input.waitFor({ state: 'visible' });
   await page.waitForFunction(
     () => !document.querySelector('#answer')?.disabled,
@@ -65,7 +71,7 @@ async function tap(label) {
 }
 
 try {
-  await page.goto(`${BASE}/onboarding`, { waitUntil: 'networkidle' });
+  await open();
   await type("hi, I'm Ama");
   await page.getByText('Nice to meet you, Ama').waitFor();
   await type('everyone is talking about the Dangote IPO');
@@ -104,6 +110,40 @@ try {
   const desk = await page.locator('main').innerText();
   if (!desk.includes('How an IPO works: the Dangote offer'))
     problems.push('the desk does not start with IPO 101');
+
+  // Everything typed, the way people type on a device: no name given, a
+  // crisis phrase (the support card, then the same question waits), and
+  // answers that used to be misread.
+  await open();
+  await type('I’d rather not say');
+  await page.getByText('That’s fine, no name needed.').waitFor();
+  await page.getByText('What brought you here?').waitFor();
+  await type('I lost everything and I want to die');
+  await page.getByText('You don’t have to carry this alone').waitFor();
+  await newestInView('the support card');
+  await page.getByText('Whenever you’re ready, we can carry on').waitFor();
+  if (await page.getByRole('button', { name: 'Just curious' }).count())
+    problems.push('suggestions crowd the support card');
+  await type('I lost money on forex');
+  await page.getByText('Thank you for saying that.').waitFor();
+  await type('never tried');
+  await page.getByText('You’ve got no bad habits to unlearn').waitFor();
+  await type('forex and gold');
+  await type('2x');
+  await page.getByText('Exactly: 100%').waitFor();
+  await type('is it legit?');
+  await page.getByText('Good instinct.').waitFor();
+  await type('like 2 hours');
+  await page.getByText('Here’s what I heard:').waitFor();
+  const unnamed = await page.locator('main').innerText();
+  for (const expected of [
+    'You’ve lost money before',
+    'You haven’t traded with real money yet',
+    'forex, commodities',
+    'An hour or more a day',
+  ])
+    if (!unnamed.includes(expected))
+      problems.push(`the typed-only summary is missing “${expected}”`);
 } catch (error) {
   problems.push(
     error instanceof Error ? error.message.split('\n')[0] : String(error),
@@ -119,5 +159,5 @@ if (problems.length) {
   process.exit(1);
 }
 console.log(
-  '✓ onboarding: typed and tapped answers read right (“about 2hrs” included), two unclear answers skip instead of looping, placed at IPO 101, desk shows it.',
+  '✓ onboarding: typed and tapped answers read right (“about 2hrs” included), two unclear answers skip instead of looping, placed at IPO 101, desk shows it; a declined name, a crisis phrase (support card, question waits) and an all-typed run read right.',
 );
