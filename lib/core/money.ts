@@ -111,6 +111,22 @@ export function mulDiv(a: number, b: number, c: number): number {
   return Number(negative ? -quotient : quotient);
 }
 
+/**
+ * 10 to the power `n`, for n from 0 to 15, from a table: exact, and the
+ * same on every engine (no `**`, whose float path isn't promised to be).
+ */
+const POWERS_OF_TEN = [
+  1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000,
+  1_000_000_000, 10_000_000_000, 100_000_000_000, 1_000_000_000_000,
+  10_000_000_000_000, 100_000_000_000_000, 1_000_000_000_000_000,
+] as const;
+
+export function pow10(n: number): number {
+  const value = POWERS_OF_TEN[n];
+  if (value === undefined) throw new RangeError(`No power of ten for ${n}.`);
+  return value;
+}
+
 /** Apply a rate in basis points: 3% of GH₵ 1,000 is `ofBp(money(1000), 300)`. */
 export function ofBp(amount: Money, bp: number): Money {
   return fromMinor(mulDiv(amount.minor, bp, BP_PER_WHOLE), amount.currency);

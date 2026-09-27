@@ -88,7 +88,7 @@ export function Library() {
     (topic === 'all' ? null : inOrder.filter((item) => item.topic === topic));
   return (
     <div className="mx-auto max-w-[1100px] px-4 pt-5 sm:px-8 lg:grid lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)] lg:items-start lg:gap-12 lg:pt-10">
-      <div className="lg:sticky lg:top-24">
+      <div className="lg:sticky lg:top-8">
         <h1 className="type-title text-fg">{LIBRARY.title}</h1>
         <p className="mt-1 type-small text-fg-2">{LIBRARY.lead}</p>
         <Link

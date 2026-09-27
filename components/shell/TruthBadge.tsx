@@ -5,6 +5,7 @@ import {
   BookIcon,
   ClockIcon,
   LoopIcon,
+  PulseIcon,
 } from '@/components/ui/icons';
 
 /**
@@ -21,6 +22,7 @@ const STYLE: Record<Truth, string> = {
   hypothetical: 'border border-dashed border-fg-2 text-fg-2',
   historical: 'border-2 border-solid border-fg text-fg',
   educational: 'border border-solid border-gold text-gold',
+  market: 'border-2 border-double border-info text-info',
   ai: 'border border-dotted border-fg-2 text-fg-2',
 };
 
@@ -35,6 +37,8 @@ function BadgeIcon({ truth }: { truth: Truth }) {
       return <ClockIcon {...size} />;
     case 'educational':
       return <BookIcon {...size} />;
+    case 'market':
+      return <PulseIcon {...size} />;
     case 'ai':
       return null;
   }
@@ -49,7 +53,7 @@ export function TruthBadge({
 }) {
   const copy = TRUTH_COPY[truth];
   const detail =
-    truth === 'historical' && source
+    (truth === 'historical' || truth === 'market') && source
       ? ` · ${source.name} · ${source.date}`
       : '';
   return (

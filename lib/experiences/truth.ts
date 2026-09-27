@@ -11,6 +11,7 @@ export const TRUTHS = [
   'hypothetical',
   'historical',
   'educational',
+  'market',
   'ai',
 ] as const;
 

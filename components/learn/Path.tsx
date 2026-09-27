@@ -2,28 +2,21 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { DESK } from '@/content/desk';
-import { HABIT } from '@/content/member';
+import { DESK, PATH } from '@/content/desk';
 import { STAGES, lesson, type Lesson } from '@/content/curriculum';
+import { nextLesson, stageOf } from '@/lib/curriculum/next';
 import { loadProfile, type Saved } from '@/lib/client/profile';
 import { useHabit } from '@/lib/client/progress';
 import { usePractice } from '@/lib/client/practice';
 import { PRACTICE } from '@/content/practice';
-import { FlameIcon } from '@/components/ui/icons';
 
 /**
- * The path: where a learner lands after onboarding, and every visit after.
- * Streak, level and today's goal at the top; the next lesson as one big
- * button; then every stage as a trail of coins to tap. Done coins are gold
- * and ticked, the next one breathes, the rest wait. It holds no rules of its
- * own: placement comes from lib/onboarding/flow.ts, lessons from
- * content/curriculum.ts, the numbers from lib/progress/habit.ts.
+ * The path (/learn): the next lesson as one big button, then every stage as
+ * a trail of coins to tap. Done coins are gold and ticked, the next one
+ * breathes, the rest wait. It holds no rules of its own: placement comes
+ * from lib/onboarding/flow.ts, lessons from content/curriculum.ts. Streak,
+ * level and today's goal live on the desk (components/desk/Dashboard.tsx).
  */
-
-function partOfDay(): 'morning' | 'afternoon' | 'evening' {
-  const hour = new Date().getHours();
-  return hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
-}
 
 /** How far each coin sits from the centre line, so the path winds. */
 const WIND = [0, 46, 70, 46, 0, -46, -70, -46];
@@ -100,36 +93,7 @@ function Coin({
   );
 }
 
-function Ring({ done, goal }: { done: number; goal: number }) {
-  const share = Math.min(1, goal ? done / goal : 0);
-  const r = 15;
-  const c = 2 * Math.PI * r;
-  return (
-    <svg viewBox="0 0 36 36" className="size-9 -rotate-90" aria-hidden>
-      <circle
-        cx="18"
-        cy="18"
-        r={r}
-        fill="none"
-        strokeWidth="4"
-        className="stroke-line"
-      />
-      <circle
-        cx="18"
-        cy="18"
-        r={r}
-        fill="none"
-        strokeWidth="4"
-        strokeLinecap="round"
-        className="stroke-gold transition-[stroke-dashoffset] duration-700"
-        strokeDasharray={c}
-        strokeDashoffset={c * (1 - share)}
-      />
-    </svg>
-  );
-}
-
-export function Desk() {
+export function Path() {
   const [state, setState] = useState<{ loaded: boolean; saved: Saved | null }>({
     loaded: false,
     saved: null,
@@ -164,87 +128,20 @@ export function Desk() {
   // The next lesson: the first of their placement lessons not yet done,
   // then the first playable lesson from their stage onwards, then any.
   // Someone who skipped the chat starts at the very first lesson.
-  const order = [
-    ...(saved?.placement.lessons ?? []),
-    ...STAGES.slice(startStage).flatMap((s) => [...s.lessons]),
-    ...STAGES.flatMap((s) => [...s.lessons]),
-  ];
-  const nextUp =
-    order.find(
-      (id) => !completed.includes(id) && lesson(id).status === 'live',
-    ) ?? null;
+  const nextUp = nextLesson(completed, saved?.placement ?? null);
   const next = nextUp ? lesson(nextUp) : null;
 
   // Only the stage you're in is open, so the path reads as "here's today"
   // rather than fifty coins at once. Any stage opens with a tap.
-  const current = STAGES.findIndex(
-    (stage) =>
-      nextUp !== null && (stage.lessons as readonly string[]).includes(nextUp),
-  );
-  const openByDefault = current === -1 ? startStage : current;
+  const openByDefault = stageOf(nextUp, startStage);
   const isOpen = (key: string, s: number) =>
     folded[key] === undefined ? s === openByDefault : !folded[key];
 
   return (
     <div className="mx-auto max-w-[1100px] overflow-x-clip px-4 pt-5 sm:px-8 lg:grid lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-start lg:gap-12 lg:pt-10">
-      <aside className="lg:sticky lg:top-24">
-        <h1 className="type-title text-fg">
-          {fresh && !saved?.profile.name
-            ? DESK.welcome
-            : DESK.greeting(partOfDay(), saved?.profile.name)}
-        </h1>
-
-        {!fresh ? (
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <div className="rounded-lg border border-line bg-panel p-3">
-              <p className="font-mono type-tick text-muted uppercase">
-                {DESK.streak}
-              </p>
-              <p
-                className={`mt-1 flex items-center gap-1 type-heading num ${habit.streak.today ? 'text-gold' : 'text-fg'}`}
-              >
-                <FlameIcon
-                  width={18}
-                  height={18}
-                  className={
-                    habit.streak.today ? 'animate-flicker' : 'opacity-50'
-                  }
-                />
-                {HABIT.streak(habit.streak.current)}
-              </p>
-            </div>
-            <div className="rounded-lg border border-line bg-panel p-3">
-              <p className="font-mono type-tick text-muted uppercase">
-                {DESK.level}
-              </p>
-              <p className="mt-1 type-heading text-fg num">
-                {habit.level.level}
-              </p>
-              <div
-                className="mt-2 h-1.5 overflow-hidden rounded-full bg-line"
-                aria-hidden
-              >
-                <div
-                  className="h-full rounded-full bg-gold transition-[width] duration-700"
-                  style={{ width: `${habit.level.progressBp / 100}%` }}
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2 rounded-lg border border-line bg-panel p-3">
-              <Ring done={habit.goal.done} goal={habit.goal.goal} />
-              <div className="min-w-0">
-                <p className="font-mono type-tick text-muted uppercase">
-                  {DESK.today}
-                </p>
-                <p className="type-small font-semibold text-fg num">
-                  {habit.goal.met
-                    ? HABIT.goalMet
-                    : HABIT.goal(habit.goal.done, habit.goal.goal)}
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : null}
+      <aside className="lg:sticky lg:top-8">
+        <h1 className="type-title text-fg">{PATH.title}</h1>
+        <p className="mt-1 type-small text-fg-2">{PATH.lead}</p>
 
         {next ? (
           <Link

@@ -1,8 +1,8 @@
 import { DESK } from '@/content/desk';
-import { Desk } from '@/components/desk/Desk';
+import { Dashboard } from '@/components/desk/Dashboard';
 
 export const metadata = { title: DESK.meta.title };
 
 export default function DeskPage() {
-  return <Desk />;
+  return <Dashboard />;
 }

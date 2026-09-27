@@ -122,3 +122,24 @@ export function tradesToRecover(
   }
   return null;
 }
+
+/** Hundredths of R as people read them: 200 → "+2R", −34 → "−0.34R", 150 → "1.5R" unsigned. */
+export function formatR(
+  hundredths: number,
+  options: { signed?: boolean } = { signed: true },
+): string {
+  const absolute = Math.abs(Math.round(hundredths));
+  const fraction = String(absolute % 100)
+    .padStart(2, '0')
+    .replace(/0+$/, '');
+  const body = `${Math.floor(absolute / 100)}${fraction ? `.${fraction}` : ''}R`;
+  if (hundredths < 0) return `−${body}`;
+  return options.signed && hundredths > 0 ? `+${body}` : body;
+}
+
+/** Tenths as a multiple: 23 → "2.3×". */
+export function formatTimes(tenths: number): string {
+  const whole = Math.floor(tenths / 10);
+  const rest = tenths % 10;
+  return `${whole}${rest ? `.${rest}` : ''}×`;
+}

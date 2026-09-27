@@ -21,6 +21,10 @@ export const TRUTH_COPY: Record<Truth, { badge: string; spoken: string }> = {
     badge: 'Educational only',
     spoken: 'Educational only. This is not advice about your own money.',
   },
+  market: {
+    badge: 'Live market data',
+    spoken: 'Live market data: real prices, as of the time shown.',
+  },
   ai: {
     badge: 'AI',
     spoken: 'Written by the AI coach.',

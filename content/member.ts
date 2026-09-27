@@ -4,15 +4,68 @@
  * Numbers arrive already worked out (lib/progress/habit.ts).
  */
 
-export const TABS = {
+/**
+ * The signed-in app's navigation (docs/member-app-plan.md §2): grouped by
+ * what you're doing. A module that isn't built yet shows as "Soon" and is
+ * never a dead link. The phone's bottom bar carries four places and a Menu
+ * that opens all of it.
+ */
+export const NAV = {
   label: 'Main',
-  items: [
-    { href: '/desk', label: 'Learn', icon: 'path' },
-    { href: '/practice', label: 'Practice', icon: 'practice' },
-    { href: '/lessons', label: 'Lessons', icon: 'book' },
-    { href: '/me', label: 'Me', icon: 'me' },
+  menu: 'Menu',
+  close: 'Close',
+  soon: 'Soon',
+  groups: [
+    {
+      title: null,
+      items: [{ href: '/desk', label: 'Desk', icon: 'desk' }],
+    },
+    {
+      title: 'Learn',
+      items: [
+        { href: '/learn', label: 'Path', icon: 'path' },
+        { href: '/lessons', label: 'Lessons', icon: 'book' },
+        { href: '/practice', label: 'Practice', icon: 'practice' },
+        { href: '/learn/glossary', label: 'Glossary', icon: 'words' },
+      ],
+    },
+    {
+      title: 'Markets',
+      items: [
+        { href: '/signals', label: 'Signals', icon: 'signal' },
+        { href: null, label: 'Calendar', icon: 'calendar' },
+      ],
+    },
+    {
+      title: 'Trade',
+      items: [
+        { href: '/journal', label: 'Journal', icon: 'journal' },
+        { href: '/tools', label: 'Tools', icon: 'tools' },
+        { href: null, label: 'Paper account', icon: 'paper' },
+      ],
+    },
+    {
+      title: 'Community',
+      items: [
+        { href: null, label: 'The Floor', icon: 'people' },
+        { href: null, label: 'Live sessions', icon: 'live' },
+      ],
+    },
+    {
+      title: 'You',
+      items: [{ href: '/me', label: 'Progress', icon: 'me' }],
+    },
+  ],
+  /** The phone's bottom bar: each lights up for its whole group. */
+  bar: [
+    { href: '/desk', label: 'Desk', icon: 'desk', group: null },
+    { href: '/learn', label: 'Learn', icon: 'path', group: 'Learn' },
+    { href: '/signals', label: 'Signals', icon: 'signal', group: 'Markets' },
+    { href: '/journal', label: 'Trade', icon: 'journal', group: 'Trade' },
   ],
 } as const;
+
+export type NavIcon = (typeof NAV.groups)[number]['items'][number]['icon'];
 
 export const TAB_DUE = (n: number) =>
   n === 1 ? '1 question to practise' : `${n} questions to practise`;

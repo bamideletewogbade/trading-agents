@@ -8,6 +8,11 @@ Written 26 Sep 2026, after the marketing site, accounts and onboarding landed. I
 
 Prices here are **hypotheses to test in the pilot**, not decisions.
 
+> **Superseded on signals (26 Sep 2026).** This document ruled out selling signals. The member
+> app now has rule-based signals with their stops, reasons against and complete record, inside
+> the Pass rather than sold alone, until legal advice says otherwise. See
+> `docs/member-app-plan.md` §4 and CLAUDE.md rule 9. The rest of this document stands.
+
 ---
 
 ## 1. The rule every revenue line must pass
