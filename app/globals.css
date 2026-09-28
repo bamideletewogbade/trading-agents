@@ -311,23 +311,37 @@
   animation: menu-item 360ms var(--ease-out) both;
 }
 
-/* Scroll reveals (components/motion/Reveal.tsx). */
+/* Scroll reveals (components/motion/Reveal.tsx): a lift out of a slight
+   blur, like a chart coming into focus. */
 html.js [data-reveal] {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(22px);
+  filter: blur(4px);
   transition:
-    opacity 600ms var(--ease-out),
-    transform 600ms var(--ease-out);
+    opacity 700ms var(--ease-out),
+    transform 700ms var(--ease-out),
+    filter 700ms var(--ease-out);
 }
 html.js [data-reveal][data-shown] {
   opacity: 1;
   transform: none;
+  filter: none;
 }
 @media (prefers-reduced-motion: reduce) {
   html.js [data-reveal] {
     opacity: 1;
     transform: none;
+    filter: none;
   }
+}
+/* A coin inside a reveal spins face-up as its row arrives. */
+html.js [data-reveal][data-shown] .reveal-spin {
+  animation: coin-spin 1100ms var(--ease-out) both;
+}
+/* A drawing inside a reveal waits for it: candles rise when you arrive,
+   not while you're still at the top of the page. */
+html.js [data-reveal]:not([data-shown]) .await-reveal {
+  animation-play-state: paused;
 }
 
 /* A slow gold breath behind the one thing to press. */
@@ -633,4 +647,199 @@ html.js [data-reveal][data-shown] {
 @utility animate-line-draw {
   stroke-dasharray: var(--len, 2000);
   animation: line-draw 900ms var(--ease-out) both;
+}
+
+/* ── The landing page's depth layer ────────────────────────────────────
+   Headlines that turn up into place word by word, cards that lean toward
+   the pointer, a chart floor running into the distance. All decoration:
+   the words are the same with or without it, and the reduced-motion rule
+   near the top leaves everything at rest in its final place. */
+
+/* A headline word turning up out of the page. The parent sets perspective. */
+@keyframes word-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em) rotateX(-70deg);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@utility animate-word-in {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  animation: word-in 800ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 55ms + var(--start, 0ms));
+}
+
+/* A card leaning toward the pointer (components/motion/Tilt.tsx sets the
+   angles and the glare's position). */
+@utility tilt {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg)) translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform 500ms var(--ease-out);
+  will-change: transform;
+  &[data-tilting] {
+    transition-duration: 90ms;
+  }
+}
+/* The light on a tilted card: a soft gold spot where the pointer is, and a
+   brighter rim near it. Shows only while the pointer is over the card. */
+@utility glare {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      420px circle at var(--mx, 50%) var(--my, 0%),
+      color-mix(in srgb, var(--color-gold) 11%, transparent),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 300ms var(--ease-out);
+    pointer-events: none;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(
+      260px circle at var(--mx, 50%) var(--my, 0%),
+      var(--color-gold),
+      transparent 70%
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    opacity: 0;
+    transition: opacity 300ms var(--ease-out);
+    pointer-events: none;
+  }
+  &[data-tilting]::before,
+  &[data-tilting]::after {
+    opacity: 1;
+  }
+}
+
+/* Something light hovering in place: a slow rise and fall. */
+@keyframes hover-y {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(calc(var(--tilt, 0deg) * -1));
+  }
+}
+@utility animate-hover-y {
+  animation: hover-y 5.5s ease-in-out infinite;
+  animation-delay: var(--start, 0ms);
+}
+
+/* A coin turning slowly on its edge, forever. */
+@keyframes coin-turn {
+  from {
+    transform: rotateY(0);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+@utility animate-coin-turn {
+  animation: coin-turn 7s linear infinite;
+}
+
+/* A replay arrow coming round again. */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@utility animate-spin-slow {
+  animation: spin-slow 9s linear infinite;
+}
+
+/* The chart floor under the closing call: grid paper laid flat and running
+   toward you, with candles standing on it. */
+@keyframes floor-run {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 64px;
+  }
+}
+@utility floor-grid {
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--color-gold) 26%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-gold) 18%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 64px 64px;
+  animation: floor-run 2.4s linear infinite;
+  mask-image: linear-gradient(to bottom, transparent, black 45%);
+}
+@keyframes candle-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@utility animate-candle-grow {
+  transform-origin: 50% 100%;
+  animation: candle-grow 1000ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 45ms + 200ms);
+}
+
+/* The edges of a strip that slides forever fade out, so words arrive
+   rather than being cut. */
+@utility fade-x {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+/* How far down the page you are: a gold hairline under the nav, driven by
+   the scroll itself, so no script runs on scroll. Browsers without scroll
+   timelines, and anyone who asked for less motion, simply don't see it. */
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      display: block;
+      transform-origin: 0 50%;
+      animation: grow-x linear both;
+      animation-timeline: scroll(root);
+    }
+  }
 }

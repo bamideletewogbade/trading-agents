@@ -6,16 +6,88 @@
 
 export const LANDING = {
   hero: {
-    eyebrow: 'For Ghana and Nigeria · Courses, signals and tools',
-    titleLead: 'Learn to trade.',
-    titleGold: 'Practise before you risk real money.',
-    lead: 'Courses you play, from zero. Signals that show their reasons and their record. A journal that measures every trade. Start with pretend money. No get-rich-quick.',
-    primary: 'Start free',
-    secondary: 'Try a lesson here',
-    promises: [
-      'Start from zero',
-      'Signals with reasons',
-      'Pretend money first',
+    eyebrow: 'Made for Ghana and Nigeria · Start from zero',
+    titleLead: 'Would you take this trade?',
+    titleGold: 'Practise before it costs you.',
+    lead: 'Start with the simplest one: buy a share, pick a selling price, see what you gain or lose. Then charts, stops and risk, one small decision at a time.',
+    primary: 'Try your first trade',
+    secondary: 'Explore the learning path',
+    promises: ['Pretend money', 'No account needed', 'Free to start'],
+  },
+
+  firstShare: {
+    kicker: 'Your first trade',
+    badge: 'Made-up example',
+    title: 'A share. Two prices. What changes?',
+    intro:
+      'You buy one share (a small piece of a company) and sell it later. Pick the selling price.',
+    diagram: 'Compare the price you pay with the price you sell for',
+    buy: 'You buy for',
+    sell: 'You sell for',
+    choose: 'What if the selling price is…',
+    scenarios: { higher: 'Higher ↑', lower: 'Lower ↓', same: 'The same =' },
+    reveal: 'See the result',
+    outcome: {
+      gain: (amount: string) => `You gain ${amount}.`,
+      loss: (amount: string) => `You lose ${amount}.`,
+      same: (_amount: string) => 'You break even.',
+    },
+    explain: {
+      gain: 'You sold for more than you paid. Try a lower selling price to see the other side.',
+      loss: 'You sold for less than you paid. A price can fall as well as rise.',
+      same: 'You sold for exactly what you paid. There is no gain or loss in this example.',
+    },
+    next: 'Next: what makes a price move?',
+    note: 'Simulated prices in Ghana cedis. Fees and taxes are left out of this first example; they can reduce a gain or increase a loss.',
+  },
+
+  ticker: {
+    label: 'Lessons you can play today',
+    count: (n: number) => `${n} live`,
+  },
+
+  steps: {
+    kicker: 'How it works',
+    title: 'Decide. See what happens. Learn why.',
+    lead: 'Every lesson is a small market you control. You make the call with pretend money, the result plays out, and the explanation arrives while it still matters.',
+    items: [
+      [
+        'Make the call',
+        'Pick a price, a stop or an answer. It’s your decision, not a textbook quiz.',
+      ],
+      [
+        'Watch it play out',
+        'See what your choice would have done, with pretend money and every chart clearly labelled.',
+      ],
+      [
+        'Learn why, then go again',
+        'Get a plain explanation, replay with a different choice, and meet what you got wrong again later.',
+      ],
+    ],
+  },
+
+  starter: {
+    kicker: 'Where are you starting?',
+    title: 'Pick the one that sounds like you.',
+    items: [
+      {
+        title: 'I’ve never traded',
+        body: 'Start with what a price is and where gains and losses come from. No jargon, no pressure.',
+        href: '/lesson/m1',
+        cta: 'Start from zero',
+      },
+      {
+        title: 'I trade, but I keep losing',
+        body: 'Most losses come from where the stop sits and how big the trade is. Practise both without the pain.',
+        href: '/lesson/r1',
+        cta: 'Find the leak',
+      },
+      {
+        title: 'I want to understand the news',
+        body: 'Inflation, the cedi, the naira, an IPO: see what it means for your money, with the numbers worked out.',
+        href: '/lesson/f3',
+        cta: 'See what moves your money',
+      },
     ],
   },
 
@@ -132,8 +204,8 @@ export const LANDING = {
 
   desk: {
     kicker: 'One desk',
-    title: 'Learn, read the market and track your trades in one place.',
-    lead: 'Open your desk and see your next lesson, today’s signals and how your own trades are going.',
+    title: 'A place to keep learning.',
+    lead: 'Find your next lesson, revisit something you missed, or explore the tools as your confidence grows.',
     modules: [
       'Courses',
       'Signals',
@@ -146,17 +218,17 @@ export const LANDING = {
   },
 
   signals: {
-    kicker: 'Signals',
+    kicker: 'Today’s signals, live',
     title: 'Signals that show their work.',
-    lead: 'Entry, stop and target, the reasons for and against, and how the same rules have done on that market, losses included.',
+    lead: 'Every call comes with its stop and target, the reasons against it, a checklist of what must be true, and the same rules’ full record on that market, losses included. Paper-trade them first.',
     all: 'See every market',
     how: 'How signals work',
   },
 
   curriculum: {
     kicker: 'Courses',
-    title: 'Seven courses, from zero to a plan.',
-    lead: 'Every lesson is a small market you control: make a call, see what happens, learn why. Go in order, or jump to what you need, like RSI or reading a company’s accounts.',
+    title: 'From your first price to a plan of your own.',
+    lead: 'How markets work, then charts, risk and strategy. Follow the path in order, or jump straight to what you need, like RSI or stop losses. Each course shows what you can play today.',
     lessonsCount: (n: number) => `${n} lessons`,
     status: {
       live: 'Play it now',
@@ -200,17 +272,31 @@ export const LANDING = {
 
   local: {
     kicker: 'Made for here',
-    title: 'Money lessons built on Ghana and Nigeria.',
-    lead: 'Real inflation from Ghana’s 2022 and Nigeria’s 2023, the cedi and the naira, T-bills, commodities, IPOs and the fees nobody mentions.',
-    lessons: ['f3', 'f7', 'f8', 'f0', 'm6', 's6'],
+    title: 'Built on the cedi, the naira and prices you know.',
+    lead: 'Inflation, currencies, T-bills and company shares, through Ghanaian and Nigerian examples. Anything taken from real history is labelled as historical data.',
+    lessons: ['f3', 'f0', 'm6'],
+    cards: {
+      f3: {
+        title: 'Why does the same money buy less?',
+        body: 'See what inflation did to savings in Ghana and Nigeria, from real history.',
+      },
+      f0: {
+        title: 'What does buying into an IPO mean?',
+        body: 'Walk through how a company sells shares to the public, with a local example.',
+      },
+      m6: {
+        title: 'Who gets paid when you trade?',
+        body: 'Brokers, signal sellers and “account managers”: see who earns from your trades, win or lose.',
+      },
+    },
     play: 'Play it',
   },
 
   closing: {
-    title: 'Your first lesson takes a few minutes.',
-    lead: 'No card. Start with a chart and a choice, then open your desk: courses, signals, a journal and tools.',
-    cta: 'Start free',
-    secondary: 'Try a lesson here',
+    title: 'Make your next mistake here, not with real money.',
+    lead: 'Lessons are free to start and run on pretend money. Keep going as a guest, or make an account later to keep your progress on every device.',
+    cta: 'Start your first lesson',
+    secondary: 'Try the first trade again',
   },
   roadmapStrip: {
     cta: 'See every course',
