@@ -1,17 +1,14 @@
 /**
- * The placeholder mark: rising steps in gold, because getting better is the
- * product (lib/brand.ts). One component, so the rename is one edit.
+ * Chartward's open C and decision point, legible at navigation size.
  */
 export function Mark({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <rect width="24" height="24" rx="6" className="fill-gold" />
       <path
-        d="M5 18h4v-4h4v-4h4V6h2"
-        className="fill-none stroke-ink"
-        strokeWidth="2.2"
-        strokeLinejoin="round"
+        d="M17 3H8L3 8v3h4V9l3-3h7zM3 14v3l5 5h9v-4h-7l-3-3v-1z"
+        className="fill-fg"
       />
+      <rect x="15" y="10" width="6" height="6" rx="1" className="fill-gold" />
     </svg>
   );
 }

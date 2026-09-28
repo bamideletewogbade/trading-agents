@@ -516,6 +516,73 @@ export function recordOf(played: readonly Played[]): TrackRecord {
   };
 }
 
+/* ── What must be true ────────────────────────────────────────────────── */
+
+/**
+ * The checks a signal is read against before anyone should paper-trade it.
+ * Every fired signal already has a trend or a base, a stop one to three ATRs
+ * away and a 2R target after costs: those are how it fired, so checking them
+ * again would only ever pass. These are the ones that vary from call to call.
+ */
+export type CheckKey =
+  | 'big-trend'
+  | 'not-stretched'
+  | 'not-chasing'
+  | 'calm'
+  | 'record'
+  | 'sample';
+
+/** `unknown` when there isn't enough record to say either way: never counted as a pass. */
+export type Check = { key: CheckKey; state: 'pass' | 'fail' | 'unknown' };
+
+export const CHECK_RULES = {
+  /** Closed signals before the record's average is worth reading at all. */
+  recordFrom: 5,
+  /** Closed signals before a record means much (content says why). */
+  sampleFrom: 30,
+} as const;
+
+export function checklistOf(
+  signal: Pick<Signal, 'against'>,
+  record: Pick<TrackRecord, 'signals' | 'avgR'>,
+): Check[] {
+  const flagged = (kind: Fact['kind']) =>
+    signal.against.some((fact) => fact.kind === kind);
+  const clear = (kind: Fact['kind']) =>
+    flagged(kind) ? ('fail' as const) : ('pass' as const);
+  return [
+    { key: 'big-trend', state: clear('big-trend') },
+    { key: 'not-stretched', state: clear('stretched') },
+    { key: 'not-chasing', state: clear('extended') },
+    { key: 'calm', state: clear('volatile') },
+    {
+      key: 'record',
+      state:
+        record.signals < CHECK_RULES.recordFrom
+          ? 'unknown'
+          : record.avgR > 0
+            ? 'pass'
+            : 'fail',
+    },
+    {
+      key: 'sample',
+      state: record.signals >= CHECK_RULES.sampleFrom ? 'pass' : 'unknown',
+    },
+  ];
+}
+
+/** How many checks pass, out of those that could be judged. */
+export function checkScore(checks: readonly Check[]): {
+  passed: number;
+  known: number;
+} {
+  const known = checks.filter((c) => c.state !== 'unknown');
+  return {
+    passed: known.filter((c) => c.state === 'pass').length,
+    known: known.length,
+  };
+}
+
 function watchAt(bars: readonly Bar[], ind: Indicators, i: number): Watch {
   const trend = trendAt(ind, i);
   const close = ind.close[i] as number;

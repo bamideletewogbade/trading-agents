@@ -1,0 +1,594 @@
+[
+  {
+    "width": 768,
+    "route": "/",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Learn to trade. Practise before you risk real money."
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/roadmap",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "From your first chart to trading with a plan."
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/labs",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [
+      "#chart-lab"
+    ],
+    "h1": [
+      "Touch the market. Feel the consequence."
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/mindset",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Most of what moves is noise."
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/ipo",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "How an IPO works, with the Dangote offer as the example."
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/community",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Trade ideas in the open. Reasoning, not signals."
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/pricing",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Free to start. Pay only if it helps."
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/sign-in",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Welcome back"
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/sign-up",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Start free"
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/onboarding",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": []
+  },
+  {
+    "width": 768,
+    "route": "/desk",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": []
+  },
+  {
+    "width": 768,
+    "route": "/lessons",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "All lessons"
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/practice",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Practise your mistakes"
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/practice/round",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Nothing due right now"
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/me",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "Your progress"
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/lesson/m1",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": []
+  },
+  {
+    "width": 768,
+    "route": "/lesson/p1",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [],
+    "h1": [
+      "That lesson isn’t ready yet"
+    ]
+  },
+  {
+    "width": 768,
+    "route": "/design",
+    "status": 200,
+    "viewport": 768,
+    "scroll": 768,
+    "missingAnchors": [
+      "#content"
+    ],
+    "h1": [
+      "Design specimen"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Learn to trade. Practise before you risk real money."
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/roadmap",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "From your first chart to trading with a plan."
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/labs",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [
+      "#chart-lab"
+    ],
+    "h1": [
+      "Touch the market. Feel the consequence."
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/mindset",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Most of what moves is noise."
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/ipo",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "How an IPO works, with the Dangote offer as the example."
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/community",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Trade ideas in the open. Reasoning, not signals."
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/pricing",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Free to start. Pay only if it helps."
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/sign-in",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Welcome back"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/sign-up",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Start free"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/onboarding",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": []
+  },
+  {
+    "width": 1024,
+    "route": "/desk",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Let’s find where you start"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/lessons",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "All lessons"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/practice",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Practise your mistakes"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/practice/round",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Nothing due right now"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/me",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "Your progress"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/lesson/m1",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": []
+  },
+  {
+    "width": 1024,
+    "route": "/lesson/p1",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [],
+    "h1": [
+      "That lesson isn’t ready yet"
+    ]
+  },
+  {
+    "width": 1024,
+    "route": "/design",
+    "status": 200,
+    "viewport": 1024,
+    "scroll": 1024,
+    "missingAnchors": [
+      "#content"
+    ],
+    "h1": [
+      "Design specimen"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Learn to trade. Practise before you risk real money."
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/roadmap",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "From your first chart to trading with a plan."
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/labs",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [
+      "#chart-lab"
+    ],
+    "h1": [
+      "Touch the market. Feel the consequence."
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/mindset",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Most of what moves is noise."
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/ipo",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "How an IPO works, with the Dangote offer as the example."
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/community",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Trade ideas in the open. Reasoning, not signals."
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/pricing",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Free to start. Pay only if it helps."
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/sign-in",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Welcome back"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/sign-up",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Start free"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/onboarding",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": []
+  },
+  {
+    "width": 1440,
+    "route": "/desk",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Let’s find where you start"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/lessons",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "All lessons"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/practice",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Practise your mistakes"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/practice/round",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Nothing due right now"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/me",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "Your progress"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/lesson/m1",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": []
+  },
+  {
+    "width": 1440,
+    "route": "/lesson/p1",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [],
+    "h1": [
+      "That lesson isn’t ready yet"
+    ]
+  },
+  {
+    "width": 1440,
+    "route": "/design",
+    "status": 200,
+    "viewport": 1440,
+    "scroll": 1440,
+    "missingAnchors": [
+      "#content"
+    ],
+    "h1": [
+      "Design specimen"
+    ]
+  }
+]

@@ -8,12 +8,12 @@
  */
 
 export const BRAND = {
-  name: 'Sika Lab',
-  short: 'Sika',
-  meaning: 'Sika means money in Twi.',
-  promise: 'Learn to read the market. Practise before it costs you.',
+  name: 'Chartward',
+  short: 'Chartward',
+  meaning: 'Read the market. Rehearse the decision.',
+  promise: 'Read the market. Rehearse the decision.',
   description:
-    'Charts, technical and fundamental analysis, and trading strategies, taught as lessons you play in simulated and historical markets, with a coach that asks before it tells. A curated roadmap, or one lesson at a time. No signals, no real money.',
+    'Understand prices, read charts, and practise market decisions through interactive lessons. Start with the basics and build your skills with simulated money.',
 } as const;
 
 export function siteUrl(): string {

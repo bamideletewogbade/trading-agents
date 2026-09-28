@@ -1,0 +1,7 @@
+# Chartward direction 01
+
+Status: preliminary concept, name not cleared. Tool: built-in image generation. Image: `chartward-direction-01.png`. Visually reviewed: name/tagline legible, restrained palette and C mark present. This is a raster concept board; miniature specimens are illustrative, not a production optical-size test.
+
+## Exact prompt
+
+Create a polished minimalist brand identity concept presentation image for a proposed trading-practice education app named exactly 'Chartward'. This is a draft concept for founder review, not a product screenshot. Landscape wide presentation board, warm ivory background, exceptionally clean Swiss graphic design. Hero centered wordmark Chartward in contemporary clean humanist sans serif black, generous whitespace. To its left a distinctive simple geometric open C-shaped mark built from two bracket strokes with a single small amber square indicating a decision point; readable at favicon size. Do not use upward profit arrows, coins, bulls, shields, candlestick clutter or gradients. Below hero write exact tagline 'Read the market. Rehearse the decision.' In a restrained bottom strip show the same mark in black on ivory, ivory on charcoal, and amber on charcoal, plus a tiny 24px-size icon specimen. A small understated caption top left says 'BRAND DIRECTION 01'; bottom right says 'Concept — name not cleared'. Flat vector-like execution, no embossed mockups, no 3D objects, no photographic scenes. Palette ivory #F7F5EF, charcoal #15191C, amber #EBAE3F. Clean typographic hierarchy and precise optical alignment.

@@ -11,6 +11,7 @@ import { crisisRule } from '@/lib/decisions/safety';
 import { recoveryBp } from '@/lib/engines/risk';
 import {
   JEV_OPTIONS,
+  MARKETS,
   STEPS,
   answer,
   answeredCount,
@@ -97,6 +98,8 @@ export function Conversation() {
   const [misses, setMisses] = useState<Partial<Record<Step, number>>>({});
   const [skipped, setSkipped] = useState<Step[]>([]);
   const [draft, setDraft] = useState('');
+  // The markets question takes several answers: ticked here, sent with Done.
+  const [picked, setPicked] = useState<Market[]>([]);
   // After the support card, no suggestions until they write again: the card
   // keeps the room, and nothing nudges them back into the questions.
   const [calm, setCalm] = useState(false);
@@ -141,6 +144,7 @@ export function Conversation() {
     setCalm(false);
     setStep(null);
     setSaving('idle');
+    setPicked([]);
     say([...C.hello, question('name', {})], () => setStep('name'));
   }
 
@@ -216,6 +220,7 @@ export function Conversation() {
     }
     const next = answer(profile, current, value);
     setProfile(next);
+    setPicked([]);
     advance(next, reaction(current, next));
   }
 
@@ -288,6 +293,25 @@ export function Conversation() {
     if (!step) return;
     push({ from: 'me', text: chipLabel(step, value) ?? String(value) });
     accept(step, value);
+  }
+
+  /** Send the ticked markets together, in the order the chips show them. */
+  function sendPicked() {
+    if (step !== 'markets' || !picked.length) return;
+    const labels = picked.map(
+      (market) => chipLabel('markets', [market]) ?? market,
+    );
+    push({ from: 'me', text: labels.join(', ') });
+    setPicked([]);
+    accept('markets', picked);
+  }
+
+  function togglePick(market: Market) {
+    setPicked((list) =>
+      list.includes(market)
+        ? list.filter((m) => m !== market)
+        : MARKETS.filter((m) => m === market || list.includes(m)),
+    );
   }
 
   async function finish(done: Profile) {
@@ -388,7 +412,60 @@ export function Conversation() {
       </div>
 
       <div className="border-t border-line bg-ink px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        {chips.length ? (
+        {chips.length && step === 'markets' ? (
+          <fieldset className="mb-3 animate-bubble-in">
+            <legend className="mb-2 font-mono type-tick text-muted">
+              {C.multi.legend}
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {chips.map((chip) => {
+                const value = chip.value as Market[];
+                const market = value[0];
+                // "Not sure yet" is an answer on its own, not one of many.
+                if (!market)
+                  return (
+                    <button
+                      key={chip.label}
+                      type="button"
+                      onClick={() => tap(value)}
+                      className="min-h-11 rounded-full border border-dashed border-edge px-4 type-small text-fg-2 transition-colors hover:border-gold hover:text-gold"
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                const on = picked.includes(market);
+                return (
+                  <label
+                    key={chip.label}
+                    className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 type-small transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold ${on ? 'border-gold bg-gold-soft font-semibold text-fg' : 'border-edge bg-raised text-fg hover:border-gold'}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={on}
+                      onChange={() => togglePick(market)}
+                      className="sr-only"
+                    />
+                    <span
+                      aria-hidden
+                      className={`grid size-4 place-items-center rounded-[4px] border text-[0.65rem] leading-none font-bold transition-colors ${on ? 'animate-pop border-gold bg-gold text-ink' : 'border-edge'}`}
+                    >
+                      {on ? '✓' : ''}
+                    </span>
+                    {chip.label}
+                  </label>
+                );
+              })}
+              <button
+                type="button"
+                onClick={sendPicked}
+                disabled={!picked.length}
+                className="btn-3d min-h-11 rounded-full bg-gold px-5 type-small font-bold text-ink disabled:opacity-40"
+              >
+                {C.multi.done(picked.length)}
+              </button>
+            </div>
+          </fieldset>
+        ) : chips.length ? (
           <div className="mb-3 flex flex-wrap gap-2">
             {chips.map((chip) => (
               <button

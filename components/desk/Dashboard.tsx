@@ -19,7 +19,9 @@ import { useHabit } from '@/lib/client/progress';
 import { usePractice } from '@/lib/client/practice';
 import { useJournal } from '@/lib/client/journal';
 import { useSignals } from '@/lib/client/signals';
+import { useWatchlist } from '@/lib/client/watchlist';
 import { usePaper } from '@/lib/client/paper';
+import { CareGate } from '@/components/coach/CareGate';
 import { formatMoney } from '@/lib/core/money';
 import { Change, SideTag } from '@/components/signals/parts';
 import { FlameIcon } from '@/components/ui/icons';
@@ -108,6 +110,16 @@ function Card({
 
 function SignalsCard({ className }: { className: string }) {
   const result = useSignals();
+  const watch = useWatchlist();
+  // The markets they follow first, then the rest; the order within each stays calls-first.
+  const followed = new Set(watch.ids ?? []);
+  const markets =
+    result.state === 'ready'
+      ? [
+          ...result.data.markets.filter((m) => followed.has(m.market.id)),
+          ...result.data.markets.filter((m) => !followed.has(m.market.id)),
+        ]
+      : [];
   return (
     <Card
       title={DESK.signals.title}
@@ -129,7 +141,7 @@ function SignalsCard({ className }: { className: string }) {
             <p className="mb-2 type-small text-fg-2">{DESK.signals.none}</p>
           ) : null}
           <ul className="divide-y divide-line">
-            {result.data.markets.slice(0, 5).map((m) => {
+            {markets.slice(0, 5).map((m) => {
               const call =
                 m.now.state === 'new'
                   ? m.now.signal
@@ -508,7 +520,9 @@ export function Dashboard() {
         </div>
 
         <div className="contents xl:flex xl:flex-col xl:gap-4">
-          <SignalsCard className="order-4 xl:order-none" />
+          <CareGate>
+            <SignalsCard className="order-4 xl:order-none" />
+          </CareGate>
           <PaperCard className="order-5 xl:order-none" />
           <JournalCard className="order-6 xl:order-none" />
           <Card

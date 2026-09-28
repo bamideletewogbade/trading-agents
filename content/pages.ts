@@ -457,3 +457,71 @@ export const PRICING_PAGE = {
     ] as const,
   },
 };
+
+export const LABS_PAGE = {
+  available: (n: number) => n + ' interactive labs available',
+  directory: 'Choose a lab',
+  open: 'Try this lab',
+  riskSteps: [
+    ['Choose your exposure', 'Leverage increases the size of a position relative to its collateral. It does not make the underlying price more or less volatile.'],
+    ['Change the price', 'The same price move has a larger effect on your collateral when exposure is larger. Both gains and losses are amplified.'],
+    ['Read the model limits', 'This simplified simulation does not reproduce a broker’s margin rules, fees, slippage or liquidation process. Even an unleveraged asset can lose value.'],
+  ] as const,
+  ipoSteps: [
+    ['Read the offer', 'Start with the published price, minimum application, business accounts and risks. An application is not a guaranteed allocation.'],
+    ['Model an allocation', 'The calculator illustrates proportional allocation when demand exceeds supply. Actual allocation follows the offer terms and approved allotment basis.'],
+    ['Separate allocation from return', 'Receiving shares does not determine their future market price. Listing prices can rise or fall; this exercise makes no return forecast.'],
+  ] as const,
+  ipoMore: 'Read the case study and sources',
+  noiseNote: 'Smoothing changes how a chart looks. It does not prove that a trend will continue or that a strategy is profitable.',
+  quiz: 'Try the signal or noise quiz',
+  nextTitle: 'Turn a useful experiment into a habit.',
+  nextBody: (live: number, planned: number) => live + ' lessons are available now; ' + planned + ' are planned. Practise a decision, review the explanation, then try again.',
+  tryLesson: 'Try a free lesson',
+  curriculum: 'Explore the curriculum',
+  meta: {
+    title: 'Interactive Labs: Market Simulators & Flight Checks',
+    description:
+      'Hands-on trading simulators. Test leverage in the Risk Lab, calculate allotment in the Market & IPO Lab, deconstruct candlestick anatomy, and separate signal from noise with zero financial risk.',
+  },
+  hero: {
+    kicker: 'Interactive Simulators · Zero Financial Risk',
+    titleLead: 'Touch the market.',
+    titleGold: 'Feel the consequence.',
+    lead: 'Reading theory doesn’t build trading instincts. Each lab lets you change an input and see what happens. Test leverage, model public offerings, and filter market noise with zero real money at stake.',
+  },
+  labs: [
+    {
+      id: 'risk-lab',
+      kicker: 'Simulator 01 · Capital Preservation',
+      title: 'Risk Lab: The Leverage Trap',
+      lead: 'See how fast leverage wipes out an account on an ordinary 2% market wobble. Adjust your leverage from 1x to 50x and test your capital survival rate.',
+      href: '/#risk-lab',
+      badge: 'Core Skill',
+    },
+    {
+      id: 'ipo-lab',
+      kicker: 'Simulator 02 · Public Offerings',
+      title: 'Market & IPO Lab: Dangote & Public Listings',
+      lead: 'Understand what buying an IPO really means. Explore an illustrative allocation, valuation and listing scenario. Actual offer terms determine how shares are allocated.',
+      href: '/ipo',
+      badge: 'Real World Case',
+    },
+    {
+      id: 'chart-lab',
+      kicker: 'Simulator 03 · Price Action',
+      title: 'Chart Anatomy Lab: Candlesticks & Support',
+      lead: 'Step through raw candlestick wicks and bodies. Find where buyers consistently defend the floor, and plan an invalidation level before you buy.',
+      href: '/#demo',
+      badge: 'Interactive Demo',
+    },
+    {
+      id: 'noise-lab',
+      kicker: 'Simulator 04 · Market Psychology',
+      title: 'Noise Filter Lab: Signal vs Noise',
+      lead: 'Tune out the chatter. Slide a moving average filter to strip away random price swings, and see how smoothing changes the picture.',
+      href: '/mindset#filter',
+      badge: 'Discipline',
+    },
+  ],
+};

@@ -6,7 +6,13 @@
  */
 
 import { formatBp } from '@/lib/core/money';
-import { SIGNAL_RULES as R, type Fact, type Side } from '@/lib/engines/signals';
+import {
+  CHECK_RULES,
+  SIGNAL_RULES as R,
+  type CheckKey,
+  type Fact,
+  type Side,
+} from '@/lib/engines/signals';
 import { formatR, formatTimes } from '@/lib/engines/trades';
 import { formatPrice } from '@/lib/markets/catalog';
 import type { NowView, Summary } from '@/lib/markets/view';
@@ -164,6 +170,68 @@ export const SIGNALS = {
     slow: `${R.slow}-day average`,
     past: 'Past signals',
   },
+  checks: {
+    title: 'What must be true',
+    lead: 'Before a signal is worth a paper trade, these should hold. A miss doesn’t cancel the call; it tells you what to watch.',
+    score: (passed: number, known: number) =>
+      known ? `${passed} of ${known} checks pass` : 'Too early to check',
+    built: 'Built into every signal',
+    builtItems: [
+      'Decided on a closed day, filled at the next open',
+      `A stop ${formatTimes(R.minStopAtrTenths)} to ${formatTimes(R.maxStopAtrTenths)} a normal day’s move away`,
+      `A target at ${formatR(R.targetR, { signed: false })}, with costs paid`,
+    ],
+    items: {
+      'big-trend': {
+        pass: `The ${R.long}-day trend agrees`,
+        fail: `The ${R.long}-day trend disagrees`,
+        unknown: '',
+      },
+      'not-stretched': {
+        pass: 'Momentum isn’t stretched',
+        fail: 'Momentum is already stretched',
+        unknown: '',
+      },
+      'not-chasing': {
+        pass: 'Price hasn’t run away from its average',
+        fail: 'Price has run away from its average: chasing',
+        unknown: '',
+      },
+      calm: {
+        pass: 'Days are their usual size',
+        fail: 'Days are bigger than usual: stops get hit more',
+        unknown: '',
+      },
+      record: {
+        pass: 'These rules have made money here on average',
+        fail: 'These rules have lost here on average',
+        unknown: `Fewer than ${CHECK_RULES.recordFrom} past signals: no record to judge`,
+      },
+      sample: {
+        pass: `${CHECK_RULES.sampleFrom} or more past signals to judge by`,
+        fail: '',
+        unknown: `Under ${CHECK_RULES.sampleFrom} past signals: judge the record lightly`,
+      },
+    } satisfies Record<CheckKey, Record<'pass' | 'fail' | 'unknown', string>>,
+  },
+  follow: {
+    title: 'Your markets',
+    edit: 'Choose markets',
+    done: 'Done',
+    legend: 'Markets to follow',
+    hint: 'Pick as many as you like. Signals on these come first.',
+    count: (n: number, of: number) =>
+      n === 0 || n === of ? 'All markets' : `${n} of ${of} markets`,
+    suggested: 'Picked from what you told Sika. Change them any time.',
+    others: (n: number, calls: number) =>
+      `Other markets · ${n}${calls ? ` · ${calls === 1 ? '1 signal' : `${calls} signals`}` : ''}`,
+    nothingYet:
+      'No signals on your markets today. The rules only speak when their setup is there.',
+    noFeed: (names: string[]) =>
+      `We can’t read ${names.join(' or ')} yet. Their lessons still work for every market.`,
+    all: 'Follow all',
+  },
+  care: 'Signals will be back here in a few days. Lessons, practice and your journal are all open, and there’s no rush.',
   back: 'All markets',
   notFound: 'We don’t read that market yet.',
   how: {

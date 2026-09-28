@@ -56,6 +56,51 @@ export const SUPPORT = {
     'Someone you trust counts too: a friend, family, a pastor or imam, a doctor.',
 } as const;
 
+/** The coach screen (/coach) and every reply it can give without a model. */
+export const COACH_CHAT = {
+  meta: { title: 'Ask the coach' },
+  back: '← Your desk',
+  title: (brand: string) => `Ask the ${brand} coach`,
+  lead: 'Bring a question about a chart, a trading idea or a mistake. Get a plain explanation, then practise it in a lesson.',
+  offline:
+    'The coach is answering from our lesson guide right now. You still get the lessons that fit your question.',
+  prompts: [
+    'Why do I keep getting stopped out?',
+    'How does leverage change my risk?',
+    'How can I practise reading charts?',
+  ],
+  you: 'You',
+  source: { ai: 'AI coach', guide: 'Lesson guide' },
+  practise: (title: string) => `Practise: ${title}`,
+  signals: 'See today’s signals, with their reasons and record',
+  thinking: 'Reading your question…',
+  error:
+    'The coach couldn’t answer just now. Your question is still here: try again, or open the lessons.',
+  label: 'Your question',
+  placeholder: 'What would you like to understand?',
+  ask: 'Ask the coach',
+  asking: 'Thinking…',
+  privacy:
+    'This conversation lasts for this visit. Don’t share account numbers, passwords or anything private.',
+  scope:
+    'The coach covers our lessons. It can’t see live prices or your broker account, check a trade, place orders or tell you what to buy.',
+  how: {
+    title: 'A question worth practising',
+    steps: [
+      'Say what confused you.',
+      'Read the explanation and ask a follow-up.',
+      'Test the idea in the lesson it suggests.',
+    ],
+  },
+  all: 'Explore all lessons →',
+  guide: (brand: string, query: string, title: string) =>
+    `${brand} teaches this by doing. For “${query}”, start with “${title}”: you can test the idea with pretend money.`,
+  guideNone: (brand: string) =>
+    `${brand} teaches how markets work, reading charts, managing risk and building a strategy, all through lessons you play. Pick a course, or try another question.`,
+  tip: 'The coach won’t tell you what to buy: nobody can promise where a price goes. These lessons teach you to judge a call yourself, whoever makes it. Signals show what our fixed rules see, with the reasons against and the full record.',
+  busy: 'You’ve asked a lot in a short time. Here’s the lesson guide while the coach catches up.',
+} as const;
+
 export const ASK_REPLY = {
   thinking: 'Looking…',
   either: 'Did you mean one of these?',

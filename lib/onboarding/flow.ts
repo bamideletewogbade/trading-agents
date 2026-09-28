@@ -621,6 +621,16 @@ export const JEV_OPTIONS: Partial<Record<Step, Record<string, string>>> = {
     '30': 'About half an hour a day',
     '60': 'An hour or more a day',
   },
+  // Several can be true at once, so the gate asks each as its own yes/no
+  // (lib/decisions/meaning.ts), never as one many-way choice.
+  markets: {
+    local:
+      'Stocks, bonds or funds in Ghana or Nigeria (GSE, NGX, T-bills, local companies)',
+    us: 'US or other foreign stocks, ETFs or indices',
+    forex: 'Currencies or forex, including synthetic indices',
+    crypto: 'Crypto: Bitcoin, Ether, coins or tokens',
+    commodities: 'Commodities: gold, oil, cocoa, silver',
+  } satisfies Record<Market, string>,
 };
 
 /* ── Where to start ───────────────────────────────────────────────────── */

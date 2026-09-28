@@ -152,7 +152,10 @@ npx oxfmt <files>      # format what you touched
   prices as integers in each market's smallest unit, closed daily bars only. The engine decides
   on a bar's close and fills at the next open, and `scripts/check-markets.ts` proves no signal
   changes when later bars arrive. The words for every fact live in `content/signals.ts`. When
-  data is down, the screen says so; signals are never drawn from made-up prices.
+  data is down, the screen says so; signals are never drawn from made-up prices. "What must
+  be true" is `checklistOf()` in the engine: code, not Jev, because every check is a number.
+  People follow markets with checkboxes (`lib/client/watchlist.ts`, seeded from onboarding
+  through `lib/markets/interests.ts`); markets they don't follow fold away, never vanish.
 - The journal (`lib/engines/journal.ts`) and the tools (`lib/engines/tools.ts`) are engines like
   any other.
 - **Accounts and sync.** A signed-in person is one learner on every device: the `accounts` table
@@ -184,7 +187,9 @@ npx oxfmt <files>      # format what you touched
   `scripts/check-onboarding.ts` using real phrases people type. The chat screen doesn't change.
   Chips are shortcuts, never the only way in: a typed answer is read (then Jev, when it's on),
   an unclear one gets a clarify line with typed examples (the checks prove each example is
-  understood), and a second miss skips the question. Nothing ever says "tap one". Every
+  understood), and a second miss skips the question. Nothing ever says "tap one". A question
+  with more than one right answer (markets) shows checkboxes and a Done button, never
+  one-tap chips, and Jev reads it as one yes/no per option, never a many-way choice. Every
   step's reader is checked against a table of phrases people type (`TYPED` in the checks);
   when the chat misreads someone, their words go there first. What's typed passes
   `crisisRule` before any reading: the support card shows in the chat and the question waits.

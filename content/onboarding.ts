@@ -110,6 +110,15 @@ export const ONBOARDING = {
     time: 'Roughly how long a day? Say it your way, like “15 minutes” or “about an hour”.',
   } satisfies Record<Step, string>,
 
+  /**
+   * Questions with more than one right answer (markets): the chips are
+   * checkboxes and a Done button sends them together. Typing still works.
+   */
+  multi: {
+    legend: 'Pick as many as you like',
+    done: (count: number) => (count ? `Done · ${count}` : 'Done'),
+  },
+
   /** After two answers the reading couldn't place: no loop, just move on. */
   skip: 'No problem, let’s skip that one.',
 

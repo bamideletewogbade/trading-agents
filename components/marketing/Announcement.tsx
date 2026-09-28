@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { DANGOTE } from '@/content/ipo';
 import { MARKETING } from '@/content/marketing';
 import { offerStatus } from '@/lib/engines/ipo';
@@ -15,6 +18,9 @@ const CLOSES = new Date(`${DANGOTE.offer.closes}T12:00:00Z`).toLocaleDateString(
 );
 
 export function Announcement({ today }: { today: string }) {
+  const pathname = usePathname();
+  // Let beginners meet the product before a time-sensitive market event.
+  if (pathname === '/') return null;
   const status = offerStatus(DANGOTE.offer, today);
   const copy = MARKETING.announcement;
   const text =

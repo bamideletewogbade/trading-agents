@@ -26,6 +26,7 @@ export const NAV = {
         { href: '/learn', label: 'Courses', icon: 'path' },
         { href: '/lessons', label: 'Lessons', icon: 'book' },
         { href: '/practice', label: 'Practice', icon: 'practice' },
+        { href: '/coach', label: 'AI Coach', icon: 'words' },
         { href: '/learn/glossary', label: 'Glossary', icon: 'words' },
       ],
     },

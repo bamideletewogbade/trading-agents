@@ -15,6 +15,8 @@ import {
   SIGNAL_RULES,
   SignalError,
   WARMUP,
+  checkScore,
+  checklistOf,
   readMarket,
   recordOf,
   type Played,
@@ -40,6 +42,11 @@ import {
   sizePosition,
 } from '../lib/engines/tools.ts';
 import { MARKETS, formatPrice, marketById } from '../lib/markets/catalog.ts';
+import {
+  cleanChoice,
+  marketsFor,
+  unreadInterests,
+} from '../lib/markets/interests.ts';
 import { parseKraken, toUnits } from '../lib/markets/kraken.ts';
 import { parseTwelveData } from '../lib/markets/twelvedata.ts';
 import { byUrgency, detailOf, summaryOf } from '../lib/markets/view.ts';
@@ -105,6 +112,64 @@ check('the test markets give both setups, both ways', () => {
     READS.every(({ reading }) => reading.history.length >= 5),
     'a test market with almost no signals proves little',
   );
+});
+
+check(
+  'the checklist follows the warnings and the record, never guesses',
+  () => {
+    for (const { reading } of READS)
+      for (const played of reading.history) {
+        const checks = checklistOf(played, reading.record);
+        const state = (key: string) => checks.find((c) => c.key === key)?.state;
+        const flagged = (kind: string) =>
+          played.against.some((f) => f.kind === kind);
+        equal(state('not-stretched') === 'fail', flagged('stretched'));
+        equal(state('not-chasing') === 'fail', flagged('extended'));
+        equal(state('calm') === 'fail', flagged('volatile'));
+        equal(state('big-trend') === 'fail', flagged('big-trend'));
+        const { passed, known } = checkScore(checks);
+        ok(passed <= known && known <= checks.length);
+      }
+    const quiet = { against: [] };
+    const state = (record: { signals: number; avgR: number }, key: string) =>
+      checklistOf(quiet, record).find((c) => c.key === key)?.state;
+    equal(
+      state({ signals: 3, avgR: 90 }, 'record'),
+      'unknown',
+      'too few to judge',
+    );
+    equal(state({ signals: 12, avgR: 20 }, 'record'), 'pass');
+    equal(state({ signals: 12, avgR: -20 }, 'record'), 'fail');
+    equal(state({ signals: 0, avgR: 0 }, 'record'), 'unknown');
+    equal(
+      state({ signals: 29, avgR: 20 }, 'sample'),
+      'unknown',
+      'never a fail, never a pass',
+    );
+    equal(state({ signals: 30, avgR: 20 }, 'sample'), 'pass');
+    deepStrictEqual(checkScore(checklistOf(quiet, { signals: 0, avgR: 0 })), {
+      passed: 4,
+      known: 4,
+    });
+  },
+);
+
+check('interests map to markets we read, and nothing else', () => {
+  deepStrictEqual(marketsFor([]), []);
+  deepStrictEqual(marketsFor(['local', 'us']), [], 'no feed, no stand-in');
+  deepStrictEqual(unreadInterests(['crypto', 'local', 'us']), ['local', 'us']);
+  deepStrictEqual(
+    marketsFor(['commodities', 'crypto']),
+    MARKETS.filter((m) => m.class === 'crypto' || m.class === 'metal').map(
+      (m) => m.id,
+    ),
+    'catalog order, whatever order they were said in',
+  );
+  ok(marketsFor(['forex']).every((id) => marketById(id)?.class === 'fx'));
+  deepStrictEqual(cleanChoice(['gold', 'btc', 'nope', 7, 'btc']), [
+    'btc',
+    'gold',
+  ]);
 });
 
 check('reading is deterministic', () => {

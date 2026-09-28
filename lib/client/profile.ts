@@ -20,6 +20,11 @@ export type Saved = {
   where: 'server' | 'device';
 };
 
+/** The device's copy only, without asking the server: for screens that need it at once. */
+export function localProfile(): Profile | null {
+  return readLocal();
+}
+
 function readLocal(): Profile | null {
   try {
     const raw = localStorage.getItem(KEY);

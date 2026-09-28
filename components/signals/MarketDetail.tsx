@@ -14,7 +14,18 @@ import {
   type Marker,
 } from '@/components/lesson/PriceChart';
 import { TruthBadge } from '@/components/shell/TruthBadge';
-import { Change, Explanation, Levels, SideTag, day } from './parts';
+import { SupportCard } from '@/components/coach/SupportCard';
+import { useInCare } from '@/components/coach/CareGate';
+import {
+  Change,
+  CheckLine,
+  Checklist,
+  Explanation,
+  Levels,
+  SideTag,
+  checksOf,
+  day,
+} from './parts';
 
 /**
  * One market: the call and its levels, the chart with those levels drawn
@@ -169,6 +180,15 @@ function Chart({ detail }: { detail: Detail }) {
 
 export function MarketDetail({ id }: { id: string }) {
   const result = useMarket(id);
+  const care = useInCare();
+
+  if (care)
+    return (
+      <div className="mx-auto max-w-[62ch] space-y-3 px-4 pt-6 pb-8">
+        <SupportCard />
+        <p className="type-body text-fg-2">{C.care}</p>
+      </div>
+    );
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 pt-4 pb-8 sm:px-8 lg:pt-6">
@@ -214,6 +234,7 @@ function Ready({ detail }: { detail: Detail }) {
   const call =
     now.state === 'new' ? now.signal : now.state === 'open' ? now.played : null;
   const price = (units: number) => formatPrice(units, market.decimals);
+  const checks = checksOf(detail);
   const learnIds = [
     ...(call ? C.learn[call.setup] : C.learn.pullback),
     ...C.learn.always,
@@ -350,6 +371,15 @@ function Ready({ detail }: { detail: Detail }) {
             ) : null}
           </section>
 
+          {checks ? (
+            <section
+              aria-labelledby="checks"
+              className="rounded-xl border border-line bg-panel p-4"
+            >
+              <Checklist checks={checks} />
+            </section>
+          ) : null}
+
           <section
             aria-labelledby="record"
             className="rounded-xl border border-line bg-panel p-4"
@@ -414,6 +444,11 @@ function Ready({ detail }: { detail: Detail }) {
                 <div className="mt-3">
                   <Levels summary={detail} />
                 </div>
+                {checks ? (
+                  <a href="#checks" className="mt-2 inline-flex min-h-8">
+                    <CheckLine checks={checks} />
+                  </a>
+                ) : null}
                 <div className="mt-4 grid gap-2">
                   {marketById(market.id)?.paper ? (
                     <Link

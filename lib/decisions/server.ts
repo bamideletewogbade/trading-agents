@@ -11,7 +11,7 @@ import { isTestTraffic, learnerFrom } from '@/lib/learning/store';
 import { decide, type Decision, type Gate, type LedgerEntry } from './gate';
 
 /** The learner's id when they have one; otherwise their address, so a guest still has a limit. */
-function clientOf(request: Request): {
+export function clientOf(request: Request): {
   client: string;
   learnerId: string | null;
 } {

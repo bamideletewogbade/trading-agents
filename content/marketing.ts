@@ -39,6 +39,12 @@ export const MARKETING = {
           note: 'Noise, signal and staying calm',
         },
         {
+          href: '/labs',
+          label: 'Interactive Labs',
+          note: 'Flight checks, leverage & risk simulators',
+          badge: 'Sim',
+        },
+        {
           href: '/ipo',
           label: 'IPO guide',
           note: 'How an IPO works, with the Dangote offer',
@@ -64,8 +70,7 @@ export const MARKETING = {
   },
 
   footer: {
-    tagline:
-      'Learn to trade, with signals that show their work. Practise here first.',
+    tagline: 'Read the market. Rehearse the decision. Pretend money first.',
     columns: [
       {
         title: 'Product',
