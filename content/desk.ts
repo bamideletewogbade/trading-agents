@@ -20,6 +20,19 @@ export const DESK = {
   start: 'Start',
   resume: 'Continue',
   minutes: (n: number) => `${n} min`,
+  /** Where the next lesson sits in its course, under the "Up next" card. */
+  lessonOf: (n: number, total: number) => `Lesson ${n} of ${total}`,
+  lessonMark: {
+    done: 'done',
+    now: 'up next',
+    later: 'still to come',
+    soon: 'coming soon',
+  },
+  courseMark: {
+    done: 'finished',
+    now: 'you are here',
+    later: 'ahead',
+  },
   allDone:
     'You’ve finished every lesson that’s out so far. New ones are on the way.',
   stage: (n: number) => `Course ${n}`,
@@ -85,4 +98,26 @@ export const PATH = {
   meta: { title: 'Courses' },
   title: 'Your courses',
   lead: 'Seven courses, from how markets work to proving it. Every lesson also stands on its own.',
+  /** Across every lesson that's out, under the title. */
+  overall: (done: number, total: number) => `${done} of ${total} lessons done`,
+  /** Under a course's title: its size, and how long its lessons take. */
+  size: (lessons: number, minutes: number | null) =>
+    `${lessons} lessons · ${minutes === null ? 'Coming soon' : `${minutes} min`}`,
+  done: (done: number, total: number) => `${done} of ${total} done`,
+  whereAmI: (course: number, n: number, total: number) =>
+    `Course ${course} · Lesson ${n} of ${total}`,
+  here: 'You are here',
+  finished: 'Finished',
+  action: {
+    next: 'Start',
+    open: 'Play',
+    again: 'Replay',
+    soon: 'Soon',
+  },
+  lessonState: {
+    done: 'done',
+    next: 'up next',
+    open: 'not started',
+    soon: 'coming soon',
+  },
 } as const;
